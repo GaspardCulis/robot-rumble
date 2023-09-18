@@ -42,6 +42,8 @@ while running:
     rect.x = player1.position.x
     rect.y = player1.position.y
     pygame.draw.rect(screen, "red",rect)
+    for b in player1.bullets:
+        pygame.draw.rect(screen, "green", Rect(b.position.x, b.position.y, 20, 20))
     player1.parseInput(pygame.key.get_pressed(), delta)
 
     PhysicsObject.update_all(delta*100)
