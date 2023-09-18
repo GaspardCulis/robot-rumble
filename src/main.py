@@ -25,6 +25,7 @@ planets = [
 ]
 
 last_time = monotonic()
+rect = Rect(player1.position.x, player1.position.y, player1.width, player1.height)
 running = True
 while running:
     for event in pygame.event.get():
@@ -38,7 +39,8 @@ while running:
     for p in planets:
         pygame.draw.circle(screen, (0, 0, 255), p.position, 10)
 
-    rect = Rect(player1.position.x,player1.position.y, player1.width, player1.height)
+    rect.x = player1.position.x
+    rect.y = player1.position.y
     pygame.draw.rect(screen, "red",rect)
     player1.parseInput(pygame.key.get_pressed(), delta)
 
