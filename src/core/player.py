@@ -4,11 +4,11 @@ from pygame import Vector2
 import pygame
 from pygame.key import ScancodeWrapper
 from .gravity import PhysicsObject
+from .minigun import Minigun
 
 PLAYER_MASS = 20
 PLAYER_SPEED = 2
 class PlayerObject(PhysicsObject):
-    bullets: list[PhysicsObject]
 
     def __init__(self, position: Vector2, inventory:list, width: int, height: int):
         super().__init__(PLAYER_MASS,position, True, False, width, height)
@@ -16,7 +16,9 @@ class PlayerObject(PhysicsObject):
         self.inventory = inventory
         self.width = width
         self.height = height
-        self.bullets = []
+        self.minigun = Minigun()
+
+        self.cdShoot = 0
 
 
 
@@ -34,6 +36,10 @@ class PlayerObject(PhysicsObject):
             self.velocity.x += PLAYER_SPEED * dt
 
         if keys[pygame.K_e]:
-            bullet = PhysicsObject(20, Vector2(self.position.x + 10, self.position.y), True, False, 80, 80)
-            bullet.velocity = Vector2(self.velocity.x + 2, self.velocity.y + 2)
-            self.bullets.append(bullet)
+            if self.cdShoot <= 0:
+                print("test")
+                self.cdShoot = self.minigun.COOLDOWN
+                self.minigun.shoot(Vector2(self.position.x + self.width / 2, self.position.y + self.height / 2),
+                                   self.velocity)
+            else:
+                self.cdShoot -= dt
