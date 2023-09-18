@@ -23,7 +23,6 @@ class PhysicsObject():
         force = Vector2(0, 0)
         for o in filter(lambda x : not (x.passive or x == self), physics_objects):
             distance = self.position.distance_squared_to(o.position)
-            print(o.position, self.position, distance)
             f = G * (self.mass * o.mass) / distance
             force += f * (o.position - self.position).normalize()
 
