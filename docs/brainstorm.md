@@ -32,6 +32,10 @@ Tire un missile à tête chercheuse (ou non, à déterminer) qui fait un max de 
 
 Met peu de KB mais beaucoup de pourcentage à force.
 
+#### Fusil à pompe
+
+Peu de range, beaucoup de recoil et pourcentage + KB
+
 ### Les dégâts
 
 Système de pourcentage comme smash
