@@ -6,7 +6,8 @@ G = 1.0
 physics_objects: list['PhysicsObject'] = []
 
 class PhysicsObject():
-    def __init__(self, mass: float, position: Vector2, passive: bool = False, static = False, width: int = 80, height: int = 80):
+    def __init__(self, mass: float, position: Vector2, passive: bool = False, static = False, **kw):
+        super().__init__(**kw)
         # La masse de l'objet
         self.mass = mass
         # Si l'objet a une influence gravitationnelle sur les autres.
