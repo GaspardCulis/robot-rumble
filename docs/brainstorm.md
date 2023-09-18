@@ -41,3 +41,10 @@ Système de pourcentage comme smash
 - Missile: pourcentage + KB
 - Trou noir: Déviation trajectoire
 
+
+## Tâches
+
+- Physique - Gaspard
+- Network - Timoreo
+- Design UI connection - A attribuer
+
