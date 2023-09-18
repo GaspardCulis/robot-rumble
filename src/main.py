@@ -3,7 +3,7 @@ from pygame import Vector2
 from time import monotonic
 from core.gravity import PhysicsObject
 
-SCREEN_SIZE = (1280, 720)
+SCREEN_SIZE = (1024, 768)
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
