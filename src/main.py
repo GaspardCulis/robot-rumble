@@ -9,9 +9,9 @@ pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
 pygame.display.set_caption('JAAJ')
 
-planet_a = PhysicsObject(169, Vector2(500, 600))
-planet_b = PhysicsObject(169, Vector2(500, 500))
-planet_c = PhysicsObject(169, Vector2(500, 550), passive=True)
+planet_a = PhysicsObject(69, Vector2(500, 600))
+planet_b = PhysicsObject(69, Vector2(500, 500))
+planet_c = PhysicsObject(69, Vector2(500, 550), passive=True)
 
 player1 = PlayerObject(Vector2(screen.get_width()/2, screen.get_height()/2), [], 80,80)
 
@@ -40,7 +40,7 @@ while running:
 
     rect = Rect(player1.position.x,player1.position.y, player1.width, player1.height)
     pygame.draw.rect(screen, "red",rect)
-    player1.parseInput(pygame.key.get_pressed())
+    player1.parseInput(pygame.key.get_pressed(), delta)
 
     PhysicsObject.update_all(delta*100)
 

@@ -4,7 +4,7 @@ from pygame.key import ScancodeWrapper
 from core.gravity import PhysicsObject
 
 PLAYER_MASS = 20
-PLAYER_SPEED = 0.5
+PLAYER_SPEED = 2
 class PlayerObject(PhysicsObject):
 
     def __init__(self, position: Vector2, inventory:list, width: int, height: int):
@@ -18,13 +18,13 @@ class PlayerObject(PhysicsObject):
 
 
 
-    def parseInput(self, keys: ScancodeWrapper):
+    def parseInput(self, keys: ScancodeWrapper, dt: float):
 
         if keys[pygame.K_z]:
-            self.velocity.y = -PLAYER_SPEED
+            self.velocity.y -= PLAYER_SPEED * dt
         if keys[pygame.K_s]:
-            self.velocity.y = PLAYER_SPEED
+            self.velocity.y += PLAYER_SPEED * dt
         if keys[pygame.K_q]:
-            self.velocity.x = -PLAYER_SPEED
+            self.velocity.x -= PLAYER_SPEED * dt
         if keys[pygame.K_d]:
-            self.velocity.x = PLAYER_SPEED
+            self.velocity.x += PLAYER_SPEED * dt
