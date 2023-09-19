@@ -3,9 +3,9 @@ import pygame
 from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
-from core.collision import CircleShape, CollisionObject, RectShape
-from core.gravity import PhysicsObject
-from core.player import PLAYER_SPEED
+from ..core.collision import CircleShape, CollisionObject, RectShape
+from ..core.gravity import PhysicsObject
+from ..core.player import PLAYER_SPEED
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT=80
