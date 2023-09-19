@@ -52,7 +52,7 @@ class Player(PhysicsObject, Sprite):
 
         self.process_keys(pygame.key.get_pressed(), delta)
         
-        self.set_rotation(self.rotation + short_angle * delta * 2.5)
+        self.set_rotation(self.rotation + short_angle * delta * 6)
 
         self.process_collisions(delta)
         
