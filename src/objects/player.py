@@ -1,4 +1,5 @@
 from pygame import Rect, Surface, Vector2, constants, transform
+from pygame.math import lerp
 import pygame
 import math
 from pygame.event import Event
@@ -9,6 +10,7 @@ from objects.planet import Planet
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
+PLAYER_VELOCITY = 500
 
 class Player(PhysicsObject, Sprite):
     all: Group = Group()
@@ -24,7 +26,9 @@ class Player(PhysicsObject, Sprite):
         self.image = transform.rotozoom(self.original_image, self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
         self.radius = PLAYER_HEIGHT/2
-        self.onground = False
+        self.jumped = False
+
+        self.input_velocity = Vector2(0)
 
         self.all.add(self)
 
@@ -35,21 +39,32 @@ class Player(PhysicsObject, Sprite):
 
         short_angle = (target_angle - self.rotation) % 360
         short_angle = 2 * short_angle % 360 - short_angle 
+
+        self.process_keys(pygame.key.get_pressed(), delta)
         
-        self.set_rotation(self.rotation + short_angle * delta * 6)
+        self.set_rotation(self.rotation + short_angle * delta * 5)
+
+        self.process_collisions(delta)
         
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
         Met à jour le joueur en fonction d'un appui de  touche
         """
+
         if keys[constants.K_d]:
-            pass
+            self.input_velocity.x = lerp(self.input_velocity.x, PLAYER_VELOCITY, delta * 2)
         if keys[constants.K_q]:
-            pass
-        if keys[constants.K_z]:
-            pass
+            self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, delta * 2)
+        if not (keys[constants.K_d] or keys[constants.K_q]):
+            self.input_velocity.x = lerp(self.input_velocity.x, 0, delta * 4)
+        if keys[constants.K_z] and not self.jumped:
+            self.velocity += Vector2(0, -1).rotate(-self.rotation) * 700
+            self.jumped = True
         if keys[constants.K_s]:
             pass
+
+        # Update position
+        self.position += self.input_velocity.rotate(-self.rotation) * delta
 
     def process_collisions(self, delta: float):
         """
@@ -58,7 +73,6 @@ class Player(PhysicsObject, Sprite):
         if not hasattr(self, "first_frame"):
             self.first_frame = False
             return
-        self.onground = False
         for planet in Planet.all:
             if pygame.sprite.collide_circle(self, planet):
                 # Check if lands on his feets
@@ -76,7 +90,7 @@ class Player(PhysicsObject, Sprite):
                     clip_position = planet.position + collision_normal * (self.radius + planet.radius)
                     self.position = clip_position
                     self.velocity = Vector2(0)
-                    self.onground = True
+                    self.jumped = False
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation

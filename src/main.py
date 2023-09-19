@@ -18,7 +18,7 @@ planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet
 
 player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
 
-player.velocity = Vector2(0, 500)
+player.velocity = Vector2(300, -100)
 player.set_rotation(-90)
 
 last_time = monotonic()
@@ -34,7 +34,6 @@ while running:
     PhysicsObject.update_all(delta)
     Planet.all.update()
     Player.all.update(delta)
-    player.process_collisions(delta)
 
     screen.fill((255, 255, 255))
 
