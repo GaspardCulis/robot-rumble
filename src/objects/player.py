@@ -4,6 +4,7 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
+from objects.planet import Planet
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT=80
@@ -41,14 +42,14 @@ class Player(PhysicsObject, Sprite):
         if keys[constants.K_s]:
             pass
 
-    def process_collisions(self, colliders: list, delta: float):
+    def process_collisions(self, delta: float):
         """
         Met à jour le joueur en fonction de potentiels objets en collision
         """
         if not hasattr(self, "first_frame"):
             self.first_frame = False
             return
-        for sprite in colliders:
+        for sprite in Planet.all:
             if pygame.sprite.collide_circle(self, sprite):
                 collision_normal = (self.position - sprite.position).normalize()
                 velocity_along_normal = self.velocity.dot(collision_normal)
