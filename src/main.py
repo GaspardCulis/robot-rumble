@@ -16,7 +16,7 @@ screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
 pygame.display.set_caption('JAAJ')
 
 planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
-planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet1.png")))
+planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
 
 player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
 
