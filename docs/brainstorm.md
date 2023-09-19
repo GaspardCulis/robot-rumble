@@ -45,12 +45,26 @@ Système de pourcentage comme smash
 - Missile: pourcentage + KB
 - Trou noir: Déviation trajectoire
 
+### UI
+
+- Display ammo + arme sélectionnée
+- Hp pourcentage
+- Vies restantes
 
 ## Tâches
 
 - Physique - Gaspard
 - Network - Timoreo
 - Design UI connection - A attribuer
+
+### A faire  19/09/23
+- Armes
+- UI (creation serveur + HUD+ lobby + win screen)
+- Animation sprites (idle, run, smash)
+- Le multi (lobby)
+- Intégrer sound design
+
+**A la fin de la journée on doit avoir le multi fonctionnel**
 
 ### Crédits
 
