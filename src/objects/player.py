@@ -73,7 +73,9 @@ class Player(PhysicsObject, Sprite):
             self.position += speed * delta  # Move, to avoid clipping instantly
             self.jumped = True
         if keys[constants.K_s]:
-            pass
+            self.input_velocity.y = lerp(self.input_velocity.y, PLAYER_VELOCITY * 0.75, delta*4)
+        else:
+            self.input_velocity.y = lerp(self.input_velocity.y, 0, delta * 10)
 
         # Update position
         self.position += self.input_velocity.rotate(-self.rotation) * delta
