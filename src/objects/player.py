@@ -48,7 +48,7 @@ class Player(PhysicsObject, Sprite):
 
         self.process_keys(pygame.key.get_pressed(), delta)
         
-        self.set_rotation(self.rotation + short_angle * delta * 5)
+        self.set_rotation(self.rotation + short_angle * delta * 2.5)
 
         self.process_collisions(delta)
         
@@ -64,7 +64,9 @@ class Player(PhysicsObject, Sprite):
         if not (keys[constants.K_d] or keys[constants.K_q]):
             self.input_velocity.x = lerp(self.input_velocity.x, 0, delta * 4)
         if keys[constants.K_z] and not self.jumped:
-            self.velocity += Vector2(0, -1).rotate(-self.rotation) * 500
+            speed = Vector2(0, -1).rotate(-self.rotation) * 450
+            self.velocity += speed
+            self.position += speed * delta  # Move, to avoid clipping instantly
             self.jumped = True
         if keys[constants.K_s]:
             pass
@@ -93,14 +95,14 @@ class Player(PhysicsObject, Sprite):
                     # Not on feets, bounce
                     velocity_along_normal = self.velocity.dot(collision_normal)
                     reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal
-                    self.velocity = 0.9 * reflexion_vector
-                    self.position += self.velocity * delta
+                    self.velocity = 0.5 * reflexion_vector
                 else:
                     # Clip to the floor
-                    clip_position = planet.position + collision_normal * (self.radius + planet.radius)
-                    self.position = clip_position
                     self.velocity = Vector2(0)
                     self.jumped = False
+                # In both cases, we want to set the position to the floor
+                clip_position = planet.position + collision_normal * (self.radius + planet.radius)
+                self.position = clip_position
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation

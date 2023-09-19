@@ -48,7 +48,7 @@ while running:
     dest = -(player.position - Vector2(SCREEN_SIZE)/2)
     camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(abs(delta * (max(player.velocity.x/100, 1))), 1))  # abs(player.velocity.x)
     camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(abs(delta * (max(player.velocity.y/100, 1))), 1))
-
+    print(player.position)
     pygame.display.flip()
     # print("FPS ", 1 / delta)
 
