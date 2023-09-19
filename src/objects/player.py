@@ -1,5 +1,6 @@
 from pygame import Rect, Surface, Vector2, constants, transform
 import pygame
+import math
 from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
@@ -28,7 +29,14 @@ class Player(PhysicsObject, Sprite):
         self.all.add(self)
 
     def update(self, delta: float):
-        self.set_rotation(self.rotation + delta * 90)
+        # Rotate towards nearest planet
+        nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_squared_to(self.position))[0]
+        target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
+
+        short_angle = (target_angle - self.rotation) % 360
+        short_angle = 2 * short_angle % 360 - short_angle 
+        
+        self.set_rotation(self.rotation + short_angle * delta * 6)
         
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
@@ -55,7 +63,9 @@ class Player(PhysicsObject, Sprite):
             if pygame.sprite.collide_circle(self, planet):
                 # Check if lands on his feets
                 collision_normal: Vector2 = (self.position - planet.position).normalize()
-                if Vector2(-1, 0).rotate(self.rotation).dot(collision_normal) < 0.8:
+                # La différence entre notre rotation et l'angle de la normale au sol
+                rotation_normal_diff = abs((collision_normal.angle_to(Vector2(1,0)) + 360)%360 - (self.rotation + 450) % 360)
+                if rotation_normal_diff > 20:
                     # Not on feets, bounce
                     velocity_along_normal = self.velocity.dot(collision_normal)
                     reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal

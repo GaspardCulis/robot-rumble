@@ -16,8 +16,10 @@ pygame.display.set_caption('JAAJ')
 
 planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
 
-player = Player(Vector2(0, 0), image.load(path.join(IMG_PATH, "player.png")))
+player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
 
+player.velocity = Vector2(0, 500)
+player.set_rotation(-90)
 
 last_time = monotonic()
 running = True
