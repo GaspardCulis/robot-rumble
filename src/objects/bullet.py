@@ -31,4 +31,5 @@ class Bullet(PhysicsObject, Sprite):
         self.rect.centerx = int(self.position.x)
         self.rect.centery = int(self.position.y)
 
+        self.angle = self.velocity.angle_to(Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.angle)
