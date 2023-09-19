@@ -7,7 +7,7 @@ from core.gravity import PhysicsObject
 from objects.planet import Planet
 
 PLAYER_MASS = 800
-PLAYER_HEIGHT=80
+PLAYER_HEIGHT = 80
 
 class Player(PhysicsObject, Sprite):
     all: Group = Group()
@@ -23,6 +23,7 @@ class Player(PhysicsObject, Sprite):
         self.image = transform.rotozoom(self.original_image, self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
         self.radius = PLAYER_HEIGHT/2
+        self.onground = False
 
         self.all.add(self)
 
@@ -49,6 +50,7 @@ class Player(PhysicsObject, Sprite):
         if not hasattr(self, "first_frame"):
             self.first_frame = False
             return
+        self.onground = False
         for planet in Planet.all:
             if pygame.sprite.collide_circle(self, planet):
                 # Check if lands on his feets
@@ -64,6 +66,7 @@ class Player(PhysicsObject, Sprite):
                     clip_position = planet.position + collision_normal * (self.radius + planet.radius)
                     self.position = clip_position
                     self.velocity = Vector2(0)
+                    self.onground = True
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
