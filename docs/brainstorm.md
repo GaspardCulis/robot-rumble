@@ -52,3 +52,7 @@ Système de pourcentage comme smash
 - Network - Timoreo
 - Design UI connection - A attribuer
 
+### Crédits
+
+[[https://pixeljoint.com/pixelart/53437.htm]]
+[[https://deep-fold.itch.io/pixel-planet-generator]]
