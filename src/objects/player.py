@@ -38,6 +38,10 @@ class Player(PhysicsObject, Sprite):
 
         self.all.add(self)
 
+    def kill(self):
+        super().kill()
+        self.all.remove(self)
+
     def update(self, delta: float):
         # Rotate towards nearest planet
         nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_to(self.position) - p.radius)[0]
