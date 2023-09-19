@@ -9,7 +9,7 @@ def parse_spritesheet(spritesheet: pygame.Surface, rows: int, cols: int) -> list
 
     for i in range(rows):
         for j in range(cols):
-            subsurfaces.append(Rect(j * sprite_width, i * sprite_height, sprite_width, sprite_height))
+            subsurfaces.append(spritesheet.subsurface(Rect(j * sprite_width, i * sprite_height, sprite_width, sprite_height)))
 
     return subsurfaces
 
