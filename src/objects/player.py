@@ -7,7 +7,7 @@ from core.collision import CircleShape, CollisionObject, RectShape
 from core.gravity import PhysicsObject
 from core.player import PLAYER_SPEED
 
-PLAYER_MASS = 80
+PLAYER_MASS = 800
 PLAYER_HEIGHT=80
 
 all_players: Group = Group()
@@ -24,6 +24,7 @@ class Player(PhysicsObject, Sprite):
         self.original_image = transform.scale_by(sprite, PLAYER_HEIGHT/sprite.get_rect().height)
         self.image = transform.rotozoom(self.original_image, self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
+        self.radius = PLAYER_HEIGHT/2
 
         all_players.add(self)
 
@@ -43,10 +44,19 @@ class Player(PhysicsObject, Sprite):
         if keys[constants.K_s]:
             pass
 
-    def process_collisions(self, colliders: list[CollisionObject]):
+    def process_collisions(self, colliders: list, delta: float):
         """
         Met à jour le joueur en fonction de potentiels objets en collision
         """
+        if not hasattr(self, "first_frame"):
+            self.first_frame = False
+            return
+        for sprite in colliders:
+            if pygame.sprite.collide_circle(self, sprite):
+                print(sprite)
+                self.velocity *= -0.9
+                self.velocity += sprite.velocity
+                self.position += self.velocity * delta
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
