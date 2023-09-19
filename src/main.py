@@ -1,11 +1,8 @@
 from os import path
 import pygame
-from pygame import Vector2, Rect, image
+from pygame import Vector2, image
 from time import monotonic
-from core.gravity import PhysicsObject,physics_objects
-from core.player import PlayerObject
-from core.minigun import Minigun
-from core.bullet import Bullet
+from core.gravity import PhysicsObject
 from objects.planet import Planet, all_planets
 from objects.player import Player, all_players
 

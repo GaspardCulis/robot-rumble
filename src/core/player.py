@@ -11,7 +11,7 @@ PLAYER_SPEED = 2
 class PlayerObject(PhysicsObject):
 
     def __init__(self, position: Vector2, inventory:list, width: int, height: int):
-        super().__init__(PLAYER_MASS,position, True, False, width, height)
+        super().__init__(PLAYER_MASS,position, True, False)
         self.percent = 0
         self.inventory = inventory
         self.width = width

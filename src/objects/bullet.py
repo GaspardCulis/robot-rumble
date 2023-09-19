@@ -9,6 +9,6 @@ BULLET_MASS = 5
 class Bullet(PhysicsObject):
 
     def __init__(self, position: Vector2, width: int, height: int):
-        super().__init__(BULLET_MASS, position, True, False, width, height)
+        super().__init__(BULLET_MASS, position, True, False)
         self.width = width
         self.height = height
