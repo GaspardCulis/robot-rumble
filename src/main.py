@@ -1,8 +1,11 @@
 import pygame
 from pygame import Vector2, Rect
 from time import monotonic
-from core.gravity import PhysicsObject
+from core.gravity import PhysicsObject,physics_objects
 from core.player import PlayerObject
+from core.minigun import Minigun
+from src.core.bullet import Bullet
+
 SCREEN_SIZE = (1024, 768)
 
 pygame.init()
@@ -44,9 +47,14 @@ while running:
     pygame.draw.rect(screen, "red",rect)
     player1.parseInput(pygame.key.get_pressed(), delta)
 
+    for p in physics_objects:
+        if p.mass == 5: # TODO a améliorer
+            pygame.draw.rect(screen, "green", Rect(p.position.x,p.position.y,p.width,p.height))
+
+
     PhysicsObject.update_all(delta*100)
 
     pygame.display.flip()
-    print("FPS ", 1 / delta)
+    #print("FPS ", 1 / delta)
 
 pygame.quit()
