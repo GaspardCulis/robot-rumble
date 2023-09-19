@@ -9,6 +9,6 @@ class Minigun(Weapon):
         super().__init__(10, 0.1, 30, 1.5)
 
     def shoot(self, position: Vector2, target: Vector2):
-        bullet = Bullet(position + Vector2(1, 0))
-        bullet.velocity = Vector2(1000, 0)
+        direction = (target - position).normalize()
+        bullet = Bullet(position + Vector2(1, 0), direction)
  

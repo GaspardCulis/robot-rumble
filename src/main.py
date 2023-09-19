@@ -1,6 +1,6 @@
 from os import path
 import pygame
-from pygame import Vector2, image
+from pygame import Color, Rect, Vector2, image
 from time import monotonic
 from core.gravity import PhysicsObject,physics_objects
 from objects.planet import Planet
@@ -45,6 +45,10 @@ while running:
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
+
+    mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
+    if pygame.mouse.get_pressed()[0]:
+        player.handle_click(mouse_pos)
 
     dest = -(player.position - Vector2(SCREEN_SIZE)/2)
     # add mouse deviation

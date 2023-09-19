@@ -80,10 +80,6 @@ class Player(PhysicsObject, Sprite):
         # Update position
         self.position += self.input_velocity.rotate(-self.rotation) * delta
 
-        # Shooting
-        if pygame.mouse.get_pressed()[0]:
-            self.weapons[self.selected_weapon_index].shoot(self.position, Vector2(pygame.mouse.get_pos()))
-
     def process_collisions(self, delta: float):
         """
         Met à jour le joueur en fonction de potentiels objets en collision
@@ -109,6 +105,10 @@ class Player(PhysicsObject, Sprite):
                 # In both cases, we want to set the position to the floor
                 clip_position = planet.position + collision_normal * (self.radius + planet.radius)
                 self.position = clip_position
+
+    def handle_click(self, position: Vector2):
+        # Shooting
+        self.weapons[self.selected_weapon_index].shoot(self.position, position)
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
