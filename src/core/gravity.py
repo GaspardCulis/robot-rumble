@@ -1,7 +1,7 @@
 from pygame import Vector2
 import math
 
-G = 1.0
+G = 0.01
 
 physics_objects: list['PhysicsObject'] = []
 
