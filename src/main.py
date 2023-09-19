@@ -1,34 +1,32 @@
+from os import path
 import pygame
-from pygame import Vector2, Rect
+from pygame import Vector2, Rect, image
 from time import monotonic
 from core.gravity import PhysicsObject,physics_objects
 from core.player import PlayerObject
 from core.minigun import Minigun
-from src.core.bullet import Bullet
+from core.bullet import Bullet
+from objects.planet import Planet, all_planets
+from objects.player import Player, all_players
 
 SCREEN_SIZE = (1024, 768)
+ASSETS_PATH="assets/"
+IMG_PATH=path.join(ASSETS_PATH, "img/")
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
 pygame.display.set_caption('JAAJ')
 
-planet_a = PhysicsObject(69, Vector2(500, 600))
-planet_b = PhysicsObject(69, Vector2(500, 500))
-planet_c = PhysicsObject(69, Vector2(500, 550), passive=True)
+planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
 
-player1 = PlayerObject(Vector2(screen.get_width()/2, screen.get_height()/2), [], 80,80)
+player = Player(Vector2(0, 0), image.load(path.join(IMG_PATH, "player.png")))
 
-
-planet_a.velocity = Vector2(0.5, 0)
-planet_b.velocity = Vector2(-0.5, 0)
 
 planets = [
     planet_a,
-    planet_b,
 ]
 
 last_time = monotonic()
-rect = Rect(player1.position.x, player1.position.y, player1.width, player1.height)
 running = True
 while running:
     for event in pygame.event.get():
@@ -37,22 +35,16 @@ while running:
     new_time = monotonic()
     delta = new_time - last_time
     last_time = new_time
+    
+    PhysicsObject.update_all(delta)
+    all_planets.update()
+    all_players.update(delta)
+    player.process_collisions([planet_a], delta)
+
     screen.fill((255, 255, 255))
 
-    for p in planets:
-        pygame.draw.circle(screen, (0, 0, 255), p.position, 10)
-
-    rect.x = player1.position.x
-    rect.y = player1.position.y
-    pygame.draw.rect(screen, "red",rect)
-    player1.parseInput(pygame.key.get_pressed(), delta)
-
-    for p in physics_objects:
-        if p.mass == 5: # TODO a améliorer
-            pygame.draw.rect(screen, "green", Rect(p.position.x,p.position.y,p.width,p.height))
-
-
-    PhysicsObject.update_all(delta*100)
+    all_planets.draw(screen)
+    all_players.draw(screen)    
 
     pygame.display.flip()
     #print("FPS ", 1 / delta)

@@ -1,8 +1,8 @@
 from pygame import Vector2
 
-from .bullet import Bullet
-from .gravity import PhysicsObject
-from .weapon import Weapon
+from core.bullet import Bullet
+from core.gravity import PhysicsObject
+from core.weapon import Weapon
 
 class Minigun(Weapon):
     NAME = 'minigun'

@@ -3,8 +3,8 @@ from typing import List, Any
 from pygame import Vector2
 import pygame
 from pygame.key import ScancodeWrapper
-from .gravity import PhysicsObject
-from .minigun import Minigun
+from core.gravity import PhysicsObject
+from core.minigun import Minigun
 
 PLAYER_MASS = 20
 PLAYER_SPEED = 2

@@ -3,9 +3,7 @@ import pygame
 from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
-from ..core.collision import CircleShape, CollisionObject, RectShape
-from ..core.gravity import PhysicsObject
-from ..core.player import PLAYER_SPEED
+from core.gravity import PhysicsObject
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT=80
@@ -53,9 +51,10 @@ class Player(PhysicsObject, Sprite):
             return
         for sprite in colliders:
             if pygame.sprite.collide_circle(self, sprite):
-                print(sprite)
-                self.velocity *= -0.9
-                self.velocity += sprite.velocity
+                collision_normal = (self.position - sprite.position).normalize()
+                velocity_along_normal = self.velocity.dot(collision_normal)
+                reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal
+                self.velocity = 0.9 * reflexion_vector
                 self.position += self.velocity * delta
 
     def set_rotation(self, rotation: float):

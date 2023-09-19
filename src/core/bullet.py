@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2
 
-from .gravity import PhysicsObject
+from core.gravity import PhysicsObject
 
 BULLET_MASS = 5
 

@@ -1,8 +1,8 @@
 import math
 from pygame import Surface, Vector2, image, Rect, transform
 from pygame.sprite import Sprite, collide_circle, Group
-from ..core.collision import CircleShape, CollisionObject
-from ..core.gravity import PhysicsObject
+from core.collision import CircleShape, CollisionObject
+from core.gravity import PhysicsObject
 
 all_planets = Group()
 
