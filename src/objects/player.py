@@ -62,9 +62,9 @@ class Player(PhysicsObject, Sprite):
         if keys[constants.K_q]:
             self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, delta * 2)
         if not (keys[constants.K_d] or keys[constants.K_q]):
-            self.input_velocity.x = lerp(self.input_velocity.x, 0, delta * 4)
+            self.input_velocity.x = lerp(self.input_velocity.x, 0, delta * 6)
         if keys[constants.K_z] and not self.jumped:
-            speed = Vector2(0, -1).rotate(-self.rotation) * 450
+            speed = Vector2(0, -1).rotate(-self.rotation) * 600
             self.velocity += speed
             self.position += speed * delta  # Move, to avoid clipping instantly
             self.jumped = True
@@ -91,7 +91,7 @@ class Player(PhysicsObject, Sprite):
                 collision_normal: Vector2 = (self.position - planet.position).normalize()
                 # La différence entre notre rotation et l'angle de la normale au sol
                 rotation_normal_diff = abs((collision_normal.angle_to(Vector2(1,0)) + 360)%360 - (self.rotation + 450) % 360)
-                if rotation_normal_diff > 20:
+                if rotation_normal_diff > 30:
                     # Not on feets, bounce
                     velocity_along_normal = self.velocity.dot(collision_normal)
                     reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal

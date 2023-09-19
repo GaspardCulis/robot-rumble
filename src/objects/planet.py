@@ -9,7 +9,7 @@ class Planet(PhysicsObject, Sprite):
     
     def __init__(self, position: Vector2, radius: float, sprite: Surface):
         self.radius = radius
-        mass = 4/3 * math.pi * self.radius**3
+        mass = math.pi * self.radius**2
 
         super().__init__(mass=mass, position=position, passive=False, static=True)
 
