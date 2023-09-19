@@ -58,7 +58,7 @@ class Player(PhysicsObject, Sprite):
         if not (keys[constants.K_d] or keys[constants.K_q]):
             self.input_velocity.x = lerp(self.input_velocity.x, 0, delta * 4)
         if keys[constants.K_z] and not self.jumped:
-            self.velocity += Vector2(0, -1).rotate(-self.rotation) * 700
+            self.velocity += Vector2(0, -1).rotate(-self.rotation) * 500
             self.jumped = True
         if keys[constants.K_s]:
             pass

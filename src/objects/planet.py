@@ -11,7 +11,7 @@ class Planet(PhysicsObject, Sprite):
         self.radius = radius
         mass = 4/3 * math.pi * self.radius**3
 
-        super().__init__(mass=mass, position=position, passive=False, static=False)
+        super().__init__(mass=mass, position=position, passive=False, static=True)
 
         self.image = transform.scale(sprite, Vector2(self.radius * 2))
         self.rect = self.image.get_rect()
