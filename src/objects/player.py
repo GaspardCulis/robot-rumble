@@ -30,7 +30,7 @@ class Player(PhysicsObject, Sprite):
 
     def update(self, delta: float):
         # Rotate towards nearest planet
-        nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_squared_to(self.position))[0]
+        nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_squared_to(self.position) + p.radius)[0]
         target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
 
         short_angle = (target_angle - self.rotation) % 360
