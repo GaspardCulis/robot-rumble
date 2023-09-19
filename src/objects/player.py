@@ -8,9 +8,8 @@ from core.gravity import PhysicsObject
 PLAYER_MASS = 800
 PLAYER_HEIGHT=80
 
-all_players: Group = Group()
-
 class Player(PhysicsObject, Sprite):
+    all: Group = Group()
     def __init__(self, position: Vector2, sprite: Surface):
         super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
 
@@ -24,7 +23,7 @@ class Player(PhysicsObject, Sprite):
         self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
         self.radius = PLAYER_HEIGHT/2
 
-        all_players.add(self)
+        self.all.add(self)
 
     def update(self, delta: float):
         self.set_rotation(self.rotation + delta * 90)

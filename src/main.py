@@ -2,9 +2,9 @@ from os import path
 import pygame
 from pygame import Vector2, image
 from time import monotonic
-from core.gravity import PhysicsObject
-from objects.planet import Planet, all_planets
-from objects.player import Player, all_players
+from core.gravity import PhysicsObject,physics_objects
+from objects.planet import Planet
+from objects.player import Player
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -34,14 +34,14 @@ while running:
     last_time = new_time
     
     PhysicsObject.update_all(delta)
-    all_planets.update()
-    all_players.update(delta)
+    Planet.all.update()
+    Player.all.update(delta)
     player.process_collisions([planet_a], delta)
 
     screen.fill((255, 255, 255))
 
-    all_planets.draw(screen)
-    all_players.draw(screen)    
+    Planet.all.draw(screen)
+    Player.all.draw(screen)    
 
     pygame.display.flip()
     #print("FPS ", 1 / delta)
