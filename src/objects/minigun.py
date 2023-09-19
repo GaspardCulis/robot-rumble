@@ -1,16 +1,14 @@
 from pygame import Vector2
 
-from core.bullet import Bullet
+from objects.bullet import Bullet
 from core.gravity import PhysicsObject
-from core.weapon import Weapon
+from objects.weapon import Weapon
 
 class Minigun(Weapon):
-    NAME = 'minigun'
-    IMAGE_PATH = ''
-    COOLDOWN = 0.2
     def __init__(self):
-        super().__init__()
+        super().__init__(10, 0.1, 30, 1.5)
 
-    def shoot(self, position: Vector2, velocity: Vector2):
-        bullet = Bullet(Vector2(position.x + 10, position.y), 80, 80)
-        bullet.velocity = Vector2(velocity.x + 2, velocity.y + 2)
+    def shoot(self, position: Vector2, target: Vector2):
+        bullet = Bullet(position + Vector2(1, 0))
+        bullet.velocity = Vector2(1000, 0)
+ 

@@ -6,6 +6,7 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
+from objects.minigun import Minigun
 from objects.planet import Planet
 
 PLAYER_MASS = 800
@@ -29,6 +30,11 @@ class Player(PhysicsObject, Sprite):
         self.jumped = False
 
         self.input_velocity = Vector2(0)
+
+        self.weapons = [
+            Minigun()
+        ]
+        self.selected_weapon_index = 0
 
         self.all.add(self)
 
@@ -65,6 +71,10 @@ class Player(PhysicsObject, Sprite):
 
         # Update position
         self.position += self.input_velocity.rotate(-self.rotation) * delta
+
+        # Shooting
+        if pygame.mouse.get_pressed()[0]:
+            self.weapons[self.selected_weapon_index].shoot(self.position, Vector2(pygame.mouse.get_pos()))
 
     def process_collisions(self, delta: float):
         """

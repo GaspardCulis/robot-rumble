@@ -5,6 +5,7 @@ from time import monotonic
 from core.gravity import PhysicsObject,physics_objects
 from objects.planet import Planet
 from objects.player import Player
+from objects.bullet import Bullet
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -37,9 +38,11 @@ while running:
     PhysicsObject.update_all(delta)
     Planet.all.update()
     Player.all.update(delta)
+    Bullet.all.update()
 
     screen.fill((255, 255, 255))
 
+    screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
     dest = -(player.position - Vector2(SCREEN_SIZE)/2)
@@ -47,6 +50,6 @@ while running:
     camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(abs(delta * (max(player.velocity.y/100, 1))), 1))
 
     pygame.display.flip()
-    #print("FPS ", 1 / delta)
+    # print("FPS ", 1 / delta)
 
 pygame.quit()
