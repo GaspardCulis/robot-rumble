@@ -49,13 +49,21 @@ class Player(PhysicsObject, Sprite):
         if not hasattr(self, "first_frame"):
             self.first_frame = False
             return
-        for sprite in Planet.all:
-            if pygame.sprite.collide_circle(self, sprite):
-                collision_normal = (self.position - sprite.position).normalize()
-                velocity_along_normal = self.velocity.dot(collision_normal)
-                reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal
-                self.velocity = 0.9 * reflexion_vector
-                self.position += self.velocity * delta
+        for planet in Planet.all:
+            if pygame.sprite.collide_circle(self, planet):
+                # Check if lands on his feets
+                collision_normal: Vector2 = (self.position - planet.position).normalize()
+                if Vector2(-1, 0).rotate(self.rotation).dot(collision_normal) < 0.8:
+                    # Not on feets, bounce
+                    velocity_along_normal = self.velocity.dot(collision_normal)
+                    reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal
+                    self.velocity = 0.9 * reflexion_vector
+                    self.position += self.velocity * delta
+                else:
+                    # Clip to the floor
+                    clip_position = planet.position + collision_normal * (self.radius + planet.radius)
+                    self.position = clip_position
+                    self.velocity = Vector2(0)
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
