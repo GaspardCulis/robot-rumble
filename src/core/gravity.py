@@ -1,7 +1,7 @@
 from pygame import Vector2
 import math
 
-G = 0.01
+G = 1.65
 
 physics_objects: list['PhysicsObject'] = []
 
@@ -27,7 +27,7 @@ class PhysicsObject():
             f = G * (self.mass * o.mass) / distance
             force += f * (o.position - self.position).normalize()
 
-        self.velocity += force / self.mass
+        self.velocity += (force / self.mass) * delta
         self.position += self.velocity * delta
 
 
