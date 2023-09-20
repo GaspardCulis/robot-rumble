@@ -69,8 +69,13 @@ class Player(PhysicsObject, Sprite):
             self.set_rotation(random.randint(0, 360))
             self.position = random_planet.position + Vector2(1, 0).rotate(self.rotation)
             self.process_collision(random_planet, 0)
-            nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
-            spawn_positions.append((self.position.distance_to(nearest_blackhole.position), self.position, self.rotation))
+
+            if len(BlackHole.all) == 0:
+                pos = Vector2(0)
+            else:
+                nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
+                pos = nearest_blackhole.position
+            spawn_positions.append((self.position.distance_to(pos), self.position, self.rotation))
 
         sorted_positions = sorted(spawn_positions, key=lambda p : p[0])
         print(sorted_positions)
