@@ -23,7 +23,8 @@ class Player(PhysicsObject, Sprite):
 
     def __init__(self, position: Vector2, sprite: Surface):
         super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
-
+        self.new_position = position
+        self.remote = False
         # Degrees
         self.rotation = 0.0
         # Ranges from 0.0 to 1.0
@@ -62,6 +63,9 @@ class Player(PhysicsObject, Sprite):
         self.process_keys(pygame.key.get_pressed(), delta)
         
         self.set_rotation(self.rotation + short_angle * delta * 6)
+        if self.remote:
+            self.position = Vector2(pygame.math.lerp(self.position.x, self.new_position.x, delta * 60),
+                                    pygame.math.lerp(self.position.y, self.new_position.y, delta * 60))
 
         self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD 
         if self.onground:

@@ -51,10 +51,11 @@ def apply_update(data: bytes):
         pos = DataConverter.parse_vector_float(data)
         if pl is None:
             pl = Player(pos, image.load(path.join(IMG_PATH, "player.png")))
+            pl.remote = True
             pl.unique_id = unique_id
-        else:  # TODO delta en fonction de temps d'update ??
-            pl.position = Vector2(pygame.math.lerp(pl.position.x, pos.x, 1 / 120),
-                                  pygame.math.lerp(pl.position.y, pos.y, 1 / 120))
+        else:
+            pl.remote = True  # TODO remove !!!!
+            pl.new_position = pos
         data = data[16:]
         pl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]
@@ -79,8 +80,7 @@ def apply_update(data: bytes):
             bl = Bullet(pos, Vector2())
             bl.unique_id = unique_id
         else:
-            bl.position = Vector2(pygame.math.lerp(bl.position.x, pos.x, 1 / 60),
-                                  pygame.math.lerp(bl.position.y, pos.y, 1 / 60))
+            bl.new_position = pos
         data = data[16:]
         bl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]
