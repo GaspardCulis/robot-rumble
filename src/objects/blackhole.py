@@ -63,6 +63,6 @@ class BlackHole(Bullet):
         self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
 
         self.original_image = self.image
-        super().update()
+        super().update(delta)
 
         self.rect = self.image.get_rect(center=self.position)
