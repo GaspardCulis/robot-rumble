@@ -52,25 +52,29 @@ class Player(PhysicsObject, Sprite):
             super().kill()
             self.all.remove(self)
         else:
-            self.lives -= 1
+            print("dead")
+            #self.lives -= 1
             self.respawn_on_random_planet()
 
     def respawn_on_random_planet(self):
 
-        nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
-
-        while True:
+        spawn_positions: list[Tuple[float, Vector2, float]] = []
+        for i in range(20):
             random_index = random.randint(0, len(Planet.all) - 1)
             random_planet = list(Planet.all)[random_index]
             self.set_rotation(random.randint(0, 360))
-            new_position = random_planet.position + Vector2(1, 0).rotate(self.rotation)
+            self.position = random_planet.position + Vector2(1, 0).rotate(self.rotation)
+            self.process_collision(random_planet, 0)
+            nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
+            spawn_positions.append((self.position.distance_to(nearest_blackhole.position), self.position, self.rotation))
 
+        sorted_positions = sorted(spawn_positions, key=lambda p : p[0])
+        print(sorted_positions)
+        final_position = sorted_positions[-1]
+        print(final_position)
+        self.position = final_position[1]
+        self.rotation = final_position[2]
 
-            if new_position.distance_to(nearest_blackhole.position) >= nearest_blackhole.radius + 100:
-                break
-
-        self.position = new_position
-        self.process_collision(random_planet, 0)
         self.velocity = Vector2(0)
 
 
