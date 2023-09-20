@@ -2,6 +2,7 @@ from os import path
 import pygame
 from pygame import Color, Rect, Vector2, image
 from time import monotonic
+from objects.blackhole import BlackHole
 
 from objects.planet import Planet
 from objects.player import Player
@@ -33,6 +34,7 @@ camera_pos = Vector2()
 camera_zoom = 1
 
 last_time = monotonic()
+last_mouse_buttons = (False, False, False)
 
 if state == "quit" or state is None:
     running = False
@@ -51,16 +53,19 @@ while running:
     Planet.all.update()
     Player.all.update(delta)
     Bullet.all.update()
+    BlackHole.all.update(delta)
 
     screen.fill((255, 255, 255))
 
-    screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
+    screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
+    screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
 
     mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
-    if pygame.mouse.get_pressed()[0]:
-        player.handle_click(mouse_pos)
+    mouse_buttons = pygame.mouse.get_pressed()
+    player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
+    last_mouse_buttons = mouse_buttons
 
     dest = -(player.position - Vector2(SCREEN_SIZE)/2)
     # add mouse deviation

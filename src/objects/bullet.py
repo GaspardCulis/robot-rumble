@@ -4,6 +4,7 @@ from pygame.sprite import Group, Sprite
 from random import random
 
 from core.gravity import PhysicsObject
+from objects.planet import Planet
 
 BULLET_MASS = 5
 BULLET_SPEED = 1000
@@ -33,3 +34,12 @@ class Bullet(PhysicsObject, Sprite):
 
         self.angle = self.velocity.angle_to(Vector2(1, 0))
         self.image = pygame.transform.rotate(self.original_image, self.angle)
+
+        if random() > 0.5: # Don't need to check collisions on every frame
+            self.process_collisions()
+
+    def process_collisions(self):
+        for planet in Planet.all:
+            if pygame.sprite.collide_circle(self, planet):
+                self.kill()
+                return
