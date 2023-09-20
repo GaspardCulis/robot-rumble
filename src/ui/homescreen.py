@@ -1,16 +1,61 @@
 import pygame
 from pygame import Surface
-from pygame.key import ScancodeWrapper
 import re
-import core.sound
+
+# Couleurs
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
+YELLOW = "#FFCE00"
+RED = "#FF0000"
+
+def credits_screen(screen: Surface):
+    # Liste des chaînes de caractères à afficher avec des espacements
+    credits_list = [
+        "CREDIT 1",
+        "CREDIT 2",
+        "CREDIT 3",
+    ]
+
+    bg = pygame.image.load("./assets/img/space_bg.png")
+    bg = pygame.transform.scale(bg,screen.get_size())
+
+
+    # Police de texte
+    police = pygame.font.Font("./assets/font/geom.TTF", 36)
+
+    # Positions de départ pour afficher les crédits
+    y_positions = [screen.get_height() + 200 * i for i in range(len(credits_list))]
+
+    # État du jeu
+    running = True
+
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                running = False
+
+        screen.blit(bg, (0, 0))
+
+        # Afficher toutes les chaînes de caractères simultanément
+        for i, credit in enumerate(credits_list):
+            if y_positions[i] >= -200:  # Attendre que l'espacement soit atteint
+                text_credit = police.render(credit, True, WHITE)
+                text_rect = text_credit.get_rect(center=(screen.get_width() / 2, y_positions[i]))
+                screen.blit(text_credit, text_rect)
+
+                # Déplacer le texte vers le haut
+                y_positions[i] -= 2  # Réglez la vitesse de défilement ici
+
+        if all(y <= -200 for y in y_positions):
+            # Toutes les chaînes de caractères ont été affichées, revenir au home screen
+            running = False
+
+        pygame.display.flip()
 
 def home_screen(screen: Surface) -> (str, int):
-    # Couleurs
-    WHITE = (255, 255, 255)
-    BLACK = (0, 0, 0)
-    BLUE = (0, 0, 255)
-    YELLOW = "#FFCE00"
-    RED = "#FF0000"
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
@@ -25,12 +70,9 @@ def home_screen(screen: Surface) -> (str, int):
 
     bg = pygame.transform.scale(bg,screen.get_size())
 
-    # Musique de fond
-    core.sound.loop_song('title_screen')
-
     # Boutons
     start_button = pygame.Rect(screen.get_width()/2-BUTTON_WIDTH/2-SPACE_BETWEEN, screen.get_height()/2-25, BUTTON_WIDTH, BUTTON_HEIGHT)
-    option_button = pygame.Rect(screen.get_width()/2-BUTTON_WIDTH/2, screen.get_height()/2-25, BUTTON_WIDTH, BUTTON_HEIGHT)
+    credits_button = pygame.Rect(screen.get_width()/2-BUTTON_WIDTH/2, screen.get_height()/2-25, BUTTON_WIDTH, BUTTON_HEIGHT)
     quit_button = pygame.Rect(screen.get_width()/2-BUTTON_WIDTH/2+SPACE_BETWEEN, screen.get_height()/2-25, BUTTON_WIDTH, BUTTON_HEIGHT)
 
     # Entrées pour l'IP et le port
@@ -53,6 +95,7 @@ def home_screen(screen: Surface) -> (str, int):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                return "quit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
                     print("Clic sur Start")
@@ -67,11 +110,13 @@ def home_screen(screen: Surface) -> (str, int):
                         error_text = "ADRESSE IP OU PORT INCORRECTS"
 
                     # Ajoutez ici le code pour lancer le jeu
-                elif option_button.collidepoint(event.pos):
-                    print("Clic sur Option")
-                    # Ajoutez ici le code pour les options du jeu
+                elif credits_button.collidepoint(event.pos):
+                    print("Clic sur Credit")
+                    credits_screen(screen)
+                    # Ajoutez ici le code pour les credits du jeu
                 elif quit_button.collidepoint(event.pos):
                     running = False
+                    return "quit"
                 elif ip_rect.collidepoint(event.pos):
                     active_rect = ip_rect
                 elif port_rect.collidepoint(event.pos):
@@ -103,17 +148,17 @@ def home_screen(screen: Surface) -> (str, int):
 
         # Dessiner les boutons
         pygame.draw.rect(screen, WHITE, start_button, 2)
-        pygame.draw.rect(screen, WHITE, option_button, 2)
+        pygame.draw.rect(screen, WHITE, credits_button, 2)
         pygame.draw.rect(screen, WHITE, quit_button, 2)
 
         # Afficher le texte des boutons
         text_start = police.render("START", True, WHITE)
-        text_option = police.render("OPTION", True, WHITE)
+        text_credits = police.render("CREDITS", True, WHITE)
         text_quit = police.render("QUIT", True, WHITE)
         text_title = titlePolice.render("ROBOT RUMBLE", True, YELLOW)
 
         screen.blit(text_start, (start_button.x + start_button.width/2 - text_start.get_width()/2, start_button.y + start_button.height/2 - text_start.get_height()/2))
-        screen.blit(text_option, (option_button.x + option_button.width/2 - text_option.get_width()/2, option_button.y + option_button.height/2 - text_option.get_height()/2))
+        screen.blit(text_credits, (credits_button.x + credits_button.width/2 - text_credits.get_width()/2, credits_button.y + credits_button.height/2 - text_credits.get_height()/2))
         screen.blit(text_quit, (quit_button.x + quit_button.width/2 - text_quit.get_width()/2, quit_button.y + quit_button.height/2 - text_quit.get_height()/2))
         screen.blit(text_title, (screen.get_width()/2-300,150))
 
@@ -143,4 +188,4 @@ def home_screen(screen: Surface) -> (str, int):
         pygame.display.flip()
 
     # Quitter Pygame
-    pygame.quit()
+    #pygame.quit()
