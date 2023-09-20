@@ -30,13 +30,13 @@ class Bullet(PhysicsObject, Sprite):
 
         self.unique_id = self.max_id[0]
         self.max_id[0] += 1
-        self.all.add(self)
+        Bullet.all.add(self)
 
     def kill(self):
         super().kill()
         self.all.remove(self)
 
-    def update(self):
+    def update(self, delta: float):
         self.angle = self.velocity.angle_to(Vector2(1, 0))
         if self.image:
             self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)

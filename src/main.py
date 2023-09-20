@@ -64,8 +64,7 @@ async def run_game(state: tuple[str, int]):
         PhysicsObject.update_all(delta)
         Planet.all.update()
         Player.all.update(delta)
-        Bullet.all.update()
-        BlackHole.all.update(delta)
+        Bullet.all.update(delta)
 
         screen.fill((255, 255, 255))
 

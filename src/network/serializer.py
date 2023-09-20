@@ -4,8 +4,26 @@ import pygame.math
 from pygame import image, Vector2
 
 from network.converter import DataConverter
+from objects.blackhole import BlackHole
+from objects.gunbullet import GunBullet
 from objects.player import Player
 from objects.bullet import Bullet
+
+
+def get_number_from_bullet(b: Bullet) -> int:
+    match b:
+        case GunBullet():
+            return 0x00
+        case BlackHole():
+            return 0x01
+
+
+def make_bullet_from_number(bullet_type: int, *args) -> Bullet:
+    match bullet_type:
+        case 0x00:
+            return GunBullet(*args)
+        case 0x01:
+            return BlackHole(*args)
 
 
 def prepare_update() -> bytes:
@@ -26,7 +44,12 @@ def prepare_update() -> bytes:
     # print("Amount of bullets", len(Bullet.all.sprites()))
     for b in Bullet.all:
         output.extend(DataConverter.write_varlong(b.unique_id))
+        bullet_type = get_number_from_bullet(b)
+        output.extend(DataConverter.write_varint(bullet_type))
         output.extend(DataConverter.write_vector_float(b.position))
+        if bullet_type == 0x01:  # black hole
+            b: BlackHole
+            output.extend(DataConverter.write_float(b.scale))
         output.extend(DataConverter.write_vector_float(b.velocity))
         output.extend(DataConverter.write_float(b.angle))
     return bytes(output)
@@ -75,13 +98,19 @@ def apply_update(data: bytes):
                 bl = b
                 break
         data = data[skipped:]
+        skipped, bullet_type = DataConverter.parse_varint(data)
+        data = data[skipped:]
         pos = DataConverter.parse_vector_float(data)
+        data = data[16:]
         if bl is None:
-            bl = Bullet(pos, Vector2())
+            bl = make_bullet_from_number(bullet_type, pos, Vector2())
             bl.unique_id = unique_id
         else:
             bl.new_position = pos
-        data = data[16:]
+
+        if bullet_type == 0x01:
+            bl.scale = DataConverter.parse_float(data)
+            data = data[8:]
         bl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]
         bl.angle = DataConverter.parse_float(data)
