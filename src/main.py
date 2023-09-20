@@ -10,6 +10,7 @@ from objects.bullet import Bullet
 
 from core.gravity import PhysicsObject
 from ui import homescreen
+from ui import hud
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -40,7 +41,8 @@ if state == "quit" or state is None:
     running = False
 else:
     running = True
-
+bg = pygame.image.load("assets/img/space_bg.png")
+bg = pygame.transform.scale(bg, screen.get_size())
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -55,12 +57,16 @@ while running:
     Bullet.all.update()
     BlackHole.all.update(delta)
 
-    screen.fill((255, 255, 255))
+    screen.fill((255,255,255))
+    screen.blit(bg, (0, 0))
+
 
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
+
+    hud.weapon_hud(screen,player)
 
     mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
     mouse_buttons = pygame.mouse.get_pressed()
