@@ -1,7 +1,7 @@
 from pygame import Vector2
 
-from objects.bullet import Bullet
 from core.gravity import PhysicsObject
+from objects.gunbullet import GunBullet
 from objects.weapon import Weapon
 
 class Minigun(Weapon):
@@ -10,8 +10,7 @@ class Minigun(Weapon):
 
     def shoot(self, position: Vector2, target: Vector2) -> Vector2:
         if self.can_shoot():
-            direction = (target - position).normalize()
-            bullet = Bullet(position + Vector2(1, 0), direction)
-            return direction * self.recoil
+            bullet = GunBullet(position + Vector2(1, 0), target)
+            return bullet.direction_vector * self.recoil
         return Vector2(0)
  

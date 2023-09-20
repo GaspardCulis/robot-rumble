@@ -1,5 +1,5 @@
 import pygame
-from pygame import Vector2
+from pygame import Surface, Vector2
 from pygame.sprite import Group, Sprite
 from random import random
 
@@ -13,16 +13,20 @@ class Bullet(PhysicsObject, Sprite):
     all: Group = Group()
     max_id: list[int] = [0]
 
-    def __init__(self, position: Vector2, direction_vector: Vector2):
+    def __init__(self, position: Vector2, target: Vector2, sprite: Surface | None, damage: float, spread: float = 0.1, speed: float = BULLET_SPEED):
         super().__init__(BULLET_MASS, position, True, False)
 
+        self.damage = damage
+        self.spread = spread
+        self.speed = speed
         self.angle = 0
-        self.velocity = (direction_vector + Vector2(random()/10, random()/10)) * BULLET_SPEED
-        
-        self.original_image = pygame.transform.scale_by(pygame.image.load("assets/img/bullet.png"), 2)
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        self.direction_vector = (target - position).normalize()
+        self.velocity = (self.direction_vector + Vector2(random()*self.spread, random()*self.spread)) * self.speed
 
-        self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
+        if sprite:
+            self.original_image = sprite
+            self.image = pygame.transform.rotate(self.original_image, self.angle)
+            self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
 
         self.unique_id = self.max_id[0]
         self.max_id[0] += 1
@@ -33,11 +37,10 @@ class Bullet(PhysicsObject, Sprite):
         self.all.remove(self)
 
     def update(self):
-        self.rect.centerx = int(self.position.x)
-        self.rect.centery = int(self.position.y)
-
         self.angle = self.velocity.angle_to(Vector2(1, 0))
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
+        if self.image:
+            self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
+            self.image = pygame.transform.rotate(self.original_image, self.angle)
 
         if random() > 0.5: # Don't need to check collisions on every frame
             self.process_collisions()
