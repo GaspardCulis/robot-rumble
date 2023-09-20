@@ -2,10 +2,13 @@ from os import path
 import pygame
 from pygame import Color, Rect, Vector2, image
 from time import monotonic
-from core.gravity import PhysicsObject,physics_objects
+
 from objects.planet import Planet
 from objects.player import Player
 from objects.bullet import Bullet
+
+from core.gravity import PhysicsObject
+from ui import homescreen
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -13,7 +16,11 @@ IMG_PATH=path.join(ASSETS_PATH, "img/")
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
-pygame.display.set_caption('JAAJ')
+pygame.display.set_caption('Game')
+
+
+homescreen.home_screen(screen)
+
 
 planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
 planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
