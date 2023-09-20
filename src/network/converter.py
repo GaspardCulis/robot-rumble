@@ -2,9 +2,10 @@
 # Other players send the position they are at (they calculate their own physics)
 # Host sends world items physics and counts hits between them
 # WARNING !!!! This system is VERY vulnerable to cheating ! but has the advantage of not having desyncs
+from typing import TypeAlias, Any
 
 # These packets will be sent over UDP, with NO CONFIRMATION
-# (except for initial connections, three-way handshake, similar to Websocket)
+# (except for initial connections, three-way handshake, similar to TCP)
 # If a movement packet is lost, the updated version will be sent soon enough after
 
 # movement packet is sent like every frame (1/60 or 1/120 depending on fps, vsync advantage ? yes but I don't care)
@@ -26,26 +27,26 @@
 # C<=>S Can be sent both ways
 
 # FOR HANDSHAKE
-# un-answered packets need to be resent frequently (once every 2s)
+# un-answered packets need to be resent frequently (once every 2s ? or more)
 # after handshake, receiving no packets for 10s will be considered a timeout
 
 
 # Handshake
-# C->S  0x01 id <0x14 of random data USUALLY, accepts more>
-# C<-S  0x02 id <the sent data + "FB44FDEC-978A-406A-8E52-40EF2B2DFB46" sha1 together>
-# C->S  0x03 id "OK"
+# C->S  0x01 id
+# C<-S  0x02 id
+# C->S  0x03 id
 
 # KEEPALIVE packet
 # In situations where no packet was sent for 1s, you can send a KEEPALIVE PACKET
 # This packet is a NOOP except it resets the timeout timer
 # C<=>S 0x00 id 0x00
 
-# IN LOBBY STATE
-# TODO
-
 # IN PLAY STATE
 # C->S 0x04 id len <DATA ABOUT PLAYER>
 # C<-S 0x05 id len <ARRAY OF OBJECTS AND STATES>
+
+Address: TypeAlias = tuple[str | Any, int]
+
 
 class DataConverter:
     def __init__(self):
