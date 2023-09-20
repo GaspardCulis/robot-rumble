@@ -34,6 +34,7 @@ camera_pos = Vector2()
 camera_zoom = 1
 
 last_time = monotonic()
+last_mouse_buttons = [False, False, False]
 running = True
 while running:
     for event in pygame.event.get():
@@ -57,8 +58,9 @@ while running:
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
 
     mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
-    if pygame.mouse.get_pressed()[0]:
-        player.handle_click(mouse_pos)
+    mouse_buttons = pygame.mouse.get_pressed()
+    player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
+    last_mouse_buttons = mouse_buttons
 
     dest = -(player.position - Vector2(SCREEN_SIZE)/2)
     # add mouse deviation

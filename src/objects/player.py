@@ -1,3 +1,4 @@
+from typing import Tuple
 from pygame import Rect, Surface, Vector2, constants, transform
 from pygame.math import lerp
 import pygame
@@ -34,9 +35,9 @@ class Player(PhysicsObject, Sprite):
         self.input_velocity = Vector2(0)
 
         self.weapons = [
-            BlackHoleGun(),
+            Minigun(),
             Shotgun(), 
-            Minigun()
+            BlackHoleGun(),
         ]
         self.selected_weapon_index = 0
 
@@ -110,10 +111,13 @@ class Player(PhysicsObject, Sprite):
                 clip_position = planet.position + collision_normal * (self.radius + planet.radius)
                 self.position = clip_position
 
-    def handle_click(self, position: Vector2):
+    def handle_click(self, buttons: Tuple[bool, bool, bool], last_buttons: Tuple[bool, bool, bool], position: Vector2):
         # Shooting
-        self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
-        self.selected_weapon_index = 2
+        if buttons[2] and not last_buttons[2]:
+            self.selected_weapon_index = (self.selected_weapon_index + 1) % len(self.weapons)
+
+        if buttons[0]:
+            self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
