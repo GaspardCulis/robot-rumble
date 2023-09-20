@@ -11,6 +11,8 @@ BULLET_SPEED = 1000
 
 class Bullet(PhysicsObject, Sprite):
     all: Group = Group()
+    max_id: list[int] = [0]
+
     def __init__(self, position: Vector2, target: Vector2, sprite: Surface | None, damage: float, spread: float = 0.1, speed: float = BULLET_SPEED):
         super().__init__(BULLET_MASS, position, True, False)
 
@@ -26,13 +28,15 @@ class Bullet(PhysicsObject, Sprite):
             self.image = pygame.transform.rotate(self.original_image, self.angle)
             self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
 
-        self.all.add(self)
+        self.unique_id = self.max_id[0]
+        self.max_id[0] += 1
+        Bullet.all.add(self)
 
     def kill(self):
         super().kill()
         self.all.remove(self)
 
-    def update(self):
+    def update(self, delta: float):
         if self.velocity != Vector2(0, 0):
             self.angle = self.velocity.angle_to(Vector2(1, 0))
         if self.image:

@@ -24,9 +24,12 @@ ON_GROUND_THRESHOLD = 1
 
 class Player(PhysicsObject, Sprite):
     all: Group = Group()
+    max_id: list[int] = [0]
+
     def __init__(self, position: Vector2, sprite: Surface):
         super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
-
+        self.new_position = position
+        self.remote = False
         # Degrees
         self.rotation = 0.0
         # Ranges from 0.0 to 1.0
@@ -47,7 +50,8 @@ class Player(PhysicsObject, Sprite):
             BlackHoleGun(self),
         ]
         self.selected_weapon_index = 0
-
+        self.unique_id = self.max_id[0]
+        self.max_id[0] += 1
         self.all.add(self)
 
     def kill(self):
@@ -95,9 +99,11 @@ class Player(PhysicsObject, Sprite):
         short_angle = (target_angle - self.rotation) % 360
         short_angle = 2 * short_angle % 360 - short_angle
 
-        self.process_keys(pygame.key.get_pressed(), delta)
-
+        
         self.set_rotation(self.rotation + short_angle * delta * 6)
+        if self.remote:
+            self.position = Vector2(pygame.math.lerp(self.position.x, self.new_position.x, min(delta * 60, 1)),
+                                    pygame.math.lerp(self.position.y, self.new_position.y, min(delta * 60, 1)))
 
         self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
         if self.onground:
