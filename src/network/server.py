@@ -8,11 +8,11 @@ from network.callback import Callback
 
 
 async def open_server(callback: Callback, port: int = 25565):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
+    loop.set_debug(True)
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ServerProtocol(callback),
         local_addr=("0.0.0.0", port))
-
     return protocol
 
 
@@ -26,7 +26,9 @@ class ServerProtocol(asyncio.DatagramProtocol):
         self.callback = callback
 
     def connection_made(self, transport: asyncio.DatagramTransport):
+        print("server started")
         self.transport = transport
+        self.update_task = asyncio.create_task(self.send_update_data())
 
     def datagram_received(self, data: bytes, addr: Address) -> None:
         if addr not in self.clients:
@@ -35,10 +37,14 @@ class ServerProtocol(asyncio.DatagramProtocol):
         state: ConnectionState = self.clients[addr]
         asyncio.ensure_future(self.handle_client_data(data, state))  # go handle packet
 
+    def connection_lost(self, exc: Exception | None) -> None:
+        self.update_task.cancel()
+
     async def keep_alive(self, addr: Address):
         while True:
             await asyncio.sleep(2)
-            self.transport.sendto(b'\x00', addr)
+            self.clients[addr].last_sent_id += 1
+            self.transport.sendto(b'\x00' + DataConverter.write_varlong(self.clients[addr].last_sent_id), addr)
 
     async def send_update_data(self):
         old_time = monotonic()
@@ -70,10 +76,11 @@ class ServerProtocol(asyncio.DatagramProtocol):
             match packet_id:
                 case 0x00:
                     pass  # KeepAlive NO-OP !
-                case 0x02:
+                case 0x01:
                     timeout = 2
                     self.transport.sendto(b'\x02', state.addr)
                 case 0x03:
+                    print("Client connected !")
                     state.connected = True
                     self.callback.on_connected(state.addr)
                 case 0x04:

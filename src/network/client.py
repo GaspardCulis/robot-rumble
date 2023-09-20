@@ -1,5 +1,6 @@
 import asyncio
-from typing import Any
+from asyncio import DatagramTransport
+from typing import Any, Dict
 
 from network import serializer
 from network.callback import Callback
@@ -8,10 +9,13 @@ from network.converter import DataConverter, Address
 
 
 async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565):
-    loop = asyncio.get_event_loop()
+    loop = asyncio.get_running_loop()
+    loop.set_debug(True)
+    transport: DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
-        lambda: ClientProtocol(callback),
+        lambda: ClientProtocol(callback, (ip, port)),
         remote_addr=(ip, port))
+    transport.sendto(b'\x01' + DataConverter.write_varint(0), (ip, port))
     return protocol
 
 
@@ -20,17 +24,19 @@ class ClientProtocol(asyncio.DatagramProtocol):
     callback: Callback
     state: ConnectionState | None
 
-    def __init__(self, callback: Callback):
-        self.clients = {}
+    def __init__(self, callback: Callback, addr: Address):
         self.state = None
         self.callback = callback
+        self.addr = addr
 
     def connection_made(self, transport: asyncio.DatagramTransport):
+        print("client started")
         self.transport = transport
 
     def datagram_received(self, data: bytes, addr: tuple[str | Any, int]) -> None:
         if self.state is None:
             self.state = ConnectionState(addr)
+            self.state.keepalive_task = asyncio.create_task(self.keep_alive())
         else:
             state: ConnectionState = self.state
             asyncio.ensure_future(self.handle_server_data(data, state))  # go handle packet
@@ -38,10 +44,11 @@ class ClientProtocol(asyncio.DatagramProtocol):
     def update_current_state(self, data: bytes):
         serializer.apply_update(data)
 
-    async def keep_alive(self, addr: Address):
+    async def keep_alive(self):
         while True:
             await asyncio.sleep(2)
-            self.transport.sendto(b'\x00', addr)
+            self.state.last_sent_id += 1
+            self.transport.sendto(b'\x00' + DataConverter.write_varlong(self.state.last_sent_id), self.addr)
 
     async def handle_server_data(self, data: bytes, state: ConnectionState):
         if state.timeout_task is not None:
@@ -58,7 +65,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
             match packet_id:
                 case 0x00:
                     pass  # KeepAlive NO-OP !
-                case 0x01:
+                case 0x02:
                     self.state.connected = True
                 case 0x05:
                     self.update_current_state(data)

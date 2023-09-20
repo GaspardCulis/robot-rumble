@@ -55,7 +55,7 @@ def credits_screen(screen: Surface):
 
         pygame.display.flip()
 
-def home_screen(screen: Surface) -> (str, int):
+def home_screen(screen: Surface) -> tuple[str, int] | str:
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
