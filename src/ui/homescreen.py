@@ -1,7 +1,6 @@
 import pygame
 from pygame import Surface
 import re
-import time
 
 # Couleurs
 WHITE = (255, 255, 255)
@@ -16,7 +15,6 @@ def credits_screen(screen: Surface):
         "CREDIT 1",
         "CREDIT 2",
         "CREDIT 3",
-        # Ajoutez d'autres crédits ici
     ]
 
     bg = pygame.image.load("./assets/img/space_bg.png")
@@ -56,7 +54,6 @@ def credits_screen(screen: Surface):
             running = False
 
         pygame.display.flip()
-        time.sleep(0.01)  # Pause pour contrôler la vitesse de défilement
 
 def home_screen(screen: Surface) -> (str, int):
     # Police de texte
