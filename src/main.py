@@ -11,6 +11,8 @@ from objects.bullet import Bullet
 from core.gravity import PhysicsObject
 from ui import homescreen
 
+from core.sound import Sound
+
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
@@ -22,6 +24,7 @@ pygame.display.set_caption('Game')
 
 state = homescreen.home_screen(screen)
 
+Sound.get().loop_music('in_game')
 
 planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
 planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
