@@ -12,6 +12,8 @@ from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
 from objects.shotgun import Shotgun
+import random
+from objects.blackhole import BlackHole
 from core.sound import Sound
 from objects.weapon import Weapon
 
@@ -29,7 +31,8 @@ class Player(PhysicsObject, Sprite):
         self.rotation = 0.0
         # Ranges from 0.0 to 1.0
         self.percentage = 0.0
-
+        self.lives = 3
+        self.spawnpoint = position
         self.original_image = transform.scale_by(sprite, PLAYER_HEIGHT/sprite.get_rect().height)
         self.image = transform.rotozoom(self.original_image, self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
@@ -40,7 +43,7 @@ class Player(PhysicsObject, Sprite):
 
         self.weapons: list[Weapon] = [
             Minigun(self),
-            Shotgun(self), 
+            Shotgun(self),
             BlackHoleGun(self),
         ]
         self.selected_weapon_index = 0
@@ -48,9 +51,36 @@ class Player(PhysicsObject, Sprite):
         self.all.add(self)
 
     def kill(self):
+        if self.lives == 0:
+            super().kill()
+            self.all.remove(self)
+        else:
+            print("dead")
+            self.respawn_on_random_planet()
+            self.lives -= 1
         Sound.get().play('ejection')
-        super().kill()
-        self.all.remove(self)
+
+    def respawn_on_random_planet(self):
+
+        spawn_positions: list[Tuple[float, Vector2, float]] = []
+        for i in range(20):
+            random_index = random.randint(0, len(Planet.all) - 1)
+            random_planet = list(Planet.all)[random_index]
+            self.set_rotation(random.randint(0, 360))
+            self.position = random_planet.position + Vector2(1, 0).rotate(self.rotation)
+            self.process_collision(random_planet, 0)
+            nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
+            spawn_positions.append((self.position.distance_to(nearest_blackhole.position), self.position, self.rotation))
+
+        sorted_positions = sorted(spawn_positions, key=lambda p : p[0])
+        print(sorted_positions)
+        final_position = sorted_positions[-1]
+        print(final_position)
+        self.position = final_position[1]
+        self.rotation = final_position[2]
+
+        self.velocity = Vector2(0)
+
 
     def update(self, delta: float):
         # Rotate towards nearest planet
@@ -58,18 +88,18 @@ class Player(PhysicsObject, Sprite):
         target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
 
         short_angle = (target_angle - self.rotation) % 360
-        short_angle = 2 * short_angle % 360 - short_angle 
+        short_angle = 2 * short_angle % 360 - short_angle
 
         self.process_keys(pygame.key.get_pressed(), delta)
-        
+
         self.set_rotation(self.rotation + short_angle * delta * 6)
 
-        self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD 
+        self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
         if self.onground:
             self.process_collision(nearest_planet, delta)
 
         self.process_bullets()
-        
+
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
         Met à jour le joueur en fonction d'un appui de  touche

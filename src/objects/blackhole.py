@@ -19,7 +19,7 @@ class BlackHole(Bullet):
             sprite=None,
             damage=0,
             spread=0,
-            speed=BLACK_HOLE_SPEED 
+            speed=BLACK_HOLE_SPEED
         )
 
         self.static = True
@@ -34,6 +34,7 @@ class BlackHole(Bullet):
         
         self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
+        self.radius = self.rect.height/2
 
         self.target = target
         self.at_target = False
@@ -43,7 +44,7 @@ class BlackHole(Bullet):
     def kill(self):
             super().kill()
             self.all.remove(self)
-        
+
     def update(self, delta) -> None:
         self.position += self.velocity * delta
         
