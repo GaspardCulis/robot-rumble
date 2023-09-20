@@ -2,6 +2,8 @@ import pygame
 from pygame import Surface
 import re
 
+from core.sound import Sound
+
 # Couleurs
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -86,7 +88,7 @@ def home_screen(screen: Surface) -> (str, int):
 
     error_text = ""
 
-
+    Sound.get().loop_music('title_screen')
 
     # État du jeu
     running = True
