@@ -9,6 +9,7 @@ from objects.player import Player
 from objects.bullet import Bullet
 
 from core.gravity import PhysicsObject
+from objects.weapon import Weapon
 from ui import homescreen
 
 SCREEN_SIZE = (1024, 768)
@@ -49,23 +50,25 @@ while running:
     delta = new_time - last_time
     last_time = new_time
     
+    mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
+    mouse_buttons = pygame.mouse.get_pressed()
+    player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
+    last_mouse_buttons = mouse_buttons
+
     PhysicsObject.update_all(delta)
     Planet.all.update()
+    BlackHole.all.update(delta)
     Player.all.update(delta)
     Bullet.all.update()
-    BlackHole.all.update(delta)
+    Weapon.all.update(mouse_pos)
 
     screen.fill((255, 255, 255))
 
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
+    screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
     screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
-
-    mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
-    mouse_buttons = pygame.mouse.get_pressed()
-    player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
-    last_mouse_buttons = mouse_buttons
 
     dest = -(player.position - Vector2(SCREEN_SIZE)/2)
     # add mouse deviation

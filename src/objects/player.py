@@ -7,11 +7,13 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
+from objects.bullet import Bullet
 from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
 from objects.shotgun import Shotgun
 from core.sound import Sound
+from objects.weapon import Weapon
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
@@ -36,10 +38,10 @@ class Player(PhysicsObject, Sprite):
 
         self.input_velocity = Vector2(0)
 
-        self.weapons = [
-            Minigun(),
-            Shotgun(), 
-            BlackHoleGun(),
+        self.weapons: list[Weapon] = [
+            Minigun(self),
+            Shotgun(self), 
+            BlackHoleGun(self),
         ]
         self.selected_weapon_index = 0
 
@@ -65,6 +67,8 @@ class Player(PhysicsObject, Sprite):
         self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD 
         if self.onground:
             self.process_collision(nearest_planet, delta)
+
+        self.process_bullets()
         
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
@@ -122,6 +126,11 @@ class Player(PhysicsObject, Sprite):
 
         if buttons[0]:
             self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
+
+    def process_bullets(self):
+        for bullet in pygame.sprite.spritecollide(self, Bullet.all, False):
+            self.percentage += bullet.damage
+            print(self.percentage)
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
