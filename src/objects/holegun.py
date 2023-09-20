@@ -1,10 +1,13 @@
 from pygame import Vector2
+from objects.blackhole import BlackHole
 from objects.weapon import Weapon
 
 
 class BlackHoleGun(Weapon):
-    def __init__(self, recoil: float, cooldown_delay: float, ammo: int, reload_time: float) -> None:
-        super().__init__(0.0, 0.0, 1, 15)
+    def __init__(self) -> None:
+        super().__init__(0.0, 0.0, 1, 1)
 
     def shoot(self, origin: Vector2, target: Vector2) -> Vector2:
-        return super().shoot(origin, target)
+        if super().can_shoot():
+            bullet = BlackHole(origin + Vector2(1, 0), target)
+        return Vector2(0)

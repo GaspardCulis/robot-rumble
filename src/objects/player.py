@@ -6,6 +6,7 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
+from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
 from objects.shotgun import Shotgun
@@ -33,6 +34,7 @@ class Player(PhysicsObject, Sprite):
         self.input_velocity = Vector2(0)
 
         self.weapons = [
+            BlackHoleGun(),
             Shotgun(), 
             Minigun()
         ]
@@ -111,6 +113,7 @@ class Player(PhysicsObject, Sprite):
     def handle_click(self, position: Vector2):
         # Shooting
         self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
+        self.selected_weapon_index = 2
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
