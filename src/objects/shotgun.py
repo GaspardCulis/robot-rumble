@@ -15,6 +15,6 @@ class Shotgun(Weapon):
         if self.can_shoot():
             direction = (target - position).normalize()
             for a in range(-10, 10):
-                bullet = GunBullet(position + Vector2(1, 0), target)
+                bullet = GunBullet(self.get_bullet_spawnpoint(), target)
             return direction * self.recoil
         return Vector2(0)

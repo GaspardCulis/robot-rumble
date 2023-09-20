@@ -6,6 +6,7 @@ import pygame as pg
 from pygame.sprite import Group, Sprite
 
 ASSETS_DIR = "assets/img/weapons"
+WEAPON_OFFSET = Vector2(20, 10)
 
 class Weapon(Sprite):
     all: Group = Group()
@@ -22,6 +23,7 @@ class Weapon(Sprite):
         self.original_image = pg.transform.scale_by(pg.image.load(path.join(ASSETS_DIR, sprite_name)), 2)
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.owner.position).center)
+        self.direction = 0.0
   
     @abstractmethod
     def shoot(self, origin: Vector2, target: Vector2) -> Vector2:
@@ -56,9 +58,15 @@ class Weapon(Sprite):
 
     def update(self, mouse_position: Vector2):
         direction_vector = (mouse_position - self.owner.position).normalize()
-        self.image = pg.transform.rotate(self.original_image, -(Vector2(1, 0).angle_to(direction_vector)))
-        self.rect = self.image.get_rect(center=self.image.get_rect(center = self.owner.position).center)
+        self.direction = Vector2(1, 0).angle_to(direction_vector)
+        self.image = pg.transform.rotate(self.original_image, -self.direction)
+        center = self.owner.position + WEAPON_OFFSET.rotate(-self.owner.rotation)
+        self.rect = self.image.get_rect(center=self.image.get_rect(center = center).center)
 
     def is_selected(self) -> bool:
         return self.owner.weapons[self.owner.selected_weapon_index] == self
+
+    def get_bullet_spawnpoint(self) -> Vector2:
+        
+        return self.owner.position + WEAPON_OFFSET.rotate(-self.owner.rotation) +  (Vector2(24, 4).rotate(self.direction))
         

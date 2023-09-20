@@ -13,7 +13,7 @@ class Minigun(Weapon):
 
     def shoot(self, position: Vector2, target: Vector2) -> Vector2:
         if self.can_shoot():
-            bullet = GunBullet(position + Vector2(1, 0), target)
+            bullet = GunBullet(self.get_bullet_spawnpoint(), target)
             Sound.get().play('minigun')
             return bullet.direction_vector * self.recoil
         return Vector2(0)
