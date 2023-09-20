@@ -53,5 +53,4 @@ class Sound():
         if name not in self.all:
             self.load(name)
         self.all[name].play()
->>>>>>> main
 
