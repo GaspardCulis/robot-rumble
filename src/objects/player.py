@@ -11,6 +11,8 @@ from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
 from objects.shotgun import Shotgun
+import random
+from objects.blackhole import BlackHole
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
@@ -38,7 +40,7 @@ class Player(PhysicsObject, Sprite):
 
         self.weapons = [
             Minigun(),
-            Shotgun(), 
+            Shotgun(),
             BlackHoleGun(),
         ]
         self.selected_weapon_index = 0
@@ -51,7 +53,26 @@ class Player(PhysicsObject, Sprite):
             self.all.remove(self)
         else:
             self.lives -= 1
-            self.position = self.spawnpoint
+            self.respawn_on_random_planet()
+
+    def respawn_on_random_planet(self):
+
+        nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
+
+        while True:
+            random_index = random.randint(0, len(Planet.all) - 1)
+            random_planet = list(Planet.all)[random_index]
+            self.set_rotation(random.randint(0, 360))
+            new_position = random_planet.position + Vector2(1, 0).rotate(self.rotation)
+
+
+            if new_position.distance_to(nearest_blackhole.position) >= nearest_blackhole.radius + 100:
+                break
+
+        self.position = new_position
+        self.process_collision(random_planet, 0)
+        self.velocity = Vector2(0)
+
 
     def update(self, delta: float):
         # Rotate towards nearest planet
@@ -59,16 +80,15 @@ class Player(PhysicsObject, Sprite):
         target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
 
         short_angle = (target_angle - self.rotation) % 360
-        short_angle = 2 * short_angle % 360 - short_angle 
+        short_angle = 2 * short_angle % 360 - short_angle
 
         self.process_keys(pygame.key.get_pressed(), delta)
-        
+
         self.set_rotation(self.rotation + short_angle * delta * 6)
 
-        self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD 
+        self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
         if self.onground:
             self.process_collision(nearest_planet, delta)
-        
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
         Met à jour le joueur en fonction d'un appui de  touche

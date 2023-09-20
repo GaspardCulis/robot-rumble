@@ -17,7 +17,6 @@ class BlackHole(PhysicsObject, Sprite):
         self.origin = position + Vector2(0)
 
         self.velocity = (target - position).normalize() * BLACK_HOLE_SPEED
-        
         self.scale = 0.4
         self.frames = parse_spritesheet(pg.image.load(BLACK_HOLE_SPRITESHEET), 2, 25)
         self.frame_index = 0
@@ -25,6 +24,7 @@ class BlackHole(PhysicsObject, Sprite):
         
         self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
+        self.radius = self.rect.height/2
 
         self.target = target
         self.at_target = False
