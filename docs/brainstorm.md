@@ -65,6 +65,11 @@ Système de pourcentage comme smash
 - Intégrer sound design
 - Fix le jump (on peut sauter si jamais on arrive à être dans les airs sans sauter avant)
 
+### A faire 20/09/23
+
+- Animation sprite joueur
+- Implémentation dégats
+
 **A la fin de la journée on doit avoir le multi fonctionnel**
 
 ### Crédits
