@@ -1,4 +1,5 @@
 import asyncio
+from asyncio import Task, DatagramTransport
 from time import monotonic
 
 from network import serializer
@@ -7,21 +8,24 @@ from network.converter import DataConverter, Address
 from network.callback import Callback
 
 
-async def open_server(callback: Callback, port: int = 25565):
+async def open_server(callback: Callback, port: int = 25565) -> DatagramTransport:
     loop = asyncio.get_running_loop()
     loop.set_debug(True)
+    transport: DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ServerProtocol(callback),
         local_addr=("0.0.0.0", port))
-    return protocol
+    return transport
 
 
 class ServerProtocol(asyncio.DatagramProtocol):
+    update_task: Task[None] | None
     transport: asyncio.DatagramTransport
     callback: Callback
     clients: dict[Address, ConnectionState]
 
     def __init__(self, callback: Callback):
+        self.update_task = None
         self.clients = {}
         self.callback = callback
 
@@ -39,6 +43,13 @@ class ServerProtocol(asyncio.DatagramProtocol):
 
     def connection_lost(self, exc: Exception | None) -> None:
         self.update_task.cancel()
+        for state in self.clients.values():
+            state.connected = False
+            if state.keepalive_task is not None:
+                state.keepalive_task.cancel()
+            if state.timeout_task is not None:
+                state.timeout_task.cancel()
+            self.callback.on_disconnect(state.addr)  # TODO send to the clients that server is closing
 
     async def keep_alive(self, addr: Address):
         while True:
@@ -71,14 +82,17 @@ class ServerProtocol(asyncio.DatagramProtocol):
         skip, last_id = DataConverter.parse_varlong(data)
         data = data[skip:]
         timeout = 10
+        # print("SERVER: got packet id :", packet_id, "last id :", last_id, "data :", data)
         if state.last_received_id < last_id:
             state.last_received_id = last_id
             match packet_id:
                 case 0x00:
                     pass  # KeepAlive NO-OP !
                 case 0x01:
+                    print("Client starting connection, sending second packet...")
                     timeout = 2
-                    self.transport.sendto(b'\x02', state.addr)
+                    state.last_sent_id += 1
+                    self.transport.sendto(b'\x02' + DataConverter.write_varlong(state.last_sent_id), state.addr)
                 case 0x03:
                     print("Client connected !")
                     state.connected = True

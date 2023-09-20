@@ -1,4 +1,5 @@
 import asyncio
+from asyncio import DatagramTransport
 from os import path
 import pygame
 from pygame import Color, Rect, Vector2, image
@@ -34,10 +35,11 @@ if state == "quit":
 async def run_game(state: tuple[str, int]):
     ip = state[0]
     port = state[1]
+    connection : DatagramTransport
     if ip == "0.0.0.0":
-        await server.open_server(ServerCallback(), port)
+        connection = await server.open_server(ServerCallback(), port)
     else:
-        await client.connect_to_server(ClientCallback(), ip, port)
+        connection = await client.connect_to_server(ClientCallback(), ip, port)
     planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
     planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
 
@@ -87,9 +89,9 @@ async def run_game(state: tuple[str, int]):
 
         async def flip():
             pygame.display.flip()
-        await asyncio.ensure_future(flip())
+        await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
         # print("FPS ", 1 / delta)
-
+    connection.close()
     pygame.quit()
 
 asyncio.run(run_game(state), debug=True)

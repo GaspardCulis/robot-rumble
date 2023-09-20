@@ -1,5 +1,6 @@
 from os import path
 
+import pygame.math
 from pygame import image, Vector2
 
 from network.converter import DataConverter
@@ -22,6 +23,7 @@ def prepare_update() -> bytes:
     # Take all the bullets, and save info
     b: Bullet
     output.extend(DataConverter.write_varlong(len(Bullet.all.sprites())))
+    # print("Amount of bullets", len(Bullet.all.sprites()))
     for b in Bullet.all:
         output.extend(DataConverter.write_varlong(b.unique_id))
         output.extend(DataConverter.write_vector_float(b.position))
@@ -29,8 +31,10 @@ def prepare_update() -> bytes:
         output.extend(DataConverter.write_float(b.angle))
     return bytes(output)
 
-ASSETS_PATH="assets/"
-IMG_PATH=path.join(ASSETS_PATH, "img/")
+
+ASSETS_PATH = "assets/"
+IMG_PATH = path.join(ASSETS_PATH, "img/")
+
 
 def apply_update(data: bytes):
     # Load players
@@ -38,16 +42,19 @@ def apply_update(data: bytes):
     data = data[skipped:]
     for _ in range(nb_players):
         skipped, unique_id = DataConverter.parse_varint(data)
-        pl = None
+        pl: Player | None = None
         for p in Player.all:
             if p.unique_id == unique_id:
                 pl = p
+                break
         data = data[skipped:]
         pos = DataConverter.parse_vector_float(data)
         if pl is None:
             pl = Player(pos, image.load(path.join(IMG_PATH, "player.png")))
-        else:
-            pl.position = pos
+            pl.unique_id = unique_id
+        else:  # TODO delta en fonction de temps d'update ??
+            pl.position = Vector2(pygame.math.lerp(pl.position.x, pos.x, 1 / 120),
+                                  pygame.math.lerp(pl.position.y, pos.y, 1 / 120))
         data = data[16:]
         pl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]
@@ -58,18 +65,22 @@ def apply_update(data: bytes):
 
     skipped, nb_bullets = DataConverter.parse_varlong(data)
     data = data[skipped:]
+
     for _ in range(nb_bullets):
-        skipped, unique_id = DataConverter.parse_varint(data)
+        skipped, unique_id = DataConverter.parse_varlong(data)
         bl = None
-        for p in Bullet.all:
-            if p.unique_id == unique_id:
-                bl = p
+        for b in Bullet.all:
+            if b.unique_id == unique_id:
+                bl = b
+                break
         data = data[skipped:]
         pos = DataConverter.parse_vector_float(data)
         if bl is None:
             bl = Bullet(pos, Vector2())
+            bl.unique_id = unique_id
         else:
-            bl.position = pos
+            bl.position = Vector2(pygame.math.lerp(bl.position.x, pos.x, 1 / 60),
+                                  pygame.math.lerp(bl.position.y, pos.y, 1 / 60))
         data = data[16:]
         bl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]

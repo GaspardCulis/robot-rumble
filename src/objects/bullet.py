@@ -11,7 +11,7 @@ BULLET_SPEED = 1000
 
 class Bullet(PhysicsObject, Sprite):
     all: Group = Group()
-    max_id: int = 0
+    max_id: list[int] = [0]
 
     def __init__(self, position: Vector2, direction_vector: Vector2):
         super().__init__(BULLET_MASS, position, True, False)
@@ -24,8 +24,8 @@ class Bullet(PhysicsObject, Sprite):
 
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
 
-        self.unique_id = self.max_id
-        self.max_id += 1
+        self.unique_id = self.max_id[0]
+        self.max_id[0] += 1
         self.all.add(self)
 
     def kill(self):
