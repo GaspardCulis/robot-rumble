@@ -16,7 +16,7 @@ screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
 pygame.display.set_caption('Game')
 
 
-homescreen.home_screen(screen)
+state = homescreen.home_screen(screen)
 
 
 planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
@@ -29,7 +29,12 @@ planets = [
 ]
 
 last_time = monotonic()
-running = True
+
+if state == "quit" or state is None:
+    running = False
+else:
+    running = True
+
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

@@ -49,6 +49,7 @@ def home_screen(screen: Surface) -> (str, int):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+                return "quit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
                     print("Clic sur Start")
@@ -68,6 +69,7 @@ def home_screen(screen: Surface) -> (str, int):
                     # Ajoutez ici le code pour les options du jeu
                 elif quit_button.collidepoint(event.pos):
                     running = False
+                    return "quit"
                 elif ip_rect.collidepoint(event.pos):
                     active_rect = ip_rect
                 elif port_rect.collidepoint(event.pos):
@@ -139,4 +141,4 @@ def home_screen(screen: Surface) -> (str, int):
         pygame.display.flip()
 
     # Quitter Pygame
-    pygame.quit()
+    #pygame.quit()
