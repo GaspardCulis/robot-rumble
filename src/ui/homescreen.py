@@ -9,7 +9,7 @@ def home_screen(screen: Surface) -> (str, int):
     BLACK = (0, 0, 0)
     BLUE = (0, 0, 255)
     YELLOW = "#FFCE00"
-
+    RED = "#FF0000"
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
@@ -38,7 +38,7 @@ def home_screen(screen: Surface) -> (str, int):
     port_rect = pygame.Rect(screen.get_width()/2+100, screen.get_height()/2+200, PORT_WIDTH, 40)
     active_rect = None  # Zone de texte active (IP ou port)
 
-
+    error_text = ""
 
 
 
@@ -55,11 +55,13 @@ def home_screen(screen: Surface) -> (str, int):
                     # Vérifier l'adresse IP avec une expression régulière
                     ip_pattern = r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
                     if re.match(ip_pattern, ip_text) and port_text.isdigit():
-                        print("Clic sur Start")
+                        error_text = ""
                         return ip_text, int(port_text)
                         # Ajoutez ici le code pour lancer le jeu
                     else:
                         print("Adresse IP ou port incorrects")
+                        error_text = "ADRESSE IP OU PORT INCORRECTS"
+
                     # Ajoutez ici le code pour lancer le jeu
                 elif option_button.collidepoint(event.pos):
                     print("Clic sur Option")
@@ -105,10 +107,15 @@ def home_screen(screen: Surface) -> (str, int):
         text_option = police.render("OPTION", True, WHITE)
         text_quit = police.render("QUIT", True, WHITE)
         text_title = titlePolice.render("ROBOT RUMBLE", True, YELLOW)
+
         screen.blit(text_start, (start_button.x + start_button.width/2 - text_start.get_width()/2, start_button.y + start_button.height/2 - text_start.get_height()/2))
         screen.blit(text_option, (option_button.x + option_button.width/2 - text_option.get_width()/2, option_button.y + option_button.height/2 - text_option.get_height()/2))
         screen.blit(text_quit, (quit_button.x + quit_button.width/2 - text_quit.get_width()/2, quit_button.y + quit_button.height/2 - text_quit.get_height()/2))
         screen.blit(text_title, (screen.get_width()/2-300,150))
+
+        if error_text != "":
+            text_error = police.render(error_text, True, RED)
+            screen.blit(text_error, (screen.get_width()/2-text_error.get_width()/2, ip_rect.y+100))
 
         # Afficher les entrées pour l'IP et le port
         pygame.draw.rect(screen, WHITE, ip_rect, 2)
