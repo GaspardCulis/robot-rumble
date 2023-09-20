@@ -11,6 +11,7 @@ from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
 from objects.shotgun import Shotgun
+from core.sound import Sound
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
@@ -45,6 +46,7 @@ class Player(PhysicsObject, Sprite):
         self.all.add(self)
 
     def kill(self):
+        Sound.get().play('ejection')
         super().kill()
         self.all.remove(self)
 
@@ -80,6 +82,7 @@ class Player(PhysicsObject, Sprite):
             self.velocity += speed
             self.position += speed * delta  # Move, to avoid clipping instantly
             self.jumped = True
+            Sound.get().play('jump')
         if keys[constants.K_s]:
             self.input_velocity.y = lerp(self.input_velocity.y, PLAYER_VELOCITY * 0.75, delta*4)
         else:
