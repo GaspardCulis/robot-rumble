@@ -63,6 +63,7 @@ Système de pourcentage comme smash
 - Animation sprites (idle, run, smash)
 - Le multi (lobby)
 - Intégrer sound design
+- Fix le jump (on peut sauter si jamais on arrive à être dans les airs sans sauter avant)
 
 **A la fin de la journée on doit avoir le multi fonctionnel**
 
