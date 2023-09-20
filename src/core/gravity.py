@@ -39,6 +39,7 @@ class PhysicsObject():
 
     @staticmethod
     def update_all(delta: float):
-        for o in filter(lambda x : not x.static, physics_objects):
-            o.update_forces(delta)
+        for o in physics_objects:
+            if not o.static:
+                o.update_forces(delta)
             o.check_bounds()
