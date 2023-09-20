@@ -13,10 +13,10 @@ class Weapon():
         self.reload_t = 0.0
     
     @abstractmethod
-    def shoot(self, origin: Vector2, target: Vector2):
+    def shoot(self, origin: Vector2, target: Vector2) -> Vector2:
         """
         Shoots a projectile given an origin, a target
-        Returns a recoil force
+        Returns a recoil force Vector
         """
         pass
     

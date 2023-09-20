@@ -6,10 +6,12 @@ from objects.weapon import Weapon
 
 class Minigun(Weapon):
     def __init__(self):
-        super().__init__(10, 0.05, 50, 1.5)
+        super().__init__(30, 0.05, 50, 1.5)
 
-    def shoot(self, position: Vector2, target: Vector2):
+    def shoot(self, position: Vector2, target: Vector2) -> Vector2:
         if self.can_shoot():
             direction = (target - position).normalize()
             bullet = Bullet(position + Vector2(1, 0), direction)
+            return direction * self.recoil
+        return Vector2(0)
  

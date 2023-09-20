@@ -108,7 +108,7 @@ class Player(PhysicsObject, Sprite):
 
     def handle_click(self, position: Vector2):
         # Shooting
-        self.weapons[self.selected_weapon_index].shoot(self.position, position)
+        self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
