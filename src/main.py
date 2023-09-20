@@ -34,7 +34,7 @@ camera_pos = Vector2()
 camera_zoom = 1
 
 last_time = monotonic()
-last_mouse_buttons = [False, False, False]
+last_mouse_buttons = (False, False, False)
 running = True
 while running:
     for event in pygame.event.get():
