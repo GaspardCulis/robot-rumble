@@ -1,5 +1,7 @@
 import asyncio
+from time import monotonic
 
+from network import serializer
 from network.connection_state import ConnectionState
 from network.converter import DataConverter, Address
 from network.callback import Callback
@@ -38,6 +40,21 @@ class ServerProtocol(asyncio.DatagramProtocol):
             await asyncio.sleep(2)
             self.transport.sendto(b'\x00', addr)
 
+    async def send_update_data(self):
+        old_time = monotonic()
+        while True:
+            # serialize all the data to send
+            data = serializer.prepare_update()
+            # send the data (this does not block)
+            for c, state in self.clients.items():
+                state.last_sent_id += 1
+                self.transport.sendto(b'\x05' + DataConverter.write_varlong(state.last_sent_id) + data, c)
+            # calculate time taken and sleep if needed
+            new_time = monotonic()
+            delta = new_time - old_time
+            old_time = new_time
+            await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
+
     async def handle_client_data(self, data: bytes, state: ConnectionState):
         if state.timeout_task is not None:
             if state.timeout_task.done():
@@ -70,5 +87,6 @@ class ServerProtocol(asyncio.DatagramProtocol):
             if state.keepalive_task is not None:
                 state.keepalive_task.cancel()
             self.callback.on_disconnect(state.addr)
+            self.clients.pop(state.addr)
 
         state.timeout_task = asyncio.create_task(cancel_for_timeout())

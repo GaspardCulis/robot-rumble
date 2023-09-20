@@ -2,7 +2,6 @@
 # Other players send the position they are at (they calculate their own physics)
 # Host sends world items physics and counts hits between them
 # WARNING !!!! This system is VERY vulnerable to cheating ! but has the advantage of not having desyncs
-from typing import TypeAlias, Any
 
 # These packets will be sent over UDP, with NO CONFIRMATION
 # (except for initial connections, three-way handshake, similar to TCP)
@@ -42,8 +41,12 @@ from typing import TypeAlias, Any
 # C<=>S 0x00 id 0x00
 
 # IN PLAY STATE
-# C->S 0x04 id len <DATA ABOUT PLAYER>
-# C<-S 0x05 id len <ARRAY OF OBJECTS AND STATES>
+# C->S 0x04 id <DATA ABOUT PLAYER>
+# C<-S 0x05 id <ARRAY OF OBJECTS AND STATES>
+
+from typing import TypeAlias, Any
+import struct
+from pygame import Vector2
 
 Address: TypeAlias = tuple[str | Any, int]
 
@@ -51,6 +54,32 @@ Address: TypeAlias = tuple[str | Any, int]
 class DataConverter:
     def __init__(self):
         raise NotImplementedError  # DataConverter is not to be initialized
+
+    @staticmethod
+    def write_vector_float(vector: Vector2) -> bytes:
+        return DataConverter.write_float(vector.x) + DataConverter.write_float(vector.y)
+
+    @staticmethod
+    def parse_vector_float(data: bytes) -> Vector2:
+        return Vector2(DataConverter.parse_float(data), DataConverter.parse_float(data[struct.calcsize(">d"):]))
+
+    @staticmethod
+    def write_vector_int(vector: Vector2) -> bytes:
+        return DataConverter.write_varint(vector.x) + DataConverter.write_varint(vector.y)
+
+    @staticmethod  # bytesused,vector
+    def parse_vector_int(data: bytes) -> tuple[int, Vector2]:
+        used, first = DataConverter.parse_varint(data)
+        used2, second = DataConverter.parse_varint(data[used:])
+        return used + used2, Vector2(first, second)
+
+    @staticmethod  # will return 8 bytes
+    def write_float(nb: float) -> bytes:
+        return struct.pack(">d", nb)
+
+    @staticmethod  # will use 8 bytes
+    def parse_float(data: bytes) -> float:
+        return struct.unpack(">d", data[:struct.calcsize(">d")])[0]
 
     @staticmethod  # tuple is (bytesused,value)
     def parse_varlong(data: bytes) -> tuple[int, int]:

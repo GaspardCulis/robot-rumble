@@ -1,6 +1,7 @@
 import asyncio
 from typing import Any
 
+from network import serializer
 from network.callback import Callback
 from network.connection_state import ConnectionState
 from network.converter import DataConverter, Address
@@ -35,7 +36,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
             asyncio.ensure_future(self.handle_server_data(data, state))  # go handle packet
 
     def update_current_state(self, data: bytes):
-        pass
+        serializer.apply_update(data)
 
     async def keep_alive(self, addr: Address):
         while True:
@@ -60,7 +61,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
                 case 0x01:
                     self.state.connected = True
                 case 0x05:
-                    self.update_current_state(data)  # TODO parse data from server
+                    self.update_current_state(data)
                 case _:
                     print("Warning ! got an unknown packet !")
 

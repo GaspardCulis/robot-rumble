@@ -15,6 +15,8 @@ PLAYER_VELOCITY = 500
 
 class Player(PhysicsObject, Sprite):
     all: Group = Group()
+    max_id: int = 0
+
     def __init__(self, position: Vector2, sprite: Surface):
         super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
 
@@ -35,7 +37,8 @@ class Player(PhysicsObject, Sprite):
             Minigun()
         ]
         self.selected_weapon_index = 0
-
+        self.unique_id = self.max_id
+        self.max_id += 1
         self.all.add(self)
 
     def kill(self):
