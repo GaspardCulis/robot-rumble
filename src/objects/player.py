@@ -53,8 +53,9 @@ class Player(PhysicsObject, Sprite):
             self.all.remove(self)
         else:
             print("dead")
-            #self.lives -= 1
             self.respawn_on_random_planet()
+            self.lives -= 1
+
 
     def respawn_on_random_planet(self):
 
