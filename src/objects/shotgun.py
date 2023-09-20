@@ -12,8 +12,8 @@ class Shotgun(Weapon):
         
     def shoot(self, position: Vector2, target: Vector2) -> Vector2:
         if self.can_shoot():
-            angle = Vector2(1, 0).angle_to(target - position)
+            direction = (target - position).normalize()
             for a in range(-10, 10):
-                bullet = Bullet(position + Vector2(1, 0), angle + a + random() * 4)
-            return Vector2(1, 0).rotate(angle) * self.recoil
+                bullet = Bullet(position + Vector2(1, 0), direction)
+            return direction * self.recoil
         return Vector2(0)

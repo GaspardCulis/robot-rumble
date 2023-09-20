@@ -10,11 +10,11 @@ BULLET_SPEED = 1000
 
 class Bullet(PhysicsObject, Sprite):
     all: Group = Group()
-    def __init__(self, position: Vector2, angle: float):
+    def __init__(self, position: Vector2, direction_vector: Vector2):
         super().__init__(BULLET_MASS, position, True, False)
 
-        self.angle = angle
-        self.velocity = Vector2(1, 0).rotate(self.angle) * BULLET_SPEED
+        self.angle = 0
+        self.velocity = (direction_vector + Vector2(random()/10, random()/10)) * BULLET_SPEED
         
         self.original_image = pygame.transform.scale_by(pygame.image.load("assets/img/bullet.png"), 2)
         self.image = pygame.transform.rotate(self.original_image, self.angle)
