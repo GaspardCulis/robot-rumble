@@ -42,7 +42,8 @@ class ServerProtocol(asyncio.DatagramProtocol):
         asyncio.ensure_future(self.handle_client_data(data, state))  # go handle packet
 
     def connection_lost(self, exc: Exception | None) -> None:
-        self.update_task.cancel()
+        if self.update_task is not None:
+            self.update_task.cancel()
         for state in self.clients.values():
             state.connected = False
             if state.keepalive_task is not None:
@@ -51,6 +52,9 @@ class ServerProtocol(asyncio.DatagramProtocol):
                 state.timeout_task.cancel()
             self.callback.on_disconnect(state.addr)  # TODO send to the clients that server is closing
 
+    def update_player(self, data):
+        serializer.apply_player(data)
+
     async def keep_alive(self, addr: Address):
         while True:
             await asyncio.sleep(2)
@@ -58,14 +62,14 @@ class ServerProtocol(asyncio.DatagramProtocol):
             self.transport.sendto(b'\x00' + DataConverter.write_varlong(self.clients[addr].last_sent_id), addr)
 
     async def send_update_data(self):
-        old_time = monotonic()
         while True:
-            # serialize all the data to send
-            data = serializer.prepare_update()
+            old_time = monotonic()
             # send the data (this does not block)
             for c, state in self.clients.items():
+                # serialize all the data to send, different client needs their own player's data taken out
+                data = serializer.prepare_update(state.player_id)
                 state.last_sent_id += 1
-                self.transport.sendto(b'\x05' + DataConverter.write_varlong(state.last_sent_id) + data, c)
+                self.transport.sendto(b'\x06' + DataConverter.write_varlong(state.last_sent_id) + data, c)
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
@@ -96,11 +100,14 @@ class ServerProtocol(asyncio.DatagramProtocol):
                 case 0x03:
                     print("Client connected !")
                     state.connected = True
-                    self.callback.on_connected(state.addr)
-                case 0x04:
-                    pass  # TODO parse data from client
+                    self.callback.on_connected(self.transport, state, state.addr)
+                    self.callback.welcome_data(data, state, state.addr)
+                case 0x05:
+                    self.update_player(data)
                 case _:
                     print("Warning ! got an unknown packet !")
+        else:
+            print("Dropping out of order packet id", packet_id)
 
         async def cancel_for_timeout():
             await asyncio.sleep(timeout)

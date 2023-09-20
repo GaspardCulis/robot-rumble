@@ -35,15 +35,15 @@ if state == "quit":
 async def run_game(state: tuple[str, int]):
     ip = state[0]
     port = state[1]
-    connection : DatagramTransport
+    connection: DatagramTransport
+    player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
     if ip == "0.0.0.0":
         connection = await server.open_server(ServerCallback(), port)
     else:
-        connection = await client.connect_to_server(ClientCallback(), ip, port)
+        connection = await client.connect_to_server(ClientCallback(player), ip, port)
+    # NOTE !!! map MUST be created on both sides !
     planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
     planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
-
-    player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
 
     player.velocity = Vector2(0, 550)
     player.set_rotation(-90)
@@ -75,6 +75,7 @@ async def run_game(state: tuple[str, int]):
 
         mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
         mouse_buttons = pygame.mouse.get_pressed()
+        player.process_keys(pygame.key.get_pressed(), delta)
         player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
         last_mouse_buttons = mouse_buttons
 

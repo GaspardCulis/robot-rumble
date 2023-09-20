@@ -1,6 +1,5 @@
 from os import path
 
-import pygame.math
 from pygame import image, Vector2
 
 from network.converter import DataConverter
@@ -26,17 +25,18 @@ def make_bullet_from_number(bullet_type: int, *args) -> Bullet:
             return BlackHole(*args)
 
 
-def prepare_update() -> bytes:
+def prepare_update(player_id: int) -> bytes:
     output = bytearray()
     # Take up all the players, and save info
-    output.extend(DataConverter.write_varint(len(Player.all.sprites())))
+    output.extend(DataConverter.write_varint(len(Player.all.sprites()) - 1))
     p: Player
     for p in Player.all:
-        output.extend(DataConverter.write_varint(p.unique_id))
-        output.extend(DataConverter.write_vector_float(p.position))
-        output.extend(DataConverter.write_vector_float(p.velocity))
-        output.extend(DataConverter.write_float(p.rotation))
-        output.extend(DataConverter.write_float(p.percentage))
+        if p.unique_id != player_id:
+            output.extend(DataConverter.write_varint(p.unique_id))
+            output.extend(DataConverter.write_vector_float(p.position))
+            output.extend(DataConverter.write_vector_float(p.velocity))
+            output.extend(DataConverter.write_float(p.rotation))
+            output.extend(DataConverter.write_float(p.percentage))
 
     # Take all the bullets, and save info
     b: Bullet
@@ -72,6 +72,7 @@ def apply_update(data: bytes):
                 break
         data = data[skipped:]
         pos = DataConverter.parse_vector_float(data)
+        data = data[16:]
         if pl is None:
             pl = Player(pos, image.load(path.join(IMG_PATH, "player.png")))
             pl.remote = True
@@ -79,7 +80,6 @@ def apply_update(data: bytes):
         else:
             pl.remote = True  # TODO remove !!!!
             pl.new_position = pos
-        data = data[16:]
         pl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]
         pl.rotation = DataConverter.parse_float(data)
@@ -115,3 +115,36 @@ def apply_update(data: bytes):
         data = data[16:]
         bl.angle = DataConverter.parse_float(data)
         data = data[8:]
+
+
+def update_player() -> bytes:
+    output = bytearray()
+    p = list(Player.all.spritedict.keys())[0]
+    output.extend(DataConverter.write_varint(p.unique_id))
+    output.extend(DataConverter.write_vector_float(p.position))
+    output.extend(DataConverter.write_vector_float(p.velocity))
+    output.extend(DataConverter.write_float(p.rotation))
+    return bytes(output)  # TODO also transmit info about using weapons (on-click ? track your own bullets ??)
+
+
+def apply_player(data: bytes) -> None:
+    skipped, unique_id = DataConverter.parse_varint(data)
+    data = data[skipped:]
+    pl: Player | None = None
+
+    for p in Player.all:
+        if p.unique_id == unique_id:
+            pl = p
+            break
+    pos = DataConverter.parse_vector_float(data)
+    data = data[16:]
+    if pl is None:
+        pl = Player(pos, image.load(path.join(IMG_PATH, "player.png")))
+        pl.remote = True
+        pl.unique_id = unique_id
+    else:
+        pl.new_position = pos
+    pl.velocity = DataConverter.parse_vector_float(data)
+    data = data[16:]
+    pl.rotation = DataConverter.parse_float(data)
+    data = data[8:]

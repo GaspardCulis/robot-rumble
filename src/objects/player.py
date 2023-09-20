@@ -58,14 +58,12 @@ class Player(PhysicsObject, Sprite):
         target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
 
         short_angle = (target_angle - self.rotation) % 360
-        short_angle = 2 * short_angle % 360 - short_angle 
-
-        self.process_keys(pygame.key.get_pressed(), delta)
+        short_angle = 2 * short_angle % 360 - short_angle
         
         self.set_rotation(self.rotation + short_angle * delta * 6)
         if self.remote:
-            self.position = Vector2(pygame.math.lerp(self.position.x, self.new_position.x, delta * 60),
-                                    pygame.math.lerp(self.position.y, self.new_position.y, delta * 60))
+            self.position = Vector2(pygame.math.lerp(self.position.x, self.new_position.x, min(delta * 60, 1)),
+                                    pygame.math.lerp(self.position.y, self.new_position.y, min(delta * 60, 1)))
 
         self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD 
         if self.onground:

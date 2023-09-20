@@ -40,9 +40,12 @@
 # This packet is a NOOP except it resets the timeout timer
 # C<=>S 0x00 id 0x00
 
+# Server sending "welcome" info
+# C<-S 0x04 id player_id (varint)
+
 # IN PLAY STATE
-# C->S 0x04 id <DATA ABOUT PLAYER>
-# C<-S 0x05 id <ARRAY OF OBJECTS AND STATES>
+# C->S 0x05 id <DATA ABOUT PLAYER>
+# C<-S 0x06 id <ARRAY OF OBJECTS AND STATES>
 
 from typing import TypeAlias, Any
 import struct

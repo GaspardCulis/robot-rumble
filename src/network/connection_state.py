@@ -12,3 +12,4 @@ class ConnectionState:
     connected: bool = False
     timeout_task: Task = None
     keepalive_task: Task = None
+    player_id: int = 0
