@@ -2,6 +2,7 @@ import pygame
 from pygame import Surface
 from pygame.key import ScancodeWrapper
 import re
+import core.sound
 
 def home_screen(screen: Surface) -> (str, int):
     # Couleurs
@@ -23,6 +24,9 @@ def home_screen(screen: Surface) -> (str, int):
     bg = pygame.image.load("./assets/img/space_bg.png")
 
     bg = pygame.transform.scale(bg,screen.get_size())
+
+    # Musique de fond
+    core.sound.loop_song('title_screen')
 
     # Boutons
     start_button = pygame.Rect(screen.get_width()/2-BUTTON_WIDTH/2-SPACE_BETWEEN, screen.get_height()/2-25, BUTTON_WIDTH, BUTTON_HEIGHT)
