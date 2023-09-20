@@ -1,8 +1,10 @@
 from pygame import mixer
+from typing import Optional
 
 class Sound():
     # Dictionnaire de sons chargés
     all: dict[str, mixer.Sound]
+    instance: Optional['Sound'] = None
 
     # Initialiser le mixer
     def __init__(self):
@@ -14,9 +16,15 @@ class Sound():
         self.all.clear()
         mixer.quit()
 
+    @staticmethod
+    def get():
+        if Sound.instance is None:
+            Sound.instance = Sound()
+        return Sound.instance
+
     # Former le chemin relatif vers le fichier son auquel on souhaite accéder
     def get_snd_path(self, name):
-        return "asset/snd/{}.ogg".format(name)
+        return "assets/snd/{}.ogg".format(name)
 
     # Arrêter le morceau en cours
     def stop_music(self):
@@ -25,7 +33,7 @@ class Sound():
             mixer.music.unload()
 
     # Jouer un moceau indéfiniment
-    def loop_song(self, name):
+    def loop_music(self, name):
         self.stop_music()
         try:
             mixer.music.load(self.get_snd_path(name))
@@ -34,15 +42,15 @@ class Sound():
             pass
 
     # Charger un son dans la classe
-    def load_sound(self, name):
+    def load(self, name):
         try:
             self.all[name] = mixer.Sound(self.get_snd_path(name))
         except FileNotFoundError:
             pass
 
     # Jouer un son 
-    def play_sound(self, name):
-        if not name in self.all:
-            self.load_sound(name)
+    def play(self, name):
+        if name not in self.all:
+            self.load(name)
         self.all[name].play()
 
