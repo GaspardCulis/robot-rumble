@@ -1,7 +1,7 @@
 from pygame import Vector2
 from random import random
 
-from objects.bullet import Bullet
+from objects.gunbullet import GunBullet
 from objects.weapon import Weapon
 
 
@@ -14,6 +14,6 @@ class Shotgun(Weapon):
         if self.can_shoot():
             direction = (target - position).normalize()
             for a in range(-10, 10):
-                bullet = Bullet(position + Vector2(1, 0), direction)
+                bullet = GunBullet(position + Vector2(1, 0), target)
             return direction * self.recoil
         return Vector2(0)
