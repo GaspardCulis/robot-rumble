@@ -5,7 +5,7 @@ from core.collision import CircleShape, CollisionObject
 from core.gravity import PhysicsObject
 
 class Planet(PhysicsObject, Sprite):
-    all = Group()
+    all: Group = Group()
     
     def __init__(self, position: Vector2, radius: float, sprite: Surface):
         self.radius = radius

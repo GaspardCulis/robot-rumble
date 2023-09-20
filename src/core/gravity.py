@@ -3,9 +3,8 @@ import math
 
 G = 800
  
-physics_objects: list['PhysicsObject'] = []
-
 class PhysicsObject():
+    all_objects: list['PhysicsObject'] = []
     def __init__(self, mass: float, position: Vector2, passive: bool = False, static = False, **kw):
         super().__init__(**kw)
         # La masse de l'objet
@@ -18,14 +17,14 @@ class PhysicsObject():
         self.position = position
         self.velocity = Vector2(0, 0)
 
-        physics_objects.append(self)
+        PhysicsObject.all_objects.append(self)
 
     def kill(self):
-        physics_objects.remove(self)
+        PhysicsObject.all_objects.remove(self)
 
     def update_forces(self, delta: float):
         force = Vector2(0, 0)
-        for o in filter(lambda x : not (x.passive or x == self), physics_objects):
+        for o in filter(lambda x : not (x.passive or x == self), PhysicsObject.all_objects):
             distance = self.position.distance_squared_to(o.position)
             f = G * (self.mass * o.mass) / distance
             force += f * (o.position - self.position).normalize()
@@ -39,7 +38,7 @@ class PhysicsObject():
 
     @staticmethod
     def update_all(delta: float):
-        for o in physics_objects:
+        for o in PhysicsObject.all_objects:
             if not o.static:
                 o.update_forces(delta)
             o.check_bounds()

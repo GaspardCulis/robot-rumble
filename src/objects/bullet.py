@@ -34,7 +34,7 @@ class Bullet(PhysicsObject, Sprite):
 
     def kill(self):
         super().kill()
-        self.all.remove(self)
+        Bullet.all.remove(self)
 
     def update(self, delta: float):
         if self.velocity != Vector2(0, 0):

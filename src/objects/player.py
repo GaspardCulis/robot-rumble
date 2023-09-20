@@ -171,7 +171,6 @@ class Player(PhysicsObject, Sprite):
     def process_bullets(self):
         for bullet in pygame.sprite.spritecollide(self, Bullet.all, False):
             self.percentage += bullet.damage
-            print(self.percentage)
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation

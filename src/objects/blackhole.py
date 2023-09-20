@@ -39,11 +39,11 @@ class BlackHole(Bullet):
         self.target = target
         self.at_target = False
 
-        self.all.add(self)
+        BlackHole.all.add(self)
 
     def kill(self):
             super().kill()
-            self.all.remove(self)
+            BlackHole.all.remove(self)
 
     def update(self, delta) -> None:
         self.position += self.velocity * delta
