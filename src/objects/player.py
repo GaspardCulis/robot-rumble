@@ -22,7 +22,8 @@ class Player(PhysicsObject, Sprite):
         self.rotation = 0.0
         # Ranges from 0.0 to 1.0
         self.percentage = 0.0
-
+        self.lives = 3
+        self.spawnpoint = position
         self.original_image = transform.scale_by(sprite, PLAYER_HEIGHT/sprite.get_rect().height)
         self.image = transform.rotozoom(self.original_image, self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
@@ -39,8 +40,12 @@ class Player(PhysicsObject, Sprite):
         self.all.add(self)
 
     def kill(self):
-        super().kill()
-        self.all.remove(self)
+        if self.lives == 0:
+            super().kill()
+            self.all.remove(self)
+        else:
+            self.lives -= 1
+            self.position = self.spawnpoint
 
     def update(self, delta: float):
         # Rotate towards nearest planet
