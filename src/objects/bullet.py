@@ -33,7 +33,8 @@ class Bullet(PhysicsObject, Sprite):
         self.all.remove(self)
 
     def update(self):
-        self.angle = self.velocity.angle_to(Vector2(1, 0))
+        if self.velocity != Vector2(0, 0):
+            self.angle = self.velocity.angle_to(Vector2(1, 0))
         if self.image:
             self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
             self.image = pygame.transform.rotate(self.original_image, self.angle)
