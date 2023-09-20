@@ -8,6 +8,7 @@ from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
 from objects.minigun import Minigun
 from objects.planet import Planet
+from objects.shotgun import Shotgun
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
@@ -32,6 +33,7 @@ class Player(PhysicsObject, Sprite):
         self.input_velocity = Vector2(0)
 
         self.weapons = [
+            Shotgun(), 
             Minigun()
         ]
         self.selected_weapon_index = 0
