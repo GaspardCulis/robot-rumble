@@ -19,15 +19,22 @@ class Planet(PhysicsObject, Sprite):
 
         super().__init__(mass=mass, position=position, passive=False, static=True)
 
-        self.frames = list(map(
-            lambda x: transform.scale(x, Vector2(self.radius * 2)),
-            parse_spritesheet(
-                pg.image.load(
-                    path.join(PLANET_ASSETS_PATH, sprite_name)
-                ).convert_alpha(),
-                8, 25
-            )
-        ))
+        scale_multiplier = 2
+        if sprite_name.startswith("star"):
+            scale_multiplier *= 2
+
+        spritesheet = pg.image.load(path.join(PLANET_ASSETS_PATH, sprite_name)).convert_alpha()
+        ss_rect = spritesheet.get_rect()
+        if ss_rect.height == ss_rect.width: # Is square ?
+            self.frames = [pg.transform.scale(spritesheet, Vector2(self.radius * scale_multiplier))]
+        else:
+            self.frames = list(map(
+                lambda x: transform.scale(x, Vector2(self.radius * scale_multiplier)),
+                parse_spritesheet(
+                    spritesheet,
+                    8, 25
+                )
+            ))
         self.frame_index = 0
         self.last_frame_skip = monotonic()
         self.image = self.frames[self.frame_index]
