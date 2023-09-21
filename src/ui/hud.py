@@ -1,5 +1,5 @@
 import pygame
-from pygame import Surface, Vector2
+from pygame import Surface, Vector2, Color
 from pygame.sprite import Sprite
 
 from objects.player import Player
@@ -15,7 +15,7 @@ class Hud():
         self.police = pygame.font.Font("./assets/font/geom.TTF", 36)
         self.player = player
         self.spacing = 50
-        self.border_color = (255, 255, 255)
+        self.border_color = Color(255, 255, 255,0)
         self.weapon_img_path = "./assets/img/weapons/"
         self.surfaces = []
         for weapon in self.player.weapons:
@@ -31,7 +31,7 @@ class Hud():
             k += self.rect_width + self.spacing
 
         for weapon in self.player.weapons:
-            pygame.draw.rect(screen, self.border_color, (x, 10, self.rect_width, self.rect_height), 3)
+            pygame.draw.rect(screen, self.border_color, (x, 10, self.rect_width, self.rect_height), 3, 15)
 
             if self.player.weapons[self.player.selected_weapon_index] == weapon:
                 ammo_remaining = max(weapon.remaining_ammo, 0)
