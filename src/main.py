@@ -23,14 +23,14 @@ from ui import homescreen
 
 from core.sound import Sound
 
-SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
 BG_PATH = path.join(IMG_PATH, "backgrounds/")
 
 pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
+screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN, pygame.SCALED, vsync=1)
 pygame.display.set_caption('Game')
+SCREEN_SIZE = pygame.display.get_window_size()
 
 
 state = homescreen.home_screen(screen)
