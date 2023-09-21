@@ -47,6 +47,7 @@ async def run_game(state: tuple[str, int]):
     player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
     if ip == "0.0.0.0":
         connection = await server.open_server(ServerCallback(), port)
+        Bullet.is_server = True
     else:
         connection = await client.connect_to_server(ClientCallback(player), ip, port)
     # NOTE !!! map MUST be created on both sides !
@@ -112,7 +113,7 @@ async def run_game(state: tuple[str, int]):
         async def flip():
             pygame.display.flip()
         await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
-        print("FPS ", 1 / delta)
+        # print("FPS ", 1 / delta)
     connection.close()
     pygame.quit()
 

@@ -11,6 +11,8 @@ BULLET_SPEED = 1000
 
 class Bullet(PhysicsObject, Sprite):
     all: Group = Group()
+    to_sync: list['Bullet'] = []
+    is_server: bool = False
     max_id: list[int] = [0]
 
     def __init__(self, position: Vector2, target: Vector2, sprite: Surface | None, damage: float, spread: float = 0.1, speed: float = BULLET_SPEED):
@@ -30,6 +32,8 @@ class Bullet(PhysicsObject, Sprite):
 
         self.unique_id = self.max_id[0]
         self.max_id[0] += 1
+        if not Bullet.is_server:
+            Bullet.to_sync.append(self)
         Bullet.all.add(self)
 
     def kill(self):
