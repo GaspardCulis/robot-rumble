@@ -18,10 +18,13 @@ class Hud():
         self.player = player
         self.spacing = 50
         self.border_color = Color(255, 255, 255)
-        self.weapon_img_path = "./assets/img/weapons/"
         self.surfaces = []
         for weapon in self.player.weapons:
             self.surfaces.append(pygame.transform.scale(weapon.original_image, Vector2(150, 150)))
+
+        head_img = pygame.image.load("./assets/img/head.png").convert_alpha()
+        self.head = pygame.transform.scale(head_img, Vector2(50, 50))
+
 
 
 
@@ -48,3 +51,16 @@ class Hud():
                 screen.blit(ammo_text, (screen.get_width()-ammo_text.get_width(),screen.get_height()-ammo_text.get_height()))
 
             x += self.rect_width + self.spacing
+
+    def hp_hud(self, screen: Surface):
+
+        spacing = 0
+        for i in range(1,self.player.lives+1):
+            head_pos = pygame.Rect(10+spacing,screen.get_height()-55, 10,10)
+            screen.blit(self.head, head_pos)
+            spacing += self.head.get_width()+10
+
+        percent_text = self.police.render(": " + str(self.player.percentage) + "%", True, self.border_color)
+        screen.blit(percent_text, Vector2(spacing+30, screen.get_height()-40))
+
+        pass
