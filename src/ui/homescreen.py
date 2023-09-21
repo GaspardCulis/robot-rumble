@@ -106,6 +106,10 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
                     ip_pattern = r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
                     if re.match(ip_pattern, ip_text) and port_text.isdigit():
                         error_text = ""
+                        screen.blit(bg, (0, 0))  # Dessinez l'image de fond en haut à gauche (0, 0)
+                        text_title = titlePolice.render("LOADING...", True, YELLOW)
+                        screen.blit(text_title, (screen.get_width()/2 - text_title.get_width()/2,150))
+                        pygame.display.flip()
                         return ip_text, int(port_text)
                         # Ajoutez ici le code pour lancer le jeu
                     else:
