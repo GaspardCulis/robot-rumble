@@ -49,7 +49,10 @@ def prepare_update(player_id: int) -> bytes:
         bullet_type = get_number_from_bullet(b)
         output.extend(DataConverter.write_varint(bullet_type))
         output.extend(DataConverter.write_vector_float(b.position))
-        if bullet_type == 0x01:  # black hole
+        if bullet_type == 0x00:
+            b: GunBullet
+            output.extend(DataConverter.write_varint(b.owner_id))
+        elif bullet_type == 0x01:  # black hole
             b: BlackHole
             output.extend(DataConverter.write_float(b.scale))
         output.extend(DataConverter.write_vector_float(b.velocity))
@@ -107,8 +110,14 @@ def apply_update(data: bytes):
         data = data[skipped:]
         pos = DataConverter.parse_vector_float(data)
         data = data[16:]
+        args = [pos, Vector2()]
+        if bullet_type == 0x00:
+            skipped, owner_id = DataConverter.parse_varint(data)
+            data = data[skipped:]
+            args.append(owner_id)
+
         if bl is None:
-            bl = make_bullet_from_number(bullet_type, pos, Vector2())
+            bl = make_bullet_from_number(bullet_type, *args)
             bl.unique_id = unique_id
         else:
             bl.new_position = pos
