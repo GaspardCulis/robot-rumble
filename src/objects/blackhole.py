@@ -28,7 +28,7 @@ class BlackHole(Bullet):
         self.origin = position + Vector2(0)
 
         self.scale = 0.4
-        self.frames = parse_spritesheet(pg.image.load(BLACK_HOLE_SPRITESHEET), 2, 25)
+        self.frames = parse_spritesheet(pg.image.load(BLACK_HOLE_SPRITESHEET).convert(), 2, 25)
         self.frame_index = 0
         self.last_frame_skip = monotonic()
         

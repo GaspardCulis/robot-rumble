@@ -20,7 +20,7 @@ class Weapon(Sprite):
         self.remaining_ammo = ammo
         self.last_shot = 0.0
         self.reload_t = 0.0
-        self.original_image = pg.transform.scale_by(pg.image.load(path.join(ASSETS_DIR, sprite_name)), 2)
+        self.original_image = pg.transform.scale_by(pg.image.load(path.join(ASSETS_DIR, sprite_name)).convert_alpha(), 2)
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.owner.position).center)
         self.direction = 0.0

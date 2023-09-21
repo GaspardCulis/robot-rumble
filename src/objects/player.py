@@ -40,11 +40,11 @@ class Player(PhysicsObject, Sprite):
 
         self.frames_idle = list(map(
             lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
-            parse_spritesheet(pg.image.load("assets/img/player/player_idle.png"), 3, 3, 7)
+            parse_spritesheet(pg.image.load("assets/img/player/player_idle.png").convert_alpha(), 3, 3, 7)
         ))
         self.frames_run = list(map(
             lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
-            parse_spritesheet(pg.image.load("assets/img/player/player_run.png"), 3, 3, 7)
+            parse_spritesheet(pg.image.load("assets/img/player/player_run.png").convert_alpha(), 3, 3, 7)
         ))
 
         self.frames = self.frames_idle
@@ -185,7 +185,7 @@ class Player(PhysicsObject, Sprite):
         for bullet in pg.sprite.spritecollide(self, GunBullet.all, False):
             if bullet.owner_id != self.unique_id:
                 self.percentage += bullet.damage
-                self.velocity += Vector2(1, 0).rotate(bullet.angle) * bullet.kb
+                self.velocity += Vector2(1, 0).rotate(-bullet.angle) * bullet.kb
                 bullet.kill()
 
     def set_rotation(self, rotation: float):
