@@ -16,8 +16,10 @@ from objects.bullet import Bullet
 
 from core.gravity import PhysicsObject
 from objects.weapon import Weapon
+from ui.hud import Hud
 from ui import homescreen
-from ui import hud
+
+from core.sound import Sound
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -33,6 +35,7 @@ if state == "quit":
     pygame.quit()
     exit(0)
 
+Sound.get().loop_music('in_game')
 
 async def run_game(state: tuple[str, int]):
     ip = state[0]
@@ -51,6 +54,9 @@ async def run_game(state: tuple[str, int]):
     player.set_rotation(-90)
     camera_pos = Vector2()
     camera_zoom = 1
+
+    hud = Hud(player)
+
 
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
@@ -77,7 +83,6 @@ async def run_game(state: tuple[str, int]):
         Bullet.all.update(delta)
         Weapon.all.update(mouse_pos)
 
-        screen.fill((255,255,255))
         screen.blit(bg, (0, 0))
 
 
@@ -87,8 +92,7 @@ async def run_game(state: tuple[str, int]):
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
 
-        hud.weapon_hud(screen,player)
-
+        hud.weapon_hud(screen)
 
         dest = -(player.position - Vector2(SCREEN_SIZE)/2)
         # add mouse deviation
@@ -101,7 +105,7 @@ async def run_game(state: tuple[str, int]):
         async def flip():
             pygame.display.flip()
         await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
-        # print("FPS ", 1 / delta)
+        print("FPS ", 1 / delta)
     connection.close()
     pygame.quit()
 

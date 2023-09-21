@@ -5,29 +5,37 @@ from pygame.sprite import Sprite
 from objects.player import Player
 
 
-
-def weapon_hud(screen: Surface, player: Player):
-
-    rect_width = 100
-    rect_height = 100
-    police = pygame.font.Font("./assets/font/geom.TTF", 36)
-
-    spacing = 50
-    border_color = (255, 255, 255)
-    weapon_img_path = "./assets/img/weapons/"
-
-    x = 10
-    for weapon in player.weapons:
-        pygame.draw.rect(screen, border_color, (x, 10, rect_width, rect_height), 3)
-
-        surface = pygame.image.load(weapon_img_path+(weapon.__class__.__name__+".png").lower())
-        surface = pygame.transform.scale(surface, Vector2(150, 150))
-        screen.blit(surface, Vector2(x-surface.get_width()/4, 0-surface.get_height()/6))
+class Hud():
 
 
-        if player.weapons[player.selected_weapon_index] == weapon:
-            ammo_remaining = max(weapon.remaining_ammo, 0)
-            ammo_text = police.render(str(ammo_remaining) + "/" + str(weapon.ammo), True, (255,255,255))
-            screen.blit(ammo_text, (screen.get_width()-ammo_text.get_width(),screen.get_height()-ammo_text.get_height()))
+    def __init__(self, player: Player):
 
-        x += rect_width + spacing
+        self.rect_width = 100
+        self.rect_height = 100
+        self.police = pygame.font.Font("./assets/font/geom.TTF", 36)
+        self.player = player
+        self.spacing = 50
+        self.border_color = (255, 255, 255)
+        self.weapon_img_path = "./assets/img/weapons/"
+        self.surfaces = []
+        for weapon in self.player.weapons:
+            self.surfaces.append(pygame.transform.scale(weapon.original_image, Vector2(150, 150)))
+
+
+
+    def weapon_hud(self, screen: Surface):
+        x = 10
+        k = 10
+        for surface in self.surfaces:
+            screen.blit(surface, Vector2(k-surface.get_width()/4, 0-surface.get_height()/6))
+            k += self.rect_width + self.spacing
+
+        for weapon in self.player.weapons:
+            pygame.draw.rect(screen, self.border_color, (x, 10, self.rect_width, self.rect_height), 3)
+
+            if self.player.weapons[self.player.selected_weapon_index] == weapon:
+                ammo_remaining = max(weapon.remaining_ammo, 0)
+                ammo_text = self.police.render(str(ammo_remaining) + "/" + str(weapon.ammo), True, (255,255,255))
+                screen.blit(ammo_text, (screen.get_width()-ammo_text.get_width(),screen.get_height()-ammo_text.get_height()))
+
+            x += self.rect_width + self.spacing
