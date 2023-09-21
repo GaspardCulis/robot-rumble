@@ -37,6 +37,7 @@ def prepare_update(player_id: int) -> bytes:
             output.append_vector_float(p.position)
             output.append_vector_float(p.velocity)
             output.append_float(p.rotation)
+            output.append_boolean(p.isDead)
             output.append_float(p.percentage)
             output.append_varint(p.selected_weapon_index)
             output.append_float(p.weapons[p.selected_weapon_index].direction)
@@ -73,6 +74,7 @@ def apply_update(data: bytes):
     for _ in range(nb_players):  # TODO handle player being disconnected
         pl = read_player(buffer)
         valid_ids.add(pl.unique_id)
+        pl.isDead = buffer.read_boolean()
         pl.percentage = buffer.read_float()
         pl.selected_weapon_index = buffer.read_varint()
         pl.weapons[pl.selected_weapon_index].direction = buffer.read_float()

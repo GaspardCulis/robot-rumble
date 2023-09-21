@@ -7,7 +7,7 @@ from core.gravity import PhysicsObject
 from objects.planet import Planet
 
 BULLET_MASS = 5
-BULLET_SPEED = 1000
+BULLET_SPEED = 1500
 
 class Bullet(PhysicsObject, Sprite):
     all: Group = Group()

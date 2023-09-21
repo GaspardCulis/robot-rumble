@@ -10,7 +10,7 @@ from core.sound import Sound
 
 class Shotgun(Weapon):
     def __init__(self, owner) -> None:
-        super().__init__(owner, 500, 0.0, 1, 2, "shotgun.png")
+        super().__init__(owner, 800, 0.0, 1, 2, "shotgun.png")
         
     def shoot(self, position: Vector2, target: Vector2) -> Vector2:
         if self.can_shoot():

@@ -18,6 +18,7 @@ from objects.blackhole import BlackHole
 from core.sound import Sound
 from core.spritesheets import parse_spritesheet
 from objects.weapon import Weapon
+import network
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
@@ -69,6 +70,7 @@ class Player(PhysicsObject, Sprite):
         self.all.add(self)
 
     def kill(self):
+        self.lives -= 1
         if self.lives == 0:
             super().kill()
             self.all.remove(self)
@@ -76,7 +78,6 @@ class Player(PhysicsObject, Sprite):
         else:
             print("dead")
             self.respawn_on_random_planet()
-            self.lives -= 1
             self.percentage = 0
         Sound.get().play('ejection')
 
@@ -118,8 +119,8 @@ class Player(PhysicsObject, Sprite):
         
         self.set_rotation(self.rotation + short_angle * delta * 6)
         if self.remote:
-            self.position = Vector2(pg.math.lerp(self.position.x, self.new_position.x, min(delta * 60, 1)),
-                                    pg.math.lerp(self.position.y, self.new_position.y, min(delta * 60, 1)))
+            self.position = Vector2(pg.math.lerp(self.position.x, self.new_position.x, min(delta * network.converter.TICK_RATE, 1)),
+                                    pg.math.lerp(self.position.y, self.new_position.y, min(delta * network.converter.TICK_RATE, 1)))
 
         self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
         if self.onground:
@@ -177,6 +178,8 @@ class Player(PhysicsObject, Sprite):
         self.position = clip_position
 
     def handle_click(self, buttons: Tuple[bool, bool, bool], last_buttons: Tuple[bool, bool, bool], position: Vector2):
+        if self.isDead:
+            return
         # Shooting
         if buttons[2] and not last_buttons[2]:
             self.selected_weapon_index = (self.selected_weapon_index + 1) % len(self.weapons)

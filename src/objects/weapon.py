@@ -66,7 +66,7 @@ class Weapon(Sprite):
 
 
     def is_selected(self) -> bool:
-        return self.owner.weapons[self.owner.selected_weapon_index] == self
+        return not self.owner.isDead and self.owner.weapons[self.owner.selected_weapon_index] == self
 
     def get_bullet_spawnpoint(self) -> Vector2:
         

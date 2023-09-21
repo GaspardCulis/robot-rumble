@@ -19,7 +19,7 @@ def credits_screen(screen: Surface):
         "CREDIT 3",
     ]
 
-    bg = pygame.image.load("./assets/img/space_bg_1.png")
+    bg = pygame.image.load("./assets/img/backgrounds/space_bg_1.png")
     bg = pygame.transform.scale(bg,screen.get_size())
 
 

@@ -6,10 +6,10 @@ from typing import Any
 from network import serializer
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import DataConverter, Address
+from network.converter import DataConverter, Address, TICK_RATE
 
 
-async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> DatagramTransport:
+async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> tuple[DatagramTransport, 'ClientProtocol']:
     loop = asyncio.get_running_loop()
     loop.set_debug(True)
     transport: DatagramTransport
@@ -17,7 +17,7 @@ async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int
         lambda: ClientProtocol(callback, (ip, port)),
         remote_addr=(ip, port))
     transport.sendto(b'\x01' + DataConverter.write_varint(0), None)
-    return transport
+    return transport, protocol
 
 
 class ClientProtocol(asyncio.DatagramProtocol):
@@ -25,12 +25,14 @@ class ClientProtocol(asyncio.DatagramProtocol):
     transport: asyncio.DatagramTransport
     callback: Callback
     state: ConnectionState | None
+    on_connected: asyncio.Event
 
     def __init__(self, callback: Callback, addr: Address):
         self.update_task = None
         self.state = None
         self.callback = callback
         self.addr = addr
+        self.on_connected = asyncio.Event()
 
     def connection_made(self, transport: asyncio.DatagramTransport):
         print("client started")
@@ -68,7 +70,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
+            await asyncio.sleep(1 / TICK_RATE - delta)  # tps target, if time to sleep is negative it skips
 
     def update_current_state(self, data: bytes):
         serializer.apply_update(data)
@@ -103,6 +105,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
                 case 0x04:
                     self.callback.welcome_data(data, state, state.addr)
                     self.state.connected = True
+                    self.on_connected.set()
                 case 0x06:
                     if self.state.connected:
                         self.update_current_state(data)
