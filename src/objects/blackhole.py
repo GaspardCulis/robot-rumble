@@ -32,11 +32,12 @@ class BlackHole(Bullet):
 
         self.scale = 0.4
         self.frames = SpriteSheet(BLACK_HOLE_SPRITESHEET, 2, 25, 0.05)
-        
+
         self.image = pg.transform.scale_by(self.frames.get_frame(), self.scale)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
         self.radius = self.rect.height/2
         self.is_active = False
+        self.spawn_time = 100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
         self.target = target
         self.at_target = False
         Sound.get().loop_sound_in_channel(BlackHole.snd_name)
@@ -51,12 +52,12 @@ class BlackHole(Bullet):
 
     def update(self, delta) -> None:
         self.position += self.velocity * delta
-        
+
         if not self.at_target:
             if (self.origin - self.position).length() >= (self.origin - self.target).length() :
                 self.at_target = True
                 self.velocity = Vector2(0)
-        elif self.scale < 2 and self.is_active == False:
+        elif self.scale < 2 and not self.is_active:
             self.scale = min(delta*2 + self.scale, 2)
             if self.scale == 2:
                 self.is_active = True
