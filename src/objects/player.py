@@ -130,11 +130,11 @@ class Player(PhysicsObject, Sprite):
         """
 
         if keys[constants.K_d]:
-            self.input_velocity.x = lerp(self.input_velocity.x, PLAYER_VELOCITY, delta * 2)
+            self.input_velocity.x = lerp(self.input_velocity.x, PLAYER_VELOCITY, min(delta * 2, 1))
         if keys[constants.K_q]:
-            self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, delta * 2)
+            self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, min(delta * 2, 1))
         if not (keys[constants.K_d] or keys[constants.K_q]):
-            self.input_velocity.x = lerp(self.input_velocity.x, 0, delta * 6)
+            self.input_velocity.x = lerp(self.input_velocity.x, 0, min(delta * 6, 1))
         if keys[constants.K_z] and self.onground:
             speed = Vector2(0, -1).rotate(-self.rotation) * 600
             self.velocity += speed
@@ -142,9 +142,9 @@ class Player(PhysicsObject, Sprite):
             self.jumped = True
             Sound.get().play('jump')
         if keys[constants.K_s]:
-            self.input_velocity.y = lerp(self.input_velocity.y, PLAYER_VELOCITY * 0.75, delta*4)
+            self.input_velocity.y = lerp(self.input_velocity.y, PLAYER_VELOCITY * 0.75, min(delta*4, 1))
         else:
-            self.input_velocity.y = lerp(self.input_velocity.y, 0, delta * 10)
+            self.input_velocity.y = lerp(self.input_velocity.y, 0, min(delta * 10, 1))
 
         # Update position
         self.position += self.input_velocity.rotate(-self.rotation) * delta
