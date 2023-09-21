@@ -190,5 +190,5 @@ class Player(PhysicsObject, Sprite):
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
-        self.image = pg.transform.rotate(self.image, self.rotation)
+        self.image = pg.transform.rotate(self.frames[self.frame_index], self.rotation)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
