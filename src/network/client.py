@@ -55,7 +55,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
             self.state.keepalive_task.cancel()
         if self.state.timeout_task is not None:
             self.state.timeout_task.cancel()
-        self.callback.on_disconnect(self.state.addr)  # TODO send to the server that the client is closing
+        self.callback.on_disconnect(self.state, self.state.addr)  # TODO send to the server that the client is closing
 
     async def send_update_data(self):
         while True:
@@ -68,7 +68,6 @@ class ClientProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            old_time = new_time
             await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
 
     def update_current_state(self, data: bytes):

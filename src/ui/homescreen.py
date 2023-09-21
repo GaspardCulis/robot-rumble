@@ -78,7 +78,7 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
     # Entrées pour l'IP et le port
     ip_text = ""
     port_text = ""
-    IP_WIDTH = 250
+    IP_WIDTH = 300
     PORT_WIDTH = 150
     ip_rect = pygame.Rect(screen.get_width()/2-300, screen.get_height()/2+200, IP_WIDTH, 40)
     port_rect = pygame.Rect(screen.get_width()/2+100, screen.get_height()/2+200, PORT_WIDTH, 40)

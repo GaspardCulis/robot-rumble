@@ -24,5 +24,5 @@ class ServerCallback(Callback):
     def welcome_data(self, data: bytes, state: ConnectionState, addr: Address):
         pass
 
-    def on_disconnect(self, addr: Address):
+    def on_disconnect(self, state: ConnectionState, addr: Address):
         pass

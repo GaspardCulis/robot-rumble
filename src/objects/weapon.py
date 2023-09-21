@@ -57,8 +57,9 @@ class Weapon(Sprite):
             return False
 
     def update(self, mouse_position: Vector2):
-        direction_vector = (mouse_position - self.owner.position).normalize()
-        self.direction = Vector2(1, 0).angle_to(direction_vector)
+        if not self.owner.remote:
+            direction_vector = (mouse_position - self.owner.position).normalize()
+            self.direction = Vector2(1, 0).angle_to(direction_vector)
         self.image = pg.transform.rotate(self.original_image, -self.direction)
         center = self.owner.position + WEAPON_OFFSET.rotate(-self.owner.rotation)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = center).center)

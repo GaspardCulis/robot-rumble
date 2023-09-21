@@ -15,5 +15,5 @@ class Callback(ABC):
         pass  # Called when you get the first data about someone
 
     @abstractmethod
-    def on_disconnect(self, addr: Address):
+    def on_disconnect(self, state: ConnectionState, addr: Address):
         pass  # Called when a client is disconnected / you are disconnected from the server

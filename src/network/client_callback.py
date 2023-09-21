@@ -18,5 +18,5 @@ class ClientCallback(Callback):
         print("I am player id :", unique_id)
         self.player.unique_id = unique_id
 
-    def on_disconnect(self, addr: Address):
+    def on_disconnect(self, state: ConnectionState, addr: Address):
         pass

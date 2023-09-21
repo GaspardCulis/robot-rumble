@@ -37,6 +37,8 @@ def prepare_update(player_id: int) -> bytes:
             output.extend(DataConverter.write_vector_float(p.velocity))
             output.extend(DataConverter.write_float(p.rotation))
             output.extend(DataConverter.write_float(p.percentage))
+            output.extend(DataConverter.write_varint(p.selected_weapon_index))
+            output.extend(DataConverter.write_float(p.weapons[p.selected_weapon_index].direction))
 
     # Take all the bullets, and save info
     b: Bullet
@@ -78,13 +80,16 @@ def apply_update(data: bytes):
             pl.remote = True
             pl.unique_id = unique_id
         else:
-            pl.remote = True  # TODO remove !!!!
             pl.new_position = pos
         pl.velocity = DataConverter.parse_vector_float(data)
         data = data[16:]
         pl.rotation = DataConverter.parse_float(data)
         data = data[8:]
         pl.percentage = DataConverter.parse_float(data)
+        data = data[8:]
+        skipped, pl.selected_weapon_index = DataConverter.parse_varint(data)
+        data = data[skipped:]
+        pl.weapons[pl.selected_weapon_index].direction = DataConverter.parse_float(data)
         data = data[8:]
 
     skipped, nb_bullets = DataConverter.parse_varlong(data)
@@ -119,11 +124,13 @@ def apply_update(data: bytes):
 
 def update_player() -> bytes:
     output = bytearray()
-    p = list(Player.all.spritedict.keys())[0]
+    p: Player = list(Player.all.spritedict.keys())[0]
     output.extend(DataConverter.write_varint(p.unique_id))
     output.extend(DataConverter.write_vector_float(p.position))
     output.extend(DataConverter.write_vector_float(p.velocity))
     output.extend(DataConverter.write_float(p.rotation))
+    output.extend(DataConverter.write_varint(p.selected_weapon_index))
+    output.extend(DataConverter.write_float(p.weapons[p.selected_weapon_index].direction))
     return bytes(output)  # TODO also transmit info about using weapons (on-click ? track your own bullets ??)
 
 
@@ -147,4 +154,9 @@ def apply_player(data: bytes) -> None:
     pl.velocity = DataConverter.parse_vector_float(data)
     data = data[16:]
     pl.rotation = DataConverter.parse_float(data)
+    data = data[8:]
+    skipped, weapon_index = DataConverter.parse_varint(data)
+    data = data[skipped:]
+    pl.selected_weapon_index = weapon_index
+    pl.weapons[weapon_index].direction = DataConverter.parse_float(data)
     data = data[8:]

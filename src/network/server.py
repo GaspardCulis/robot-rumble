@@ -50,7 +50,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
                 state.keepalive_task.cancel()
             if state.timeout_task is not None:
                 state.timeout_task.cancel()
-            self.callback.on_disconnect(state.addr)  # TODO send to the clients that server is closing
+            self.callback.on_disconnect(state, state.addr)  # TODO send to the clients that server is closing
 
     def update_player(self, data):
         serializer.apply_player(data)
@@ -73,7 +73,6 @@ class ServerProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            old_time = new_time
             await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
 
     async def handle_client_data(self, data: bytes, state: ConnectionState):
@@ -114,7 +113,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
             state.connected = False
             if state.keepalive_task is not None:
                 state.keepalive_task.cancel()
-            self.callback.on_disconnect(state.addr)
+            self.callback.on_disconnect(state, state.addr)
             self.clients.pop(state.addr)
 
         state.timeout_task = asyncio.create_task(cancel_for_timeout())
