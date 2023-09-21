@@ -37,6 +37,7 @@ class Player(PhysicsObject, Sprite):
         # Ranges from 0.0 to 100.0
         self.percentage = 0.0
         self.lives = 3
+        self.isDead = False
 
         self.frames_idle = list(map(
             lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
@@ -71,6 +72,7 @@ class Player(PhysicsObject, Sprite):
         if self.lives == 0:
             super().kill()
             self.all.remove(self)
+            self.isDead = True
         else:
             print("dead")
             self.respawn_on_random_planet()
