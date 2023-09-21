@@ -33,8 +33,7 @@ class PhysicsObject():
         self.position += self.velocity * delta
 
     def check_bounds(self):
-        return
-        if self.position.x > 3000 or self.position.x < -3000 or self.position.y > 3000 or self.position.y < -3000:
+        if self.position.x > 5000 or self.position.x < -5000 or self.position.y > 5000 or self.position.y < -5000:
             self.kill()
 
     @staticmethod

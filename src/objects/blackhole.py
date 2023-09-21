@@ -38,10 +38,9 @@ class BlackHole(Bullet):
         self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
         self.radius = self.rect.height/2
-
+        self.is_active = False
         self.target = target
         self.at_target = False
-
         Sound.get().loop_sound_in_channel(BlackHole.snd_name)
 
         BlackHole.all.add(self)
@@ -55,21 +54,30 @@ class BlackHole(Bullet):
     def update(self, delta) -> None:
         self.position += self.velocity * delta
         
+
         if not self.at_target:
             if (self.origin - self.position).length() >= (self.origin - self.target).length() :
                 self.at_target = True
                 self.velocity = Vector2(0)
-        elif self.scale < 2:
+        elif self.scale < 2 and self.is_active == False:
             self.scale = min(delta + self.scale, 2)
+            if self.scale == 2:
+                self.is_active = True
+                self.spawn_time = monotonic()
+        elif monotonic() - self.spawn_time >= 10:
+            self.scale = max(self.scale - delta, 0)
+            if self.scale <= 0:
+                self.kill()
         self.mass = BLACK_HOLE_MASS * (self.scale - 0.4)/1.6  # scale might be updated in network
 
         if monotonic() - self.last_frame_skip > 0.05:
             self.frame_index = (self.frame_index + 1) % len(self.frames)
             self.last_frame_skip = monotonic()
-        
+
         self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
 
         self.original_image = self.image
         super().update(delta)
 
         self.rect = self.image.get_rect(center=self.position)
+

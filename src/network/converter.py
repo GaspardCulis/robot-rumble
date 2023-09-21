@@ -52,6 +52,9 @@ import struct
 from pygame import Vector2
 
 Address: TypeAlias = tuple[str | Any, int]
+# How many times by second does the server send updates ?
+# MUST BE THE SAME ON SERVER AND CLIENT !!!!!
+TICK_RATE = 128
 
 
 class DataBuffer:

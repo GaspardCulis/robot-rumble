@@ -74,7 +74,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
+            await asyncio.sleep(1 / TICK_RATE - delta)  # tps target, if time to sleep is negative it skips
 
     def update_current_state(self, data: bytes):
         serializer.apply_update(data)

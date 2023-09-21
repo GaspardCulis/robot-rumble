@@ -76,7 +76,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
+            await asyncio.sleep(1 / TICK_RATE - delta)  # tps target, if time to sleep is negative it skips
 
     async def handle_client_data(self, data: bytes, state: ConnectionState):
         if state.timeout_task is not None:
