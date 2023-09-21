@@ -101,7 +101,7 @@ async def run_game(state: tuple[str, int]):
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
 
         hud.weapon_hud(screen)
-
+        hud.hp_hud(screen)
         dest = -(player.position - Vector2(SCREEN_SIZE)/2)
         # add mouse deviation
         dest.x += (pygame.mouse.get_pos()[0] / SCREEN_SIZE[0] - 0.5) * -500
