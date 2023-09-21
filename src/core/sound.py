@@ -4,16 +4,19 @@ from typing import Optional
 class Sound():
     # Dictionnaire de sons chargés
     all: dict[str, mixer.Sound]
+    channels: dict[str, mixer.Channel]
     instance: Optional['Sound'] = None
 
     # Initialiser le mixer
     def __init__(self):
         mixer.init()
-        self.all = {}
+        mixer.set_num_channels(64)
+        Sound.all = {}
+        Sound.channels = {}
 
     # Supprimer tous les sons de la classe et quitter le mixer
     def __del__(self):
-        self.all.clear()
+        Sound.all.clear()
         mixer.quit()
 
     @staticmethod
@@ -44,13 +47,26 @@ class Sound():
     # Charger un son dans la classe
     def load(self, name):
         try:
-            self.all[name] = mixer.Sound(self.get_snd_path(name))
+            Sound.all[name] = mixer.Sound(self.get_snd_path(name))
         except FileNotFoundError:
             pass
 
     # Jouer un son 
     def play(self, name):
-        if name not in self.all:
+        if name not in Sound.all:
             self.load(name)
-        self.all[name].play()
+        Sound.all[name].play()
+
+    def add_channel(self, name):
+        if name not in Sound.channels:
+            Sound.channels[name] = mixer.Channel(len(Sound.channels))
+
+    def loop_sound_in_channel(self, name):
+        self.load(name)
+        self.add_channel(name)
+        Sound.channels[name].play(Sound.all[name], -1)
+
+    def stop_channel(self, name):
+        if name in Sound.channels and Sound.channels[name].get_busy():
+            Sound.channels[name].stop()
 

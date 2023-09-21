@@ -5,6 +5,7 @@ from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
 from core.spritesheets import parse_spritesheet
 from objects.bullet import Bullet
+from core.sound import Sound
 
 BLACK_HOLE_MASS = 100000
 BLACK_HOLE_SPEED = 300
@@ -12,6 +13,8 @@ BLACK_HOLE_SPRITESHEET = "assets/img/black_hole.png"
 
 class BlackHole(Bullet):
     all: Group = Group()
+    snd_name: str = 'black_hole'
+
     def __init__(self, position: Vector2, target: Vector2):
         super().__init__(
             position=position,
@@ -39,11 +42,15 @@ class BlackHole(Bullet):
         self.target = target
         self.at_target = False
 
+        Sound.get().loop_sound_in_channel(BlackHole.snd_name)
+
         BlackHole.all.add(self)
 
     def kill(self):
             super().kill()
             BlackHole.all.remove(self)
+            if not bool(BlackHole.all):
+                Sound.get().stop_channel(BlackHole.snd_name)
 
     def update(self, delta) -> None:
         self.position += self.velocity * delta
