@@ -2,7 +2,7 @@ import pygame
 from pygame import Surface, Vector2
 from pygame.sprite import Sprite
 
-from src.objects.player import Player
+from objects.player import Player
 
 
 
