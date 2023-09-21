@@ -1,3 +1,4 @@
+from time import monotonic
 from typing import Tuple
 from pygame import Rect, Surface, Vector2, constants, transform
 from pygame.math import lerp
@@ -51,6 +52,7 @@ class Player(PhysicsObject, Sprite):
 
         self.frames = self.frames_idle
         self.frame_index = 0
+        self.last_frame_skip = monotonic()
       
         self.image = transform.rotozoom(self.frames[self.frame_index], self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
@@ -109,6 +111,12 @@ class Player(PhysicsObject, Sprite):
 
 
     def update(self, delta: float):
+        # Update frames
+        if monotonic() - self.last_frame_skip > 0.1:
+            self.frame_index = (self.frame_index + 1) % len(self.frames)
+            self.image = self.frames[self.frame_index]
+            self.last_frame_skip = monotonic()
+            
         # Rotate towards nearest planet
         nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_to(self.position) - p.radius)[0]
         target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
@@ -116,7 +124,6 @@ class Player(PhysicsObject, Sprite):
         short_angle = (target_angle - self.rotation) % 360
         short_angle = 2 * short_angle % 360 - short_angle
 
-        
         self.set_rotation(self.rotation + short_angle * delta * 6)
         if self.remote:
             self.position = Vector2(pg.math.lerp(self.position.x, self.new_position.x, min(delta * network.converter.TICK_RATE, 1)),
@@ -127,6 +134,7 @@ class Player(PhysicsObject, Sprite):
             self.process_collision(nearest_planet, delta)
 
         self.process_bullets()
+
 
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
@@ -139,6 +147,9 @@ class Player(PhysicsObject, Sprite):
             self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, min(delta * 2, 1))
         if not (keys[constants.K_d] or keys[constants.K_q]):
             self.input_velocity.x = lerp(self.input_velocity.x, 0, min(delta * 6, 1))
+            self.frames = self.frames_idle
+        elif self.onground:
+            self.frames = self.frames_run
         if keys[constants.K_z] and self.onground:
             speed = Vector2(0, -1).rotate(-self.rotation) * 600
             self.velocity += speed
