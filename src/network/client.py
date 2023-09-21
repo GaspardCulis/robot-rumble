@@ -11,7 +11,6 @@ from network.converter import DataConverter, Address, TICK_RATE
 
 async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> tuple[DatagramTransport, 'ClientProtocol']:
     loop = asyncio.get_running_loop()
-    loop.set_debug(True)
     transport: DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ClientProtocol(callback, (ip, port)),

@@ -11,7 +11,6 @@ from network.callback import Callback
 
 async def open_server(callback: Callback, port: int = 25565) -> tuple[DatagramTransport, 'ServerProtocol']:
     loop = asyncio.get_running_loop()
-    loop.set_debug(True)
     transport: DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ServerProtocol(callback),
