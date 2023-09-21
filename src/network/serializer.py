@@ -1,8 +1,7 @@
 from os import path
 
-from pygame import image, Vector2
+from pygame import Vector2
 
-from core.gravity import PhysicsObject
 from network.converter import DataBuffer
 from objects.blackhole import BlackHole
 from objects.gunbullet import GunBullet

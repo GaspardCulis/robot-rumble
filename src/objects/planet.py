@@ -1,12 +1,8 @@
 import math
 from os import path
-from time import monotonic
-import pygame as pg
-from pygame import Surface, Vector2, image, Rect, transform
-from pygame.sprite import Sprite, collide_circle, Group
-from core.collision import CircleShape, CollisionObject
+from pygame import Vector2
+from pygame.sprite import Sprite, Group
 from core.gravity import PhysicsObject
-from core.imageloader import ImageLoader
 from core.spritesheets import SpriteSheet
 
 PLANET_ASSETS_PATH = "assets/img/planet"

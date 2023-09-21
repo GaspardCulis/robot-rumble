@@ -1,12 +1,8 @@
-import pygame
 from pygame import Vector2
-from pygame.sprite import Group, Sprite
-from random import random
+from pygame.sprite import Group
 
-from core.gravity import PhysicsObject
 from core.imageloader import ImageLoader
 from objects.bullet import Bullet
-from objects.planet import Planet
 
 BULLET_KB = 60
 

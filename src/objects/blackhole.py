@@ -1,8 +1,7 @@
 from time import monotonic
 from pygame import Vector2
 import pygame as pg
-from pygame.sprite import Group, Sprite
-from core.gravity import PhysicsObject
+from pygame.sprite import Group
 from core.spritesheets import SpriteSheet
 from objects.bullet import Bullet
 from core.sound import Sound

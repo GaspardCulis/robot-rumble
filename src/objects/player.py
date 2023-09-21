@@ -1,15 +1,11 @@
-from time import monotonic
 from typing import Tuple
-from pygame import Rect, Surface, Vector2, constants, transform
+from pygame import Vector2, constants, transform
 from pygame.math import lerp
 import pygame as pg
 import math
-from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
-from core.imageloader import ImageLoader
-from objects.bullet import Bullet
 from objects.gunbullet import GunBullet
 from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
@@ -193,7 +189,7 @@ class Player(PhysicsObject, Sprite):
             self.selected_weapon_index = (self.selected_weapon_index + 1) % len(self.weapons)
 
         if buttons[0]:
-            self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
+            self.velocity -= self.weapons[self.selected_weapon_index].shoot(position)
 
     def process_bullets(self):
         for bullet in pg.sprite.spritecollide(self, GunBullet.all, False):

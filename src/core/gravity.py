@@ -1,5 +1,4 @@
 from pygame import Vector2
-import math
 
 G = 800
  

@@ -2,7 +2,6 @@ from time import monotonic
 
 import pygame
 from pygame import Surface, Vector2, Color
-from pygame.sprite import Sprite
 from core.imageloader import ImageLoader
 
 from objects.player import Player

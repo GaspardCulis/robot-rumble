@@ -1,7 +1,6 @@
 import asyncio
 from asyncio import Task, DatagramTransport
 from time import monotonic
-from typing import Tuple
 
 from network import serializer
 from network.connection_state import ConnectionState

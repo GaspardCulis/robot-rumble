@@ -4,7 +4,7 @@ import random
 from asyncio import DatagramTransport
 from os import path
 import pygame
-from pygame import Color, Rect, Vector2, image
+from pygame import Vector2
 from time import monotonic
 
 from core.camera import Camera

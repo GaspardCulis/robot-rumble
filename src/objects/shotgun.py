@@ -1,7 +1,4 @@
 from pygame import Vector2
-from random import random
-
-from pygame.sprite import Sprite
 
 from objects.gunbullet import GunBullet
 from objects.weapon import Weapon
@@ -13,11 +10,13 @@ class Shotgun(Weapon):
         super().__init__(owner, 800, 0.0, 1, 2, "shotgun.png")
         self.reload_snd = 'reload_shotgun'
         
-    def shoot(self, position: Vector2, target: Vector2) -> Vector2:
+    def shoot(self, target: Vector2) -> Vector2:
         if self.can_shoot():
-            direction = (target - position).normalize()
             Sound.get().play('shotgun')
+            center_bullet = None
             for a in range(-10, 10):
                 bullet = GunBullet(self.get_bullet_spawnpoint(), target, self.owner.unique_id)
-            return direction * self.recoil
+                if a == 0:
+                    center_bullet = bullet
+            return center_bullet.direction_vector * self.recoil
         return Vector2(0)

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from os import path
 from time import monotonic
-from pygame import Surface, Vector2
+from pygame import Vector2
 import pygame as pg
 from pygame.sprite import Group, Sprite
 from core.sound import Sound
@@ -12,7 +12,7 @@ from core.imageloader import ImageLoader
 ASSETS_DIR = "assets/img/weapons"
 WEAPON_OFFSET = Vector2(20, 10)
 
-class Weapon(Sprite):
+class Weapon(Sprite, ABC):
     all: Group = Group()
     reload_snd: str
     def __init__(self, owner, recoil: float, cooldown_delay: float, ammo: int, reload_time: float, sprite_name: str) -> None:
@@ -31,7 +31,7 @@ class Weapon(Sprite):
         self.direction = 0.0
   
     @abstractmethod
-    def shoot(self, origin: Vector2, target: Vector2) -> Vector2:
+    def shoot(self, target: Vector2) -> Vector2:
         """
         Shoots a projectile given an origin, a target
         Returns a recoil force Vector

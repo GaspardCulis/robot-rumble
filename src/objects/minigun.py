@@ -12,7 +12,7 @@ class Minigun(Weapon):
         super().__init__(owner, 30, 0.05, 50, 1.5, "minigun.png")
         self.reload_snd = 'reload_minigun'
 
-    def shoot(self, position: Vector2, target: Vector2) -> Vector2:
+    def shoot(self, target: Vector2) -> Vector2:
         if self.can_shoot():
             bullet = GunBullet(self.get_bullet_spawnpoint(), target, self.owner.unique_id)
             Sound.get().play('minigun')

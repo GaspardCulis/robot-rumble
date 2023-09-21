@@ -1,6 +1,5 @@
 from random import random
 from time import monotonic
-from enum import Enum
 from pygame import Rect, Surface, Vector2, transform
 
 from core.imageloader import ImageLoader

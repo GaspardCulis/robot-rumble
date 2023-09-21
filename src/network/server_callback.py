@@ -1,6 +1,6 @@
 from asyncio import DatagramTransport
 
-from pygame import Vector2, image
+from pygame import Vector2
 
 from network.callback import Callback
 from network.connection_state import ConnectionState
