@@ -42,6 +42,8 @@ class Weapon(Sprite):
         After processing, returns True if the weapon can shoot, False otherwise
         """
         if self.remaining_ammo == 0:
+            if self.reload_snd is not None:
+                asyncio.create_task(Sound.get().play_with_delay(self.reload_snd, 0.5))
             self.reload_t = monotonic()
             self.remaining_ammo = -1
             return False
