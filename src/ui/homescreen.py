@@ -100,6 +100,7 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
                 return "quit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
+                    Sound.get().play('button')
                     print("Clic sur Start")
                     # Vérifier l'adresse IP avec une expression régulière
                     ip_pattern = r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
@@ -113,10 +114,12 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
 
                     # Ajoutez ici le code pour lancer le jeu
                 elif credits_button.collidepoint(event.pos):
+                    Sound.get().play('button')
                     print("Clic sur Credit")
                     credits_screen(screen)
                     # Ajoutez ici le code pour les credits du jeu
                 elif quit_button.collidepoint(event.pos):
+                    Sound.get().play('button')
                     running = False
                     return "quit"
                 elif ip_rect.collidepoint(event.pos):
