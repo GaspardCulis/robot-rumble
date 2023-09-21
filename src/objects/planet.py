@@ -6,6 +6,7 @@ from pygame import Surface, Vector2, image, Rect, transform
 from pygame.sprite import Sprite, collide_circle, Group
 from core.collision import CircleShape, CollisionObject
 from core.gravity import PhysicsObject
+from core.imageloader import ImageLoader, SpriteSheetLoader
 from core.spritesheets import parse_spritesheet
 
 PLANET_ASSETS_PATH = "assets/img/planet"
@@ -25,18 +26,11 @@ class Planet(PhysicsObject, Sprite):
         elif sprite_name.count("ring") > 0:
             scale_multiplier *= 3
 
-        spritesheet = pg.image.load(path.join(PLANET_ASSETS_PATH, sprite_name)).convert_alpha()
-        ss_rect = spritesheet.get_rect()
-        if ss_rect.height == ss_rect.width: # Is square ?
-            self.frames = [pg.transform.scale(spritesheet, Vector2(self.radius * scale_multiplier))]
+        if sprite_name != "planet69.png":
+            self.frames = SpriteSheetLoader.get_instance().load(path.join(PLANET_ASSETS_PATH, sprite_name), 8, 25, scale=Vector2(self.radius * scale_multiplier))
         else:
-            self.frames = list(map(
-                lambda x: transform.scale(x, Vector2(self.radius * scale_multiplier)),
-                parse_spritesheet(
-                    spritesheet,
-                    8, 25
-                )
-            ))
+            self.frames = [ImageLoader.get_instance().load(path.join(PLANET_ASSETS_PATH, sprite_name), scale=Vector2(self.radius * scale_multiplier))]
+
         self.frame_index = 0
         self.last_frame_skip = monotonic()
         self.image = self.frames[self.frame_index]

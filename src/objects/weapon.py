@@ -5,6 +5,8 @@ from pygame import Surface, Vector2
 import pygame as pg
 from pygame.sprite import Group, Sprite
 
+from core.imageloader import ImageLoader
+
 ASSETS_DIR = "assets/img/weapons"
 WEAPON_OFFSET = Vector2(20, 10)
 
@@ -20,8 +22,8 @@ class Weapon(Sprite):
         self.remaining_ammo = ammo
         self.last_shot = 0.0
         self.reload_t = 0.0
-        self.original_image = pg.transform.scale_by(pg.image.load(path.join(ASSETS_DIR, sprite_name)).convert_alpha(), 2)
-        self.image = self.original_image.copy()
+        self.original_image = ImageLoader.get_instance().load(path.join(ASSETS_DIR, sprite_name), 2)
+        self.image = self.original_image
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.owner.position).center)
         self.direction = 0.0
   

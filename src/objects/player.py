@@ -8,6 +8,7 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
+from core.imageloader import ImageLoader, SpriteSheetLoader
 from objects.bullet import Bullet
 from objects.gunbullet import GunBullet
 from objects.holegun import BlackHoleGun
@@ -30,7 +31,7 @@ class Player(PhysicsObject, Sprite):
     all: Group = Group()
     max_id: list[int] = [0]
 
-    def __init__(self, position: Vector2, sprite: Surface):
+    def __init__(self, position: Vector2):
         super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
         self.new_position = position
         self.remote = False
@@ -41,14 +42,10 @@ class Player(PhysicsObject, Sprite):
         self.lives = 3
         self.isDead = False
 
-        self.frames_idle = list(map(
-            lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
-            parse_spritesheet(pg.image.load("assets/img/player/player_idle.png").convert_alpha(), 3, 3, 7)
-        ))
-        self.frames_run = list(map(
-            lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
-            parse_spritesheet(pg.image.load("assets/img/player/player_run.png").convert_alpha(), 3, 3, 7)
-        ))
+        spritesheet_loader = SpriteSheetLoader.get_instance()
+        
+        self.frames_idle = spritesheet_loader.load("assets/img/player/player_idle.png", 3, 3, frame_count=7, scale=Vector2(PLAYER_HEIGHT))
+        self.frames_run = spritesheet_loader.load("assets/img/player/player_run.png", 3, 3, frame_count=7, scale=Vector2(PLAYER_HEIGHT))
 
         self.frames = self.frames_idle
         self.frame_index = 0

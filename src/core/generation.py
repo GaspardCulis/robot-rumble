@@ -34,7 +34,7 @@ def procedural_generation(seed: int = None) -> tuple[list[Planet], int]:
 
     num_planets = random.randint(MIN_PLANETS, MAX_PLANETS)
     for i in range(num_planets):
-        print(f"\rGenerating planets [{i + 1}/{num_planets}]", end='')
+        print(f"Generating planets [{i + 1}/{num_planets}]")
         while True:
             random_planet = random.choice(out)
             random_direction = Vector2(1, 0).rotate(random.randint(1, 360))
