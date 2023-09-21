@@ -14,9 +14,15 @@ RED = "#FF0000"
 def credits_screen(screen: Surface):
     # Liste des chaînes de caractères à afficher avec des espacements
     credits_list = [
-        "CREDIT 1",
-        "CREDIT 2",
-        "CREDIT 3",
+        "THANKS TO WUBS FOR HIS SICK PIXEL ART GUN GENERATOR",
+        "HUGE THANKS TO DEEP FOLD FOR HIS AMAZING PLANET AND SPACE BACKGROUND GENERATOR",
+        "S/O DAVID HARRINGTON FOR HIS CUTE ANIMATED ROBOT SPRITE",
+        "HONORABLE MENTION TO ROBTOP FOR THE GEOMETRY DASH FONT CURRENTLY BEING DISPLAYED",
+        "",
+        "GAME DESIGN: GASPARD CULIS",
+        "NETWORKING: TIMOTHE TABOADA",
+        "SOUND DESIGN: HIPPOLYTE CHAUVIN",
+        "UI DESIGN: NOHA BOUTEMEUR"
     ]
 
     bg = pygame.image.load("./assets/img/backgrounds/space_bg_1.png")

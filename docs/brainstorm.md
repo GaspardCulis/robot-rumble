@@ -77,5 +77,8 @@ Système de pourcentage comme smash
 
 ### Crédits
 
-[[https://pixeljoint.com/pixelart/53437.htm]]
-[[https://deep-fold.itch.io/pixel-planet-generator]]
+https://opengameart.org/content/pixel-robot
+https://deep-fold.itch.io/pixel-planet-generator
+https://deep-fold.itch.io/space-background-generator
+https://wubs.itch.io/random-pixel-art-gun-generator
+https://www.robtopgames.com/
