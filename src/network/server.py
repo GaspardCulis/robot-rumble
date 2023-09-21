@@ -1,6 +1,7 @@
 import asyncio
 from asyncio import Task, DatagramTransport
 from time import monotonic
+from typing import Tuple
 
 from network import serializer
 from network.connection_state import ConnectionState
@@ -8,14 +9,14 @@ from network.converter import DataConverter, Address
 from network.callback import Callback
 
 
-async def open_server(callback: Callback, port: int = 25565) -> DatagramTransport:
+async def open_server(callback: Callback, port: int = 25565) -> tuple[DatagramTransport, 'ServerProtocol']:
     loop = asyncio.get_running_loop()
     loop.set_debug(True)
     transport: DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ServerProtocol(callback),
         local_addr=("0.0.0.0", port))
-    return transport
+    return transport, protocol
 
 
 class ServerProtocol(asyncio.DatagramProtocol):
@@ -23,11 +24,13 @@ class ServerProtocol(asyncio.DatagramProtocol):
     transport: asyncio.DatagramTransport
     callback: Callback
     clients: dict[Address, ConnectionState]
+    server_seed: int
 
     def __init__(self, callback: Callback):
         self.update_task = None
         self.clients = {}
         self.callback = callback
+        self.server_seed = -1
 
     def connection_made(self, transport: asyncio.DatagramTransport):
         print("server started")
@@ -99,7 +102,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
                 case 0x03:
                     print("Client connected !")
                     state.connected = True
-                    self.callback.on_connected(self.transport, state, state.addr)
+                    self.callback.on_connected(self.transport, state, state.addr, self.server_seed)
                     self.callback.welcome_data(data, state, state.addr)
                 case 0x05:
                     self.update_player(data)

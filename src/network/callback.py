@@ -7,7 +7,7 @@ from network.converter import Address
 
 class Callback(ABC):
     @abstractmethod
-    def on_connected(self, transport: DatagramTransport, state: ConnectionState, addr: Address):
+    def on_connected(self, transport: DatagramTransport, state: ConnectionState, addr: Address, *extras):
         pass  # Called when a new client is connected / you are connected to the server
 
     @abstractmethod

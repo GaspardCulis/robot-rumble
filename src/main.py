@@ -49,12 +49,16 @@ async def run_game(state: tuple[str, int]):
     connection: DatagramTransport
     player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
     if ip == "0.0.0.0":
-        connection = await server.open_server(ServerCallback(), port)
+        connection, protocol = await server.open_server(ServerCallback(), port)
         Bullet.is_server = True
+        # NOTE !!! map MUST be created on both sides !
+        planets, seed = procedural_generation()
+        print("Map generated with seed", seed)
+        protocol.server_seed = seed
     else:
-        connection = await client.connect_to_server(ClientCallback(player), ip, port)
-    # NOTE !!! map MUST be created on both sides !
-    planets = procedural_generation()
+        connection, protocol = await client.connect_to_server(ClientCallback(player), ip, port)
+        await protocol.on_connected.wait()  # Block until connected successfully
+        # map will be created in the client callback
 
     player.respawn_on_random_planet()
 
