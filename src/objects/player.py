@@ -75,6 +75,7 @@ class Player(PhysicsObject, Sprite):
             print("dead")
             self.respawn_on_random_planet()
             self.lives -= 1
+            self.percentage = 0
         Sound.get().play('ejection')
 
     def respawn_on_random_planet(self):
