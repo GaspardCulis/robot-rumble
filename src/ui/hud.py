@@ -1,3 +1,5 @@
+from time import monotonic
+
 import pygame
 from pygame import Surface, Vector2, Color
 from pygame.sprite import Sprite
@@ -15,7 +17,7 @@ class Hud():
         self.police = pygame.font.Font("./assets/font/geom.TTF", 36)
         self.player = player
         self.spacing = 50
-        self.border_color = Color(255, 255, 255,0)
+        self.border_color = Color(255, 255, 255)
         self.weapon_img_path = "./assets/img/weapons/"
         self.surfaces = []
         for weapon in self.player.weapons:
@@ -29,9 +31,16 @@ class Hud():
         for surface in self.surfaces:
             screen.blit(surface, Vector2(k-surface.get_width()/4, 0-surface.get_height()/6))
             k += self.rect_width + self.spacing
-
         for weapon in self.player.weapons:
             pygame.draw.rect(screen, self.border_color, (x, 10, self.rect_width, self.rect_height), 3, 15)
+            timer = monotonic() - weapon.reload_t
+            if timer <= weapon.reload_time:
+                remaining_time = round(weapon.reload_time-timer,1)
+                cd_text = self.police.render(str(remaining_time), True, self.border_color)
+            else:
+                cd_text = self.police.render("", True, self.border_color)
+
+            screen.blit(cd_text, Vector2(x+cd_text.get_width()/2-5,self.rect_height+50))
 
             if self.player.weapons[self.player.selected_weapon_index] == weapon:
                 ammo_remaining = max(weapon.remaining_ammo, 0)
