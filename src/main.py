@@ -19,6 +19,8 @@ from objects.weapon import Weapon
 from ui.hud import Hud
 from ui import homescreen
 
+from core.sound import Sound
+
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
@@ -33,6 +35,7 @@ if state == "quit":
     pygame.quit()
     exit(0)
 
+Sound.get().loop_music('in_game')
 
 async def run_game(state: tuple[str, int]):
     ip = state[0]
