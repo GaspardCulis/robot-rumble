@@ -23,14 +23,14 @@ from ui import homescreen
 
 from core.sound import Sound
 
-SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
 BG_PATH = path.join(IMG_PATH, "backgrounds/")
 
 pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
+screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN, pygame.SCALED, vsync=1)
 pygame.display.set_caption('Game')
+SCREEN_SIZE = pygame.display.get_window_size()
 
 
 state = homescreen.home_screen(screen)
@@ -101,14 +101,14 @@ async def run_game(state: tuple[str, int]):
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
 
         hud.weapon_hud(screen)
-
+        hud.hp_hud(screen)
         dest = -(player.position - Vector2(SCREEN_SIZE)/2)
         # add mouse deviation
         dest.x += (pygame.mouse.get_pos()[0] / SCREEN_SIZE[0] - 0.5) * -500
         dest.y += (pygame.mouse.get_pos()[1] / SCREEN_SIZE[1] - 0.5) * -500
 
-        camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(abs(delta * (max(player.velocity.x/100, 1))), 1))  # abs(player.velocity.x)
-        camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(abs(delta * (max(player.velocity.y/100, 1))), 1))
+        camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(delta * abs(max(player.velocity.x/60, 5)), 1))
+        camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(delta * abs(max(player.velocity.y/60, 5)), 1))
 
         async def flip():
             pygame.display.flip()
