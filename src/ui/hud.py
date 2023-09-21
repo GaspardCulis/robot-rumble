@@ -4,6 +4,7 @@ import pygame
 from pygame import Surface, Vector2, Color
 from pygame.sprite import Sprite
 
+from core.image import Image
 from objects.player import Player
 
 
@@ -22,7 +23,7 @@ class Hud():
         for weapon in self.player.weapons:
             self.surfaces.append(pygame.transform.scale(weapon.original_image, Vector2(150, 150)))
 
-        head_img = pygame.image.load("./assets/img/head.png").convert_alpha()
+        head_img = Image.get().load("./assets/img/head.png", True)
         self.head = pygame.transform.scale(head_img, Vector2(50, 50))
 
 

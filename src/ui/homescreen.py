@@ -2,6 +2,7 @@ import pygame
 from pygame import Surface
 import re
 
+from core.image import Image
 from core.sound import Sound
 
 # Couleurs
@@ -19,7 +20,7 @@ def credits_screen(screen: Surface):
         "CREDIT 3",
     ]
 
-    bg = pygame.image.load("./assets/img/backgrounds/space_bg_1.png")
+    bg = Image.get().load("./assets/img/backgrounds/space_bg_1.png", False)
     bg = pygame.transform.scale(bg,screen.get_size())
 
 
@@ -68,7 +69,7 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
     BUTTON_WIDTH = 200
     BUTTON_HEIGHT = 60
     SPACE_BETWEEN = 300
-    bg = pygame.image.load("./assets/img/backgrounds/space_bg_1.png")
+    bg = Image.get().load("./assets/img/backgrounds/space_bg_1.png", False)
 
     bg = pygame.transform.scale(bg,screen.get_size())
 

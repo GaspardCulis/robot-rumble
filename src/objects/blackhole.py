@@ -3,7 +3,7 @@ from pygame import Vector2
 import pygame as pg
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
-from core.spritesheets import parse_spritesheet
+from core.image import Image
 from objects.bullet import Bullet
 from core.sound import Sound
 
@@ -31,7 +31,7 @@ class BlackHole(Bullet):
         self.origin = position + Vector2(0)
 
         self.scale = 0.4
-        self.frames = parse_spritesheet(pg.image.load(BLACK_HOLE_SPRITESHEET).convert_alpha(), 2, 25)
+        self.frames = Image.get().load_spritesheet(BLACK_HOLE_SPRITESHEET, 2, 25, has_alpha=True)
         self.frame_index = 0
         self.last_frame_skip = monotonic()
         

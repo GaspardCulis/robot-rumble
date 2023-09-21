@@ -179,7 +179,7 @@ def read_player(buffer: DataBuffer) -> Player:
             break
     pos = buffer.read_vector_float()
     if pl is None:
-        pl = Player(pos, image.load(path.join(IMG_PATH, "player.png")))
+        pl = Player(pos)
         pl.remote = True
         pl.unique_id = unique_id
     else:

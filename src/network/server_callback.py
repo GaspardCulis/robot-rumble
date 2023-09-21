@@ -12,8 +12,7 @@ class ServerCallback(Callback):
 
     def on_connected(self, transport: DatagramTransport, state: ConnectionState, addr: Address, *args):
         # position is useless, will be instantly updated by client
-        new_player = Player(Vector2(9, 30), image.load(
-            "assets/img/player.png"))  # A new player just connected, make a new player object
+        new_player = Player(Vector2(9, 30))  # A new player just connected, make a new player object
         new_player.remote = True
         print("Player id", new_player.unique_id, "just joined !")
         state.player_id = new_player.unique_id

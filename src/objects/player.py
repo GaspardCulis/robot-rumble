@@ -8,6 +8,7 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
+from core.image import Image
 from objects.bullet import Bullet
 from objects.gunbullet import GunBullet
 from objects.holegun import BlackHoleGun
@@ -17,7 +18,6 @@ from objects.shotgun import Shotgun
 import random
 from objects.blackhole import BlackHole
 from core.sound import Sound
-from core.spritesheets import parse_spritesheet
 from objects.weapon import Weapon
 import network
 
@@ -30,7 +30,7 @@ class Player(PhysicsObject, Sprite):
     all: Group = Group()
     max_id: list[int] = [0]
 
-    def __init__(self, position: Vector2, sprite: Surface):
+    def __init__(self, position: Vector2):
         super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
         self.new_position = position
         self.remote = False
@@ -43,11 +43,11 @@ class Player(PhysicsObject, Sprite):
 
         self.frames_idle = list(map(
             lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
-            parse_spritesheet(pg.image.load("assets/img/player/player_idle.png").convert_alpha(), 3, 3, 7)
+            Image.get().load_spritesheet("assets/img/player/player_idle.png", 3, 3, 7, True)
         ))
         self.frames_run = list(map(
             lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
-            parse_spritesheet(pg.image.load("assets/img/player/player_run.png").convert_alpha(), 3, 3, 7)
+            Image.get().load_spritesheet("assets/img/player/player_run.png", 3, 3, 7, True)
         ))
 
         self.frames = self.frames_idle

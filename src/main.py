@@ -8,6 +8,7 @@ from pygame import Color, Rect, Vector2, image
 from time import monotonic
 
 from core.camera import Camera
+from core.image import Image
 from network import server, client
 from network.client_callback import ClientCallback
 from network.server_callback import ServerCallback
@@ -45,7 +46,7 @@ async def run_game(state: tuple[str, int]):
     ip = state[0]
     port = state[1]
     connection: DatagramTransport
-    player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
+    player = Player(Vector2(9, 30))
     if ip == "0.0.0.0":
         connection, protocol = await server.open_server(ServerCallback(), port)
         Bullet.is_server = True
@@ -77,7 +78,7 @@ async def run_game(state: tuple[str, int]):
     backgrounds_list = os.listdir(BG_PATH)
 
     bg_name = random.choice(backgrounds_list)
-    bg = pygame.image.load(BG_PATH+"/"+bg_name).convert()
+    bg = Image.get().load(BG_PATH+"/"+bg_name, False)
     bg = pygame.transform.scale(bg, screen.get_size())
 
     Sound.get().loop_music('in_game')
