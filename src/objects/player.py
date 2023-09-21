@@ -58,6 +58,7 @@ class Player(PhysicsObject, Sprite):
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
         self.radius = PLAYER_HEIGHT/2
         self.onground = False
+        self.gotshot = False
 
         self.input_velocity = Vector2(0)
 
@@ -182,11 +183,12 @@ class Player(PhysicsObject, Sprite):
         collision_normal: Vector2 = (self.position - collider.position).normalize()
         # La différence entre notre rotation et l'angle de la normale au sol
         rotation_normal_diff = abs((collision_normal.angle_to(Vector2(1,0)) + 360)%360 - (self.rotation + 450) % 360)
-        if rotation_normal_diff > 30:
+        if rotation_normal_diff > 30 or self.gotshot:
             # Not on feets, bounce
             velocity_along_normal = self.velocity.dot(collision_normal)
             reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal
             self.velocity = 0.5 * reflexion_vector
+            self.gotshot = False
         else:
             # Clip to the floor
             self.velocity = Vector2(0)
@@ -211,6 +213,7 @@ class Player(PhysicsObject, Sprite):
                 self.percentage += bullet.damage
                 self.velocity += Vector2(1, 0).rotate(-bullet.angle) * bullet.kb * (self.percentage / 100)
                 bullet.kill()
+                self.gotshot = True
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
