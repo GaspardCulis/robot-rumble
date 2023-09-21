@@ -8,7 +8,7 @@ from objects.bullet import Bullet
 from core.sound import Sound
 
 BLACK_HOLE_MASS = 100000
-BLACK_HOLE_SPEED = 300
+BLACK_HOLE_SPEED = 1000
 BLACK_HOLE_SPRITESHEET = "assets/img/black_hole.png"
 
 class BlackHole(Bullet):
@@ -54,13 +54,12 @@ class BlackHole(Bullet):
     def update(self, delta) -> None:
         self.position += self.velocity * delta
         
-
         if not self.at_target:
             if (self.origin - self.position).length() >= (self.origin - self.target).length() :
                 self.at_target = True
                 self.velocity = Vector2(0)
         elif self.scale < 2 and self.is_active == False:
-            self.scale = min(delta + self.scale, 2)
+            self.scale = min(delta*2 + self.scale, 2)
             if self.scale == 2:
                 self.is_active = True
                 self.spawn_time = monotonic()
