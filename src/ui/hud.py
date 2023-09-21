@@ -65,3 +65,10 @@ class Hud():
             percent_text = self.police.render("PERDU", True, self.border_color)
 
         screen.blit(percent_text, Vector2(spacing + 30, screen.get_height() - 40))
+
+
+    def fps_hud(self, screen: Surface, delta: float):
+        
+        fps_text = self.police.render(str(round(1 / delta, 0))+" FPS", True, self.border_color)
+        screen.blit(fps_text, Vector2(screen.get_width()-fps_text.get_width(), 20))
+
