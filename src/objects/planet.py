@@ -22,6 +22,8 @@ class Planet(PhysicsObject, Sprite):
         scale_multiplier = 2
         if sprite_name.startswith("star"):
             scale_multiplier *= 2
+        elif sprite_name.count("ring") > 0:
+            scale_multiplier *= 3
 
         spritesheet = pg.image.load(path.join(PLANET_ASSETS_PATH, sprite_name)).convert_alpha()
         ss_rect = spritesheet.get_rect()

@@ -112,7 +112,7 @@ async def run_game(state: tuple[str, int]):
         async def flip():
             pygame.display.flip()
         await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
-        print("FPS ", 1 / delta)
+        # print("FPS ", 1 / delta)
     connection.close()
     pygame.quit()
 
