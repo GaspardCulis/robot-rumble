@@ -7,8 +7,7 @@ from core.gravity import PhysicsObject
 from objects.bullet import Bullet
 from objects.planet import Planet
 
-BULLET_MASS = 5
-BULLET_SPEED = 1000
+BULLET_KB = 20
 
 class GunBullet(Bullet):
     all: Group = Group()
@@ -20,6 +19,7 @@ class GunBullet(Bullet):
             damage=5
         )
         self.owner_id = owner_id
+        self.kb = BULLET_KB
 
         GunBullet.all.add(self)
 
