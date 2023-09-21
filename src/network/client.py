@@ -6,7 +6,7 @@ from typing import Any
 from network import serializer
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import DataConverter, Address
+from network.converter import DataConverter, Address, TICK_RATE
 
 
 async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> tuple[DatagramTransport, 'ClientProtocol']:
@@ -70,7 +70,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
+            await asyncio.sleep(1 / TICK_RATE - delta)  # tps target, if time to sleep is negative it skips
 
     def update_current_state(self, data: bytes):
         serializer.apply_update(data)
