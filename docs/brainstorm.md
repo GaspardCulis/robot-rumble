@@ -70,6 +70,8 @@ Système de pourcentage comme smash
 - Animation sprite joueur
 - Implémentation dégats
 - KB
+- HD
+- 
 
 **A la fin de la journée on doit avoir le multi fonctionnel**
 

@@ -7,10 +7,10 @@ from core.gravity import PhysicsObject
 from objects.bullet import Bullet
 from objects.planet import Planet
 
-BULLET_MASS = 5
-BULLET_SPEED = 1000
+BULLET_KB = 20
 
 class GunBullet(Bullet):
+    all: Group = Group()
     def __init__(self, position: Vector2, target: Vector2, owner_id: int = 69):
         super().__init__(
             position=position,
@@ -19,4 +19,11 @@ class GunBullet(Bullet):
             damage=5
         )
         self.owner_id = owner_id
+        self.kb = BULLET_KB
+
+        GunBullet.all.add(self)
+
+    def kill(self):
+        GunBullet.all.remove(self)
+        super().kill()
 
