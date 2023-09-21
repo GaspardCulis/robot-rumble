@@ -11,11 +11,12 @@ BULLET_MASS = 5
 BULLET_SPEED = 1000
 
 class GunBullet(Bullet):
-    def __init__(self, position: Vector2, target: Vector2):
+    def __init__(self, position: Vector2, target: Vector2, owner_id: int = 69):
         super().__init__(
             position=position,
             target=target,
             sprite=pygame.transform.scale_by(pygame.image.load("assets/img/bullet.png"), 2),
             damage=5
         )
+        self.owner_id = owner_id
 
