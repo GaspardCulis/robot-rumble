@@ -63,8 +63,12 @@ class DataBuffer:
         self._data = bytearray(data) if data else bytearray()
         self._index = 0
 
-    def get_data(self):
-        return self._data
+    def flip(self) -> 'DataBuffer':
+        self._index = 0
+        return self
+
+    def get_data(self) -> bytes:
+        return bytes(self._data[self._index:])
 
     def append_vector_float(self, vector: Vector2):
         self.append_float(vector.x)

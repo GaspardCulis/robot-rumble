@@ -26,7 +26,6 @@ def weapon_hud(screen: Surface, player: Player):
 
 
         if player.weapons[player.selected_weapon_index] == weapon:
-            print(player.selected_weapon_index)
             ammo_remaining = max(weapon.remaining_ammo, 0)
             ammo_text = police.render(str(ammo_remaining) + "/" + str(weapon.ammo), True, (255,255,255))
             screen.blit(ammo_text, (screen.get_width()-ammo_text.get_width(),screen.get_height()-ammo_text.get_height()))
