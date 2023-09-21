@@ -1,5 +1,6 @@
 from pygame import mixer
 from typing import Optional
+import asyncio
 
 class Sound():
     # Dictionnaire de sons chargés
@@ -56,6 +57,10 @@ class Sound():
         if name not in Sound.all:
             self.load(name)
         Sound.all[name].play()
+
+    async def play_with_delay(self, name, delay):
+        await asyncio.sleep(delay)
+        self.play(name)
 
     def add_channel(self, name):
         if name not in Sound.channels:

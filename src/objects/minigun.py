@@ -10,6 +10,7 @@ from core.sound import Sound
 class Minigun(Weapon):
     def __init__(self, owner):
         super().__init__(owner, 30, 0.05, 50, 1.5, "minigun.png")
+        self.reload_snd = 'reload_minigun'
 
     def shoot(self, position: Vector2, target: Vector2) -> Vector2:
         if self.can_shoot():

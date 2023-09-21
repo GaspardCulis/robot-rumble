@@ -4,6 +4,8 @@ from time import monotonic
 from pygame import Surface, Vector2
 import pygame as pg
 from pygame.sprite import Group, Sprite
+from core.sound import Sound
+import asyncio
 
 from core.imageloader import ImageLoader
 
@@ -12,6 +14,7 @@ WEAPON_OFFSET = Vector2(20, 10)
 
 class Weapon(Sprite):
     all: Group = Group()
+    reload_snd: str
     def __init__(self, owner, recoil: float, cooldown_delay: float, ammo: int, reload_time: float, sprite_name: str) -> None:
         super().__init__(Weapon.all)
         self.owner = owner
@@ -41,6 +44,8 @@ class Weapon(Sprite):
         After processing, returns True if the weapon can shoot, False otherwise
         """
         if self.remaining_ammo == 0:
+            if self.reload_snd is not None:
+                asyncio.create_task(Sound.get().play_with_delay(self.reload_snd, 0.5))
             self.reload_t = monotonic()
             self.remaining_ammo = -1
             return False
