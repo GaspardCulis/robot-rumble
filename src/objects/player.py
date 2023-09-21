@@ -173,6 +173,7 @@ class Player(PhysicsObject, Sprite):
         for bullet in pygame.sprite.spritecollide(self, GunBullet.all, False):
             if bullet.owner_id != self.unique_id:
                 self.percentage += bullet.damage
+                self.velocity += Vector2(1, 0).rotate(bullet.angle) * bullet.kb
                 bullet.kill()
 
     def set_rotation(self, rotation: float):
