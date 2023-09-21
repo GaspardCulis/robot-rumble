@@ -21,7 +21,7 @@ class Camera:
         return (1, 1)
 
     def update(self, delta: float):
-        if self.player_to_follow.isDead:
+        if self.player_to_follow.isDead and len(Player.all) > 0:
             target = Player.all.sprites()[self.player_to_follow.spectated_player_index]
         else:
             target = self.player_to_follow
