@@ -3,7 +3,7 @@ from asyncio import DatagramTransport
 from core import generation
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import Address, DataConverter, DataBuffer
+from network.converter import Address, DataBuffer
 from objects.player import Player
 
 

@@ -6,7 +6,7 @@ from typing import Any
 from network import serializer
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import DataConverter, Address
+from network.converter import Address, TICK_RATE, DataBuffer
 
 
 async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> tuple[DatagramTransport, 'ClientProtocol']:
@@ -16,7 +16,7 @@ async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ClientProtocol(callback, (ip, port)),
         remote_addr=(ip, port))
-    transport.sendto(b'\x01' + DataConverter.write_varint(0), None)
+    transport.sendto(b'\x01' + DataBuffer().append_varint(0).flip().get_data(), None)
     return transport, protocol
 
 
@@ -66,7 +66,11 @@ class ClientProtocol(asyncio.DatagramProtocol):
             data = serializer.update_player()
             # send the data (this does not block)
             self.state.last_sent_id += 1
-            self.transport.sendto(b'\x05' + DataConverter.write_varlong(self.state.last_sent_id) + data, None)
+            buffer = DataBuffer()
+            buffer.extend(b'\x05')
+            buffer.append_varlong(self.state.last_sent_id)
+            buffer.extend(data)
+            self.transport.sendto(buffer.flip().get_data(), None)
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
@@ -79,17 +83,19 @@ class ClientProtocol(asyncio.DatagramProtocol):
         while True:
             await asyncio.sleep(2)
             self.state.last_sent_id += 1
-            self.transport.sendto(b'\x00' + DataConverter.write_varlong(self.state.last_sent_id), None)
+            buffer = DataBuffer()
+            buffer.extend(b'\x00')
+            buffer.append_varlong(self.state.last_sent_id)
+            self.transport.sendto(buffer.flip().get_data(), None)
 
     async def handle_server_data(self, data: bytes, state: ConnectionState):
         if state.timeout_task is not None:
             if state.timeout_task.done():
                 pass  # TODO server has timed out ? do something specific ?
             state.timeout_task.cancel()
-        skip, packet_id = DataConverter.parse_varint(data)
-        data = data[skip:]
-        skip, last_id = DataConverter.parse_varlong(data)
-        data = data[skip:]
+        buffer = DataBuffer(data)
+        packet_id = buffer.read_varint()
+        last_id = buffer.read_varlong()
         timeout = 10
         # print("CLIENT: got packet id :", packet_id, "last id :", last_id, "data :", data)
         if state.last_received_id < last_id:
@@ -100,15 +106,18 @@ class ClientProtocol(asyncio.DatagramProtocol):
                 case 0x02:
                     print("Got Second packet, sending last confirmation")
                     self.state.last_sent_id += 1
-                    self.transport.sendto(b'\x03' + DataConverter.write_varlong(self.state.last_sent_id), None)
+                    conf_buffer = DataBuffer()
+                    conf_buffer.extend(b'\x03')
+                    conf_buffer.append_varlong(self.state.last_sent_id)  # can add extra data here from client
+                    self.transport.sendto(conf_buffer.flip().get_data(), None)
                     self.callback.on_connected(self.transport, state, state.addr)
                 case 0x04:
-                    self.callback.welcome_data(data, state, state.addr)
+                    self.callback.welcome_data(buffer.get_data(), state, state.addr)
                     self.state.connected = True
                     self.on_connected.set()
                 case 0x06:
                     if self.state.connected:
-                        self.update_current_state(data)
+                        self.update_current_state(buffer.get_data())
                 case _:
                     print("Warning ! got an unknown packet !")
         else:
