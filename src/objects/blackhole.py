@@ -3,7 +3,7 @@ from pygame import Vector2
 import pygame as pg
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
-from core.spritesheets import parse_spritesheet
+from core.spritesheets import SpriteSheet
 from objects.bullet import Bullet
 from core.sound import Sound
 
@@ -31,11 +31,9 @@ class BlackHole(Bullet):
         self.origin = position + Vector2(0)
 
         self.scale = 0.4
-        self.frames = parse_spritesheet(pg.image.load(BLACK_HOLE_SPRITESHEET).convert_alpha(), 2, 25)
-        self.frame_index = 0
-        self.last_frame_skip = monotonic()
+        self.frames = SpriteSheet(BLACK_HOLE_SPRITESHEET, 2, 25, 0.05)
         
-        self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
+        self.image = pg.transform.scale_by(self.frames.get_frame(), self.scale)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
         self.radius = self.rect.height/2
         self.is_active = False
@@ -69,11 +67,7 @@ class BlackHole(Bullet):
                 self.kill()
         self.mass = BLACK_HOLE_MASS * (self.scale - 0.4)/1.6  # scale might be updated in network
 
-        if monotonic() - self.last_frame_skip > 0.05:
-            self.frame_index = (self.frame_index + 1) % len(self.frames)
-            self.last_frame_skip = monotonic()
-
-        self.image = pg.transform.scale_by(self.frames[self.frame_index], self.scale)
+        self.image = pg.transform.scale_by(self.frames.get_frame(), self.scale)
 
         self.original_image = self.image
         super().update(delta)
