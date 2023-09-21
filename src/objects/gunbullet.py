@@ -7,7 +7,7 @@ from core.gravity import PhysicsObject
 from objects.bullet import Bullet
 from objects.planet import Planet
 
-BULLET_KB = 20
+BULLET_KB = 30
 
 class GunBullet(Bullet):
     all: Group = Group()
@@ -15,7 +15,7 @@ class GunBullet(Bullet):
         super().__init__(
             position=position,
             target=target,
-            sprite=pygame.transform.scale_by(pygame.image.load("assets/img/bullet.png"), 2),
+            sprite=pygame.transform.scale_by(pygame.image.load("assets/img/bullet.png").convert(), 2),
             damage=5
         )
         self.owner_id = owner_id

@@ -47,8 +47,8 @@ async def run_game(state: tuple[str, int]):
     else:
         connection = await client.connect_to_server(ClientCallback(player), ip, port)
     # NOTE !!! map MUST be created on both sides !
-    planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
-    planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
+    planet_a = Planet(Vector2(512, 380), 300, "planet1.png")
+    planet_b = Planet(Vector2(1200, 200), 100, "planet2.png")
 
     player.velocity = Vector2(0, 550)
     player.set_rotation(-90)
@@ -62,7 +62,7 @@ async def run_game(state: tuple[str, int]):
     last_mouse_buttons = (False, False, False)
     running = True
     bg = pygame.image.load("assets/img/space_bg.png")
-    bg = pygame.transform.scale(bg, screen.get_size())
+    bg = pygame.transform.scale(bg, screen.get_size()).convert()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
