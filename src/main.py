@@ -78,7 +78,7 @@ async def run_game(state: tuple[str, int]):
         delta = new_time - last_time
         last_time = new_time
 
-        mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
+        mouse_pos = Vector2(pygame.mouse.get_pos()) - camera.get_pos()
         mouse_buttons = pygame.mouse.get_pressed()
         player.process_keys(pygame.key.get_pressed(), delta)
         player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
@@ -92,11 +92,11 @@ async def run_game(state: tuple[str, int]):
 
         screen.blit(bg, (0, 0))
 
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in Planet.all])
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in Player.all])
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in Bullet.all])
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in BlackHole.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Planet.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Player.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Bullet.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in BlackHole.all])
 
         hud.weapon_hud(screen)
         hud.hp_hud(screen)
