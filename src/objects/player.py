@@ -1,7 +1,7 @@
 from typing import Tuple
 from pygame import Rect, Surface, Vector2, constants, transform
 from pygame.math import lerp
-import pygame
+import pygame as pg
 import math
 from pygame.event import Event
 from pygame.key import ScancodeWrapper
@@ -16,6 +16,7 @@ from objects.shotgun import Shotgun
 import random
 from objects.blackhole import BlackHole
 from core.sound import Sound
+from core.spritesheets import parse_spritesheet
 from objects.weapon import Weapon
 
 PLAYER_MASS = 800
@@ -36,10 +37,21 @@ class Player(PhysicsObject, Sprite):
         # Ranges from 0.0 to 1.0
         self.percentage = 0.0
         self.lives = 3
-        self.spawnpoint = position
-        self.original_image = transform.scale_by(sprite, PLAYER_HEIGHT/sprite.get_rect().height)
-        self.image = transform.rotozoom(self.original_image, self.rotation, 1.0)
-        self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
+
+        self.frames_idle = list(map(
+            lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
+            parse_spritesheet(pg.image.load("assets/img/player/player_idle.png"), 3, 3, 7)
+        ))
+        self.frames_run = list(map(
+            lambda x: pg.transform.scale_by(x, PLAYER_HEIGHT/x.get_rect().height),
+            parse_spritesheet(pg.image.load("assets/img/player/player_run.png"), 3, 3, 7)
+        ))
+
+        self.frames = self.frames_idle
+        self.frame_index = 0
+      
+        self.image = transform.rotozoom(self.frames[self.frame_index], self.rotation, 1.0)
+        self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
         self.radius = PLAYER_HEIGHT/2
         self.onground = False
 
@@ -103,8 +115,8 @@ class Player(PhysicsObject, Sprite):
         
         self.set_rotation(self.rotation + short_angle * delta * 6)
         if self.remote:
-            self.position = Vector2(pygame.math.lerp(self.position.x, self.new_position.x, min(delta * 60, 1)),
-                                    pygame.math.lerp(self.position.y, self.new_position.y, min(delta * 60, 1)))
+            self.position = Vector2(pg.math.lerp(self.position.x, self.new_position.x, min(delta * 60, 1)),
+                                    pg.math.lerp(self.position.y, self.new_position.y, min(delta * 60, 1)))
 
         self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
         if self.onground:
@@ -170,7 +182,7 @@ class Player(PhysicsObject, Sprite):
             self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
 
     def process_bullets(self):
-        for bullet in pygame.sprite.spritecollide(self, GunBullet.all, False):
+        for bullet in pg.sprite.spritecollide(self, GunBullet.all, False):
             if bullet.owner_id != self.unique_id:
                 self.percentage += bullet.damage
                 self.velocity += Vector2(1, 0).rotate(bullet.angle) * bullet.kb
@@ -178,5 +190,5 @@ class Player(PhysicsObject, Sprite):
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
-        self.image = transform.rotate(self.original_image, self.rotation)
-        self.rect = self.image.get_rect(center=self.original_image.get_rect(center = self.position).center)
+        self.image = pg.transform.rotate(self.image, self.rotation)
+        self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
