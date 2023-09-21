@@ -34,7 +34,7 @@ class Player(PhysicsObject, Sprite):
         self.remote = False
         # Degrees
         self.rotation = 0.0
-        # Ranges from 0.0 to 1.0
+        # Ranges from 0.0 to 100.0
         self.percentage = 0.0
         self.lives = 3
 
@@ -185,7 +185,7 @@ class Player(PhysicsObject, Sprite):
         for bullet in pg.sprite.spritecollide(self, GunBullet.all, False):
             if bullet.owner_id != self.unique_id:
                 self.percentage += bullet.damage
-                self.velocity += Vector2(1, 0).rotate(-bullet.angle) * bullet.kb
+                self.velocity += Vector2(1, 0).rotate(-bullet.angle) * bullet.kb * (self.percentage / 100)
                 bullet.kill()
 
     def set_rotation(self, rotation: float):
