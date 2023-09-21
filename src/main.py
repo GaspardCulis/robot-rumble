@@ -77,8 +77,8 @@ async def run_game(state: tuple[str, int]):
         Bullet.all.update(delta)
         Weapon.all.update(mouse_pos)
 
-    screen.fill((255,255,255))
-    screen.blit(bg, (0, 0))
+        screen.fill((255,255,255))
+        screen.blit(bg, (0, 0))
 
 
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
