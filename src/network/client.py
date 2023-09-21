@@ -65,8 +65,9 @@ class ClientProtocol(asyncio.DatagramProtocol):
             # serialize all the data to send
             data = serializer.update_player()
             # send the data (this does not block)
-            self.state.last_sent_id += 1
-            self.transport.sendto(b'\x05' + DataConverter.write_varlong(self.state.last_sent_id) + data, None)
+            if data is not None:
+                self.state.last_sent_id += 1
+                self.transport.sendto(b'\x05' + DataConverter.write_varlong(self.state.last_sent_id) + data, None)
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time

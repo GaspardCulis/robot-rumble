@@ -73,41 +73,46 @@ class DataBuffer:
     def get_data(self) -> bytes:
         return bytes(self._data[self._index:])
 
-    def append_boolean(self, boolean: bool):
+    def append_boolean(self, boolean: bool)  -> 'DataBuffer':
         self.append_varint(1 if boolean else 0)
+        return self
 
-    def append_vector_float(self, vector: Vector2):
+    def append_vector_float(self, vector: Vector2) -> 'DataBuffer':
         self.append_float(vector.x)
         self.append_float(vector.y)
+        return self
 
-    def append_float(self, nb: float):
+    def append_float(self, nb: float) -> 'DataBuffer':
         self.extend(struct.pack(DataBuffer.FLOAT_TYPING, nb))
+        return self
 
-    def append_varint(self, number: int) -> None:
+    def append_varint(self, number: int) -> 'DataBuffer':
         number = number & 0xFFFF_FFFF  # limit to 32 bits
         while True:
             if (number & ~0x7F) == 0:
                 self.append(number)
-                return
+                return self
             self.append((number & 0x7F) | 0x80)
             number >>= 7
 
-    def append_varlong(self, number: int) -> None:
+    def append_varlong(self, number: int) -> 'DataBuffer':
         number = number & 0xFFFF_FFFF_FFFF_FFFF  # limit to 64 bits
         while True:
             if (number & ~0x7F) == 0:
                 self.append(number)
-                return
+                return self
             self.append((number & 0x7F) | 0x80)
             number >>= 7
 
-    def append(self, data: int):
+    def append(self, data: int) -> 'DataBuffer':
         self._data.append(data)
         self._index += 1
+        return self
 
-    def extend(self, data: bytes):
+    def extend(self, data: bytes) -> 'DataBuffer':
         self._data.extend(data)
         self._index += len(data)
+        return self
 
     def read_boolean(self) -> bool:
         return self.read_varint() != 0

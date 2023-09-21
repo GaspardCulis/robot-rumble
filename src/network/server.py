@@ -5,7 +5,7 @@ from typing import Tuple
 
 from network import serializer
 from network.connection_state import ConnectionState
-from network.converter import DataConverter, Address, TICK_RATE
+from network.converter import DataConverter, Address, TICK_RATE, DataBuffer
 from network.callback import Callback
 
 
@@ -62,7 +62,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
         while True:
             await asyncio.sleep(2)
             self.clients[addr].last_sent_id += 1
-            self.transport.sendto(b'\x00' + DataConverter.write_varlong(self.clients[addr].last_sent_id), addr)
+            self.transport.sendto(b'\x00' + DataBuffer().append_varlong(self.clients[addr].last_sent_id).flip().get_data(), addr)
 
     async def send_update_data(self):
         while True:

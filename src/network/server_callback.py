@@ -4,7 +4,7 @@ from pygame import Vector2, image
 
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import Address, DataConverter
+from network.converter import Address, DataBuffer
 from objects.player import Player
 
 
@@ -18,9 +18,12 @@ class ServerCallback(Callback):
         print("Player id", new_player.unique_id, "just joined !")
         state.player_id = new_player.unique_id
         state.last_sent_id += 1
-        transport.sendto(b'\x04' + DataConverter.write_varlong(state.last_sent_id) +
-                         DataConverter.write_varint(new_player.unique_id) +
-                         DataConverter.write_varlong(args[0]),
+        output = DataBuffer()
+        output.append_varlong(state.last_sent_id)
+        output.append_varint(new_player.unique_id)
+        output.append_varlong(args[0])
+
+        transport.sendto(b'\x04' + output.flip().get_data(),
                          addr)  # inform client about the unique id chosen and the seed
 
     def welcome_data(self, data: bytes, state: ConnectionState, addr: Address):

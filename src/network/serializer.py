@@ -113,9 +113,16 @@ def apply_update(data: bytes):
             b.kill()  # delete bullet
 
 
-def update_player() -> bytes:
+def update_player() -> bytes | None:
     output = DataBuffer()
-    p: Player = list(Player.all.spritedict.keys())[0]
+    p: Player | None = None
+    pl: Player
+    for pl in Player.all:
+        if not pl.remote:
+            p = pl
+            break
+    if p is None:
+        return None
     output.append_varint(p.unique_id)
     output.append_vector_float(p.position)
     output.append_vector_float(p.velocity)
