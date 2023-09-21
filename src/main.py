@@ -61,8 +61,8 @@ async def run_game(state: tuple[str, int]):
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
     running = True
-    bg = pygame.image.load("assets/img/space_bg.png")
-    bg = pygame.transform.scale(bg, screen.get_size()).convert()
+    bg = pygame.image.load("assets/img/space_bg.png").convert()
+    bg = pygame.transform.scale(bg, screen.get_size())
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
