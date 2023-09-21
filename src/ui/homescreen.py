@@ -78,8 +78,8 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
     quit_button = pygame.Rect(screen.get_width()/2-BUTTON_WIDTH/2+SPACE_BETWEEN, screen.get_height()/2-25, BUTTON_WIDTH, BUTTON_HEIGHT)
 
     # Entrées pour l'IP et le port
-    ip_text = ""
-    port_text = ""
+    ip_text = "0.0.0.0"
+    port_text = "6942"
     IP_WIDTH = 300
     PORT_WIDTH = 150
     ip_rect = pygame.Rect(screen.get_width()/2-300, screen.get_height()/2+200, IP_WIDTH, 40)
