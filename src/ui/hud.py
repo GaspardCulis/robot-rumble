@@ -63,4 +63,3 @@ class Hud():
         percent_text = self.police.render(": " + str(self.player.percentage) + "%", True, self.border_color)
         screen.blit(percent_text, Vector2(spacing+30, screen.get_height()-40))
 
-        pass
