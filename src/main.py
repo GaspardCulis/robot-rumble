@@ -17,6 +17,7 @@ from objects.bullet import Bullet
 from core.gravity import PhysicsObject
 from objects.weapon import Weapon
 from ui import homescreen
+from ui import hud
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -54,7 +55,8 @@ async def run_game(state: tuple[str, int]):
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
     running = True
-
+    bg = pygame.image.load("assets/img/space_bg.png")
+    bg = pygame.transform.scale(bg, screen.get_size())
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -75,13 +77,18 @@ async def run_game(state: tuple[str, int]):
         Bullet.all.update(delta)
         Weapon.all.update(mouse_pos)
 
-        screen.fill((255, 255, 255))
+    screen.fill((255,255,255))
+    screen.blit(bg, (0, 0))
+
 
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
+
+        hud.weapon_hud(screen,player)
+
 
         dest = -(player.position - Vector2(SCREEN_SIZE)/2)
         # add mouse deviation
