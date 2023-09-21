@@ -177,6 +177,8 @@ class Player(PhysicsObject, Sprite):
         self.position = clip_position
 
     def handle_click(self, buttons: Tuple[bool, bool, bool], last_buttons: Tuple[bool, bool, bool], position: Vector2):
+        if self.isDead:
+            return
         # Shooting
         if buttons[2] and not last_buttons[2]:
             self.selected_weapon_index = (self.selected_weapon_index + 1) % len(self.weapons)

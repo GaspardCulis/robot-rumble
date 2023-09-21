@@ -70,6 +70,9 @@ class DataBuffer:
     def get_data(self) -> bytes:
         return bytes(self._data[self._index:])
 
+    def append_boolean(self, boolean: bool):
+        self.append_varint(1 if boolean else 0)
+
     def append_vector_float(self, vector: Vector2):
         self.append_float(vector.x)
         self.append_float(vector.y)
@@ -102,6 +105,9 @@ class DataBuffer:
     def extend(self, data: bytes):
         self._data.extend(data)
         self._index += len(data)
+
+    def read_boolean(self) -> bool:
+        return self.read_varint() != 0
 
     def read_vector_float(self) -> Vector2:
         return Vector2(self.read_float(), self.read_float())

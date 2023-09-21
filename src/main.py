@@ -7,6 +7,7 @@ import pygame
 from pygame import Color, Rect, Vector2, image
 from time import monotonic
 
+from core.camera import Camera
 from network import server, client
 from network.client_callback import ClientCallback
 from network.server_callback import ServerCallback
@@ -56,11 +57,9 @@ async def run_game(state: tuple[str, int]):
     planets = procedural_generation()
 
     player.respawn_on_random_planet()
-    camera_pos = Vector2()
-    camera_zoom = 1 # Not working
 
     hud = Hud(player)
-
+    camera = Camera(player, Vector2(SCREEN_SIZE))
 
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
@@ -93,22 +92,15 @@ async def run_game(state: tuple[str, int]):
 
         screen.blit(bg, (0, 0))
 
-
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in Planet.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in Player.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in Bullet.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(camera.get_scale())) for spr in BlackHole.all])
 
         hud.weapon_hud(screen)
         hud.hp_hud(screen)
-        dest = -(player.position - Vector2(SCREEN_SIZE)/2)
-        # add mouse deviation
-        dest.x += (pygame.mouse.get_pos()[0] / SCREEN_SIZE[0] - 0.5) * -500
-        dest.y += (pygame.mouse.get_pos()[1] / SCREEN_SIZE[1] - 0.5) * -500
-
-        camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(delta * abs(max(player.velocity.x/60, 5)), 1))
-        camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(delta * abs(max(player.velocity.y/60, 5)), 1))
+        camera.update(delta)
 
         async def flip():
             pygame.display.flip()
