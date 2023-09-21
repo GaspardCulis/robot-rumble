@@ -68,12 +68,15 @@ class Player(PhysicsObject, Sprite):
         self.max_id[0] += 1
         self.all.add(self)
 
+        self.spectated_player_index = 0
+
     def kill(self):
         self.lives -= 1
         if self.lives == 0:
             super().kill()
             self.all.remove(self)
             self.isDead = True
+            print("Game over")
         else:
             print("dead")
             self.respawn_on_random_planet()
