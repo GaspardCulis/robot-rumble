@@ -122,4 +122,4 @@ async def run_game(state: tuple[str, int]):
     connection.close()
     pygame.quit()
 
-asyncio.run(run_game(state), debug=True)
+asyncio.run(run_game(state))
