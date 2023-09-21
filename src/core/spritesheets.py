@@ -1,6 +1,6 @@
 from random import random
 from time import monotonic
-
+from enum import Enum
 from pygame import Rect, Surface, Vector2, transform
 
 from core.imageloader import ImageLoader
@@ -12,13 +12,16 @@ class SpriteSheet():
     def __init__(self, spritesheet_path: str, rows: int,  cols: int, frame_delay: float, frame_count: int = -1, sprite_size: None | Vector2 = None) -> None:
         if frame_count == -1:
             frame_count = rows * cols
-        self.spritesheet = ImageLoader.get_instance().load(spritesheet_path, scale=Vector2(sprite_size.x * cols, sprite_size.y * rows) if sprite_size else None)
+        self.spritesheet = ImageLoader.get_instance().load(
+            spritesheet_path, 
+        )
+        s = self.spritesheet.get_size()
         if sprite_size == None:
-            s = self.spritesheet.get_size()
             sprite_size = Vector2(s[0] / cols, s[1] / rows)
         self.sprite_size = sprite_size
         self.rows = rows
         self.cols = cols
+        self.original_sprite_size = Vector2(s[0] / cols, s[1] / rows)
         self.frame_count = frame_count
         self.last_frame_skip = monotonic() + random() # Add random delay to avoid all sprites updating at the same time
         self.frame_delay = frame_delay
@@ -35,5 +38,16 @@ class SpriteSheet():
 
     def __update_frame(self):
         r, c = (self.current_frame_index // self.cols), self.current_frame_index % self.cols
-        self.frame = self.spritesheet.subsurface(Rect(c * self.sprite_size.x ,r * self.sprite_size.y, self.sprite_size.x, self.sprite_size.y))
-        
+        self.frame = transform.scale(
+            self.spritesheet.subsurface( # type: ignore
+                Rect(
+                    c * self.original_sprite_size.x, 
+                    r * self.original_sprite_size.y, 
+                    self.original_sprite_size.x, 
+                    self.original_sprite_size.y
+                )
+            ),
+            self.sprite_size
+        )
+    
+
