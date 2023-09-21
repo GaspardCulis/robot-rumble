@@ -187,7 +187,7 @@ class Player(PhysicsObject, Sprite):
             # Not on feets, bounce
             velocity_along_normal = self.velocity.dot(collision_normal)
             reflexion_vector = self.velocity - 2 * velocity_along_normal * collision_normal
-            self.velocity = 0.5 * reflexion_vector
+            self.velocity = (1.2 if self.gotshot else 0.5) * reflexion_vector
             self.gotshot = False
         else:
             # Clip to the floor
