@@ -8,6 +8,7 @@ from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
 from objects.bullet import Bullet
+from objects.gunbullet import GunBullet
 from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
@@ -169,7 +170,7 @@ class Player(PhysicsObject, Sprite):
             self.velocity -= self.weapons[self.selected_weapon_index].shoot(self.position, position)
 
     def process_bullets(self):
-        for bullet in pygame.sprite.spritecollide(self, Bullet.all, False):
+        for bullet in pygame.sprite.spritecollide(self, GunBullet.all, False):
             if bullet.owner_id != self.unique_id:
                 self.percentage += bullet.damage
                 bullet.kill()
