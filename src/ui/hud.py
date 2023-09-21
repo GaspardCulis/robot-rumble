@@ -3,9 +3,11 @@ from time import monotonic
 import pygame
 from pygame import Surface, Vector2, Color
 from pygame.sprite import Sprite
+from core.imageloader import ImageLoader
 
 from objects.player import Player
 
+FONT_PATH = "assets/font/geom.TTF"
 
 class Hud():
 
@@ -14,7 +16,8 @@ class Hud():
 
         self.rect_width = 100
         self.rect_height = 100
-        self.police = pygame.font.Font("./assets/font/geom.TTF", 36)
+        self.police = pygame.font.Font(FONT_PATH, 36)
+        self.police_small = pygame.font.Font(FONT_PATH, 24)
         self.player = player
         self.spacing = 50
         self.border_color = Color(255, 255, 255)
@@ -22,7 +25,7 @@ class Hud():
         for weapon in self.player.weapons:
             self.surfaces.append(pygame.transform.scale(weapon.original_image, Vector2(150, 150)))
 
-        head_img = pygame.image.load("./assets/img/head.png").convert_alpha()
+        head_img = ImageLoader.get_instance().load("./assets/img/head.png")
         self.head = pygame.transform.scale(head_img, Vector2(50, 50))
 
 
@@ -39,15 +42,15 @@ class Hud():
             timer = monotonic() - weapon.reload_t
             if timer <= weapon.reload_time:
                 remaining_time = round(weapon.reload_time-timer,1)
-                cd_text = self.police.render(str(remaining_time), True, self.border_color)
+                cd_text = self.police_small.render(str(remaining_time), True, self.border_color)
             else:
                 cd_text = self.police.render("", True, self.border_color)
 
-            screen.blit(cd_text, Vector2(x+cd_text.get_width()/2-5,self.rect_height+50))
+            screen.blit(cd_text, Vector2(x + self.rect_width - cd_text.get_width() - 10,self.rect_height-20))
 
             if self.player.weapons[self.player.selected_weapon_index] == weapon:
                 ammo_remaining = max(weapon.remaining_ammo, 0)
-                ammo_text = self.police.render(str(ammo_remaining) + "/" + str(weapon.ammo), True, (255,255,255))
+                ammo_text = self.police.render(str(ammo_remaining) + "/" + str(weapon.ammo) + " n", True, (255,255,255))
                 screen.blit(ammo_text, (screen.get_width()-ammo_text.get_width(),screen.get_height()-ammo_text.get_height()))
 
             x += self.rect_width + self.spacing
