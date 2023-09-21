@@ -105,6 +105,7 @@ async def run_game(state: tuple[str, int]):
 
         hud.weapon_hud(screen)
         hud.hp_hud(screen)
+        hud.fps_hud(screen, delta)
         camera.update(delta)
 
         async def flip():
