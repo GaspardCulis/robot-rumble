@@ -58,10 +58,17 @@ async def run_game(state: tuple[str, int]):
         await protocol.on_connected.wait()  # Block until connected successfully
         # map will be created in the client callback
 
-    player.respawn_on_random_planet()
-
+    
+    
     hud = Hud(player)
     camera = Camera(player, Vector2(SCREEN_SIZE))
+
+    # Spawn player
+    player.respawn_on_random_planet()
+    # Move camera immediatly
+    camera.update(60)
+    # Rotate player
+    player.update(60)
 
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)

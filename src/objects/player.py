@@ -85,7 +85,7 @@ class Player(PhysicsObject, Sprite):
 
     def respawn_on_random_planet(self):
 
-        spawn_positions: list[Tuple[float, Vector2, float]] = []
+        spawn_positions: list[Tuple[float, Vector2, float, Planet]] = []
         for i in range(20):
             random_index = random.randint(0, len(Planet.all) - 1)
             random_planet = list(Planet.all)[random_index]
@@ -98,16 +98,20 @@ class Player(PhysicsObject, Sprite):
             else:
                 nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
                 pos = nearest_blackhole.position
-            spawn_positions.append((self.position.distance_to(pos), self.position, self.rotation))
+            spawn_positions.append((self.position.distance_to(pos), self.position, self.rotation, random_planet))
 
         sorted_positions = sorted(spawn_positions, key=lambda p : p[0])
-        print(sorted_positions)
         final_position = sorted_positions[-1]
-        print(final_position)
         self.position = final_position[1]
         self.rotation = final_position[2]
+        planet = final_position[3]
 
         self.velocity = Vector2(0)
+
+        # Set rotation
+        target_angle = - math.degrees(math.atan2(planet.position.y - self.position.y, planet.position.x - self.position.x)) + 90
+
+        self.set_rotation(target_angle)
 
 
     def update(self, delta: float):
