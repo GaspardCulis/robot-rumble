@@ -59,7 +59,9 @@ class Hud():
             head_pos = pygame.Rect(10+spacing,screen.get_height()-55, 10,10)
             screen.blit(self.head, head_pos)
             spacing += self.head.get_width()+10
+        if self.player.lives > 0:
+            percent_text = self.police.render(": " + str(self.player.percentage) + "%", True, self.border_color)
+        else:
+            percent_text = self.police.render("PERDU", True, self.border_color)
 
-        percent_text = self.police.render(": " + str(self.player.percentage) + "%", True, self.border_color)
-        screen.blit(percent_text, Vector2(spacing+30, screen.get_height()-40))
-
+        screen.blit(percent_text, Vector2(spacing + 30, screen.get_height() - 40))

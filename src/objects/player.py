@@ -69,6 +69,7 @@ class Player(PhysicsObject, Sprite):
         self.all.add(self)
 
     def kill(self):
+        self.lives -= 1
         if self.lives == 0:
             super().kill()
             self.all.remove(self)
@@ -76,7 +77,6 @@ class Player(PhysicsObject, Sprite):
         else:
             print("dead")
             self.respawn_on_random_planet()
-            self.lives -= 1
             self.percentage = 0
         Sound.get().play('ejection')
 
