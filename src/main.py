@@ -7,6 +7,7 @@ import pygame
 from pygame import Color, Rect, Vector2, image
 from time import monotonic
 
+from core.camera import Camera
 from network import server, client
 from network.client_callback import ClientCallback
 from network.server_callback import ServerCallback
@@ -22,23 +23,23 @@ from ui.hud import Hud
 from ui import homescreen
 
 from core.sound import Sound
+from core.generation import procedural_generation
 
-SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
 BG_PATH = path.join(IMG_PATH, "backgrounds/")
 
 pygame.init()
-screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
+screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN, pygame.SCALED, vsync=1)
 pygame.display.set_caption('Game')
+SCREEN_SIZE = pygame.display.get_window_size()
 
+# procedural_generation()
 
 state = homescreen.home_screen(screen)
 if state == "quit":
     pygame.quit()
     exit(0)
-
-Sound.get().loop_music('in_game')
 
 async def run_game(state: tuple[str, int]):
     ip = state[0]
@@ -46,20 +47,21 @@ async def run_game(state: tuple[str, int]):
     connection: DatagramTransport
     player = Player(Vector2(9, 30), image.load(path.join(IMG_PATH, "player.png")))
     if ip == "0.0.0.0":
-        connection = await server.open_server(ServerCallback(), port)
+        connection, protocol = await server.open_server(ServerCallback(), port)
+        Bullet.is_server = True
+        # NOTE !!! map MUST be created on both sides !
+        planets, seed = procedural_generation()
+        print("Map generated with seed", seed)
+        protocol.server_seed = seed
     else:
-        connection = await client.connect_to_server(ClientCallback(player), ip, port)
-    # NOTE !!! map MUST be created on both sides !
-    planet_a = Planet(Vector2(512, 380), 300, "planet1.png")
-    planet_b = Planet(Vector2(1200, 200), 100, "planet2.png")
+        connection, protocol = await client.connect_to_server(ClientCallback(player), ip, port)
+        await protocol.on_connected.wait()  # Block until connected successfully
+        # map will be created in the client callback
 
-    player.velocity = Vector2(0, 550)
-    player.set_rotation(-90)
-    camera_pos = Vector2()
-    camera_zoom = 1
+    player.respawn_on_random_planet()
 
     hud = Hud(player)
-
+    camera = Camera(player, Vector2(SCREEN_SIZE))
 
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
@@ -70,6 +72,9 @@ async def run_game(state: tuple[str, int]):
     bg_name = random.choice(backgrounds_list)
     bg = pygame.image.load(BG_PATH+"/"+bg_name).convert()
     bg = pygame.transform.scale(bg, screen.get_size())
+
+    Sound.get().loop_music('in_game')
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -78,7 +83,7 @@ async def run_game(state: tuple[str, int]):
         delta = new_time - last_time
         last_time = new_time
 
-        mouse_pos = Vector2(pygame.mouse.get_pos()) - camera_pos
+        mouse_pos = Vector2(pygame.mouse.get_pos()) - camera.get_pos()
         mouse_buttons = pygame.mouse.get_pressed()
         player.process_keys(pygame.key.get_pressed(), delta)
         player.handle_click(mouse_buttons, last_mouse_buttons, mouse_pos)
@@ -92,27 +97,20 @@ async def run_game(state: tuple[str, int]):
 
         screen.blit(bg, (0, 0))
 
-
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Planet.all])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Player.all])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
-        screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Planet.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Player.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Bullet.all])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in BlackHole.all])
 
         hud.weapon_hud(screen)
-
-        dest = -(player.position - Vector2(SCREEN_SIZE)/2)
-        # add mouse deviation
-        dest.x += (pygame.mouse.get_pos()[0] / SCREEN_SIZE[0] - 0.5) * -500
-        dest.y += (pygame.mouse.get_pos()[1] / SCREEN_SIZE[1] - 0.5) * -500
-
-        camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(abs(delta * (max(player.velocity.x/100, 1))), 1))  # abs(player.velocity.x)
-        camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(abs(delta * (max(player.velocity.y/100, 1))), 1))
+        hud.hp_hud(screen)
+        camera.update(delta)
 
         async def flip():
             pygame.display.flip()
         await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
-        print("FPS ", 1 / delta)
+        # print("FPS ", 1 / delta)
     connection.close()
     pygame.quit()
 

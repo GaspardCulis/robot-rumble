@@ -52,6 +52,104 @@ import struct
 from pygame import Vector2
 
 Address: TypeAlias = tuple[str | Any, int]
+# How many times by second does the server send updates ?
+# MUST BE THE SAME ON SERVER AND CLIENT !!!!!
+TICK_RATE = 128
+
+
+class DataBuffer:
+    _data: bytearray
+    _index: int
+    FLOAT_TYPING: str = ">d"
+
+    def __init__(self, data: bytes = None):
+        self._data = bytearray(data) if data else bytearray()
+        self._index = 0
+
+    def flip(self) -> 'DataBuffer':
+        self._index = 0
+        return self
+
+    def get_data(self) -> bytes:
+        return bytes(self._data[self._index:])
+
+    def append_boolean(self, boolean: bool):
+        self.append_varint(1 if boolean else 0)
+
+    def append_vector_float(self, vector: Vector2):
+        self.append_float(vector.x)
+        self.append_float(vector.y)
+
+    def append_float(self, nb: float):
+        self.extend(struct.pack(DataBuffer.FLOAT_TYPING, nb))
+
+    def append_varint(self, number: int) -> None:
+        number = number & 0xFFFF_FFFF  # limit to 32 bits
+        while True:
+            if (number & ~0x7F) == 0:
+                self.append(number)
+                return
+            self.append((number & 0x7F) | 0x80)
+            number >>= 7
+
+    def append_varlong(self, number: int) -> None:
+        number = number & 0xFFFF_FFFF_FFFF_FFFF  # limit to 64 bits
+        while True:
+            if (number & ~0x7F) == 0:
+                self.append(number)
+                return
+            self.append((number & 0x7F) | 0x80)
+            number >>= 7
+
+    def append(self, data: int):
+        self._data.append(data)
+        self._index += 1
+
+    def extend(self, data: bytes):
+        self._data.extend(data)
+        self._index += len(data)
+
+    def read_boolean(self) -> bool:
+        return self.read_varint() != 0
+
+    def read_vector_float(self) -> Vector2:
+        return Vector2(self.read_float(), self.read_float())
+
+    def read_float(self) -> float:
+        return struct.unpack(DataBuffer.FLOAT_TYPING, self.read(struct.calcsize(DataBuffer.FLOAT_TYPING)))[0]
+
+    def read_varlong(self) -> int:
+        val = 0
+        pos = 0
+        current: int
+        while True:
+            current = self.read(1)[0]
+            val |= (current & 0x7F) << pos
+            if current & 0x80 == 0:
+                break
+            pos += 7
+            if pos >= 64:
+                raise IndexError("VarLong too big !")
+        return val
+
+    def read_varint(self) -> int:
+        val = 0
+        pos = 0
+        current: int
+        while True:
+            current = self.read(1)[0]
+            val |= (current & 0x7F) << pos
+            if current & 0x80 == 0:
+                break
+            pos += 7
+            if pos >= 32:
+                raise IndexError("VarLong too big !")
+        return val
+
+    def read(self, amount: int) -> bytes:
+        data = self._data[self._index: self._index + amount]
+        self._index += amount
+        return data
 
 
 class DataConverter:

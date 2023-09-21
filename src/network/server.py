@@ -1,21 +1,22 @@
 import asyncio
 from asyncio import Task, DatagramTransport
 from time import monotonic
+from typing import Tuple
 
 from network import serializer
 from network.connection_state import ConnectionState
-from network.converter import DataConverter, Address
+from network.converter import DataConverter, Address, TICK_RATE
 from network.callback import Callback
 
 
-async def open_server(callback: Callback, port: int = 25565) -> DatagramTransport:
+async def open_server(callback: Callback, port: int = 25565) -> tuple[DatagramTransport, 'ServerProtocol']:
     loop = asyncio.get_running_loop()
     loop.set_debug(True)
     transport: DatagramTransport
     transport, protocol = await loop.create_datagram_endpoint(
         lambda: ServerProtocol(callback),
         local_addr=("0.0.0.0", port))
-    return transport
+    return transport, protocol
 
 
 class ServerProtocol(asyncio.DatagramProtocol):
@@ -23,11 +24,13 @@ class ServerProtocol(asyncio.DatagramProtocol):
     transport: asyncio.DatagramTransport
     callback: Callback
     clients: dict[Address, ConnectionState]
+    server_seed: int
 
     def __init__(self, callback: Callback):
         self.update_task = None
         self.clients = {}
         self.callback = callback
+        self.server_seed = -1
 
     def connection_made(self, transport: asyncio.DatagramTransport):
         print("server started")
@@ -73,7 +76,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
             # calculate time taken and sleep if needed
             new_time = monotonic()
             delta = new_time - old_time
-            await asyncio.sleep(1 / 60 - delta)  # 60 tps target, if time to sleep is negative it skips
+            await asyncio.sleep(1 / TICK_RATE - delta)  # tps target, if time to sleep is negative it skips
 
     async def handle_client_data(self, data: bytes, state: ConnectionState):
         if state.timeout_task is not None:
@@ -99,7 +102,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
                 case 0x03:
                     print("Client connected !")
                     state.connected = True
-                    self.callback.on_connected(self.transport, state, state.addr)
+                    self.callback.on_connected(self.transport, state, state.addr, self.server_seed)
                     self.callback.welcome_data(data, state, state.addr)
                 case 0x05:
                     self.update_player(data)
