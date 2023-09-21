@@ -107,8 +107,8 @@ async def run_game(state: tuple[str, int]):
         dest.x += (pygame.mouse.get_pos()[0] / SCREEN_SIZE[0] - 0.5) * -500
         dest.y += (pygame.mouse.get_pos()[1] / SCREEN_SIZE[1] - 0.5) * -500
 
-        camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(abs(delta * (max(player.velocity.x/100, 1))), 1))  # abs(player.velocity.x)
-        camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(abs(delta * (max(player.velocity.y/100, 1))), 1))
+        camera_pos.x = pygame.math.lerp(camera_pos.x, dest.x, min(delta * abs(max(player.velocity.x/60, 5)), 1))
+        camera_pos.y = pygame.math.lerp(camera_pos.y, dest.y, min(delta * abs(max(player.velocity.y/60, 5)), 1))
 
         async def flip():
             pygame.display.flip()
