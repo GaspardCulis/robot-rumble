@@ -41,8 +41,6 @@ if state == "quit":
     pygame.quit()
     exit(0)
 
-Sound.get().loop_music('in_game')
-
 async def run_game(state: tuple[str, int]):
     ip = state[0]
     port = state[1]
@@ -74,6 +72,9 @@ async def run_game(state: tuple[str, int]):
     bg_name = random.choice(backgrounds_list)
     bg = pygame.image.load(BG_PATH+"/"+bg_name).convert()
     bg = pygame.transform.scale(bg, screen.get_size())
+
+    Sound.get().loop_music('in_game')
+
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
