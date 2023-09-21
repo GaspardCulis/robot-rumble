@@ -8,7 +8,7 @@ from pygame.event import Event
 from pygame.key import ScancodeWrapper
 from pygame.sprite import Group, Sprite
 from core.gravity import PhysicsObject
-from core.imageloader import ImageLoader, SpriteSheetLoader
+from core.imageloader import ImageLoader
 from objects.bullet import Bullet
 from objects.gunbullet import GunBullet
 from objects.holegun import BlackHoleGun
@@ -18,7 +18,7 @@ from objects.shotgun import Shotgun
 import random
 from objects.blackhole import BlackHole
 from core.sound import Sound
-from core.spritesheets import parse_spritesheet
+from core.spritesheets import SpriteSheet
 from objects.weapon import Weapon
 import network
 
@@ -42,16 +42,12 @@ class Player(PhysicsObject, Sprite):
         self.lives = 3
         self.isDead = False
 
-        spritesheet_loader = SpriteSheetLoader.get_instance()
-        
-        self.frames_idle = spritesheet_loader.load("assets/img/player/player_idle.png", 3, 3, frame_count=7, scale=Vector2(PLAYER_HEIGHT))
-        self.frames_run = spritesheet_loader.load("assets/img/player/player_run.png", 3, 3, frame_count=7, scale=Vector2(PLAYER_HEIGHT))
+        self.frames_idle = SpriteSheet("assets/img/player/player_idle.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT))
+        self.frames_run = SpriteSheet("assets/img/player/player_run.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT))
 
         self.frames = self.frames_idle
-        self.frame_index = 0
-        self.last_frame_skip = monotonic()
       
-        self.image = transform.rotozoom(self.frames[self.frame_index], self.rotation, 1.0)
+        self.image = transform.rotozoom(self.frames.get_frame(), self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
         self.radius = PLAYER_HEIGHT/2
         self.onground = False
@@ -116,12 +112,6 @@ class Player(PhysicsObject, Sprite):
 
 
     def update(self, delta: float):
-        # Update frames
-        if monotonic() - self.last_frame_skip > 0.1:
-            self.frame_index = (self.frame_index + 1) % len(self.frames)
-            self.image = self.frames[self.frame_index]
-            self.last_frame_skip = monotonic()
-            
         # Rotate towards nearest planet
         nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_to(self.position) - p.radius)[0]
         target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
@@ -129,6 +119,7 @@ class Player(PhysicsObject, Sprite):
         short_angle = (target_angle - self.rotation) % 360
         short_angle = 2 * short_angle % 360 - short_angle
 
+        # Handles rect position set, frame update and rotation
         self.set_rotation(self.rotation + short_angle * delta * 6)
         if self.remote:
             self.position = Vector2(pg.math.lerp(self.position.x, self.new_position.x, min(delta * network.converter.TICK_RATE, 1)),
@@ -214,5 +205,5 @@ class Player(PhysicsObject, Sprite):
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
-        self.image = pg.transform.rotate(self.frames[self.frame_index], self.rotation)
+        self.image = pg.transform.rotate(self.frames.get_frame(), self.rotation)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)

@@ -6,8 +6,8 @@ from pygame import Surface, Vector2, image, Rect, transform
 from pygame.sprite import Sprite, collide_circle, Group
 from core.collision import CircleShape, CollisionObject
 from core.gravity import PhysicsObject
-from core.imageloader import ImageLoader, SpriteSheetLoader
-from core.spritesheets import parse_spritesheet
+from core.imageloader import ImageLoader
+from core.spritesheets import SpriteSheet
 
 PLANET_ASSETS_PATH = "assets/img/planet"
 
@@ -27,13 +27,11 @@ class Planet(PhysicsObject, Sprite):
             scale_multiplier *= 3
 
         if sprite_name != "planet69.png":
-            self.frames = SpriteSheetLoader.get_instance().load(path.join(PLANET_ASSETS_PATH, sprite_name), 8, 25, scale=Vector2(self.radius * scale_multiplier))
+            self.frames = SpriteSheet(path.join(PLANET_ASSETS_PATH, sprite_name), 8, 25, 0.1, sprite_size=Vector2(self.radius * scale_multiplier))
         else:
-            self.frames = [ImageLoader.get_instance().load(path.join(PLANET_ASSETS_PATH, sprite_name), scale=Vector2(self.radius * scale_multiplier))]
+            self.frames = SpriteSheet(path.join(PLANET_ASSETS_PATH, sprite_name), 1, 1, 1, sprite_size=Vector2(self.radius * scale_multiplier))
 
-        self.frame_index = 0
-        self.last_frame_skip = monotonic()
-        self.image = self.frames[self.frame_index]
+        self.image = self.frames.get_frame()
         self.rect = self.image.get_rect()
 
         self.all.add(self)
@@ -46,7 +44,4 @@ class Planet(PhysicsObject, Sprite):
         self.rect.centerx = int(self.position.x)
         self.rect.centery = int(self.position.y)
 
-        if monotonic() - self.last_frame_skip > 0.1:
-            self.frame_index = (self.frame_index + 1) % len(self.frames)
-            self.image = self.frames[self.frame_index]
-            self.last_frame_skip = monotonic()
+        self.image = self.frames.get_frame()
