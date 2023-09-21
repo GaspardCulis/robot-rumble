@@ -60,8 +60,8 @@ class BlackHole(Bullet):
                 self.at_target = True
                 self.velocity = Vector2(0)
         elif self.scale < 2:
-            self.scale += delta
-            self.mass = BLACK_HOLE_MASS * (self.scale - 0.4)/1.6
+            self.scale = min(delta + self.scale, 2)
+        self.mass = BLACK_HOLE_MASS * (self.scale - 0.4)/1.6  # scale might be updated in network
 
         if monotonic() - self.last_frame_skip > 0.05:
             self.frame_index = (self.frame_index + 1) % len(self.frames)
