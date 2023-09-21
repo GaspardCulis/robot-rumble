@@ -22,6 +22,7 @@ from ui.hud import Hud
 from ui import homescreen
 
 from core.sound import Sound
+from core.generation import procedural_generation
 
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
@@ -32,6 +33,7 @@ screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN, pygame.SCALED, vsync=1
 pygame.display.set_caption('Game')
 SCREEN_SIZE = pygame.display.get_window_size()
 
+# procedural_generation()
 
 state = homescreen.home_screen(screen)
 if state == "quit":
@@ -51,13 +53,11 @@ async def run_game(state: tuple[str, int]):
     else:
         connection = await client.connect_to_server(ClientCallback(player), ip, port)
     # NOTE !!! map MUST be created on both sides !
-    planet_a = Planet(Vector2(512, 380), 300, "planet1.png")
-    planet_b = Planet(Vector2(1200, 200), 100, "planet2.png")
+    planets = procedural_generation()
 
-    player.velocity = Vector2(0, 550)
-    player.set_rotation(-90)
+    player.respawn_on_random_planet()
     camera_pos = Vector2()
-    camera_zoom = 1
+    camera_zoom = 1 # Not working
 
     hud = Hud(player)
 
