@@ -20,7 +20,7 @@ class Weapon(Sprite):
         self.remaining_ammo = ammo
         self.last_shot = 0.0
         self.reload_t = 0.0
-        self.original_image = pg.transform.scale_by(pg.image.load(path.join(ASSETS_DIR, sprite_name)), 2)
+        self.original_image = pg.transform.scale_by(pg.image.load(path.join(ASSETS_DIR, sprite_name)).convert_alpha(), 2)
         self.image = self.original_image.copy()
         self.rect = self.image.get_rect(center=self.image.get_rect(center = self.owner.position).center)
         self.direction = 0.0
@@ -42,14 +42,8 @@ class Weapon(Sprite):
             self.reload_t = monotonic()
             self.remaining_ammo = -1
             return False
-        
-        if self.remaining_ammo == -1:
-            if monotonic() - self.reload_t >= self.reload_time:
-                self.remaining_ammo = self.ammo
-            else:
-               return False
 
-        if monotonic() - self.last_shot >= self.cooldown_delay:
+        if monotonic() - self.last_shot >= self.cooldown_delay and self.remaining_ammo > 0:
             self.last_shot = monotonic()
             self.remaining_ammo -= 1
             return True
@@ -63,6 +57,13 @@ class Weapon(Sprite):
         self.image = pg.transform.rotate(self.original_image, -self.direction)
         center = self.owner.position + WEAPON_OFFSET.rotate(-self.owner.rotation)
         self.rect = self.image.get_rect(center=self.image.get_rect(center = center).center)
+
+        if self.remaining_ammo == -1:
+            if monotonic() - self.reload_t >= self.reload_time:
+                self.remaining_ammo = self.ammo
+
+
+
 
     def is_selected(self) -> bool:
         return self.owner.weapons[self.owner.selected_weapon_index] == self

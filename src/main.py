@@ -16,8 +16,10 @@ from objects.bullet import Bullet
 
 from core.gravity import PhysicsObject
 from objects.weapon import Weapon
+from ui.hud import Hud
 from ui import homescreen
-from ui import hud
+
+from core.sound import Sound
 
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
@@ -33,6 +35,7 @@ if state == "quit":
     pygame.quit()
     exit(0)
 
+Sound.get().loop_music('in_game')
 
 async def run_game(state: tuple[str, int]):
     ip = state[0]
@@ -44,19 +47,22 @@ async def run_game(state: tuple[str, int]):
     else:
         connection = await client.connect_to_server(ClientCallback(player), ip, port)
     # NOTE !!! map MUST be created on both sides !
-    planet_a = Planet(Vector2(512, 380), 300, image.load(path.join(IMG_PATH, "planet1.png")))
-    planet_b = Planet(Vector2(1200, 200), 100, image.load(path.join(IMG_PATH, "planet2.png")))
+    planet_a = Planet(Vector2(512, 380), 300, "planet1.png")
+    planet_b = Planet(Vector2(1200, 200), 100, "planet2.png")
 
     player.velocity = Vector2(0, 550)
     player.set_rotation(-90)
     camera_pos = Vector2()
     camera_zoom = 1
 
+    hud = Hud(player)
+
+
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
     running = True
     bg = pygame.image.load("assets/img/space_bg.png")
-    bg = pygame.transform.scale(bg, screen.get_size())
+    bg = pygame.transform.scale(bg, screen.get_size()).convert()
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,7 +83,6 @@ async def run_game(state: tuple[str, int]):
         Bullet.all.update(delta)
         Weapon.all.update(mouse_pos)
 
-        screen.fill((255,255,255))
         screen.blit(bg, (0, 0))
 
 
@@ -87,8 +92,7 @@ async def run_game(state: tuple[str, int]):
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in Bullet.all])
         screen.blits([(spr.image, spr.rect.move(camera_pos).scale_by(camera_zoom, camera_zoom)) for spr in BlackHole.all])
 
-        hud.weapon_hud(screen,player)
-
+        hud.weapon_hud(screen)
 
         dest = -(player.position - Vector2(SCREEN_SIZE)/2)
         # add mouse deviation
@@ -101,7 +105,7 @@ async def run_game(state: tuple[str, int]):
         async def flip():
             pygame.display.flip()
         await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
-        # print("FPS ", 1 / delta)
+        print("FPS ", 1 / delta)
     connection.close()
     pygame.quit()
 
