@@ -1,4 +1,6 @@
 import asyncio
+import os
+import random
 from asyncio import DatagramTransport
 from os import path
 import pygame
@@ -24,6 +26,7 @@ from core.sound import Sound
 SCREEN_SIZE = (1024, 768)
 ASSETS_PATH="assets/"
 IMG_PATH=path.join(ASSETS_PATH, "img/")
+BG_PATH = path.join(IMG_PATH, "backgrounds/")
 
 pygame.init()
 screen = pygame.display.set_mode(SCREEN_SIZE, pygame.SCALED, vsync=1)
@@ -61,8 +64,12 @@ async def run_game(state: tuple[str, int]):
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
     running = True
-    bg = pygame.image.load("assets/img/space_bg.png")
-    bg = pygame.transform.scale(bg, screen.get_size()).convert()
+
+    backgrounds_list = os.listdir(BG_PATH)
+
+    bg_name = random.choice(backgrounds_list)
+    bg = pygame.image.load(BG_PATH+"/"+bg_name).convert()
+    bg = pygame.transform.scale(bg, screen.get_size())
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
