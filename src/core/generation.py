@@ -24,7 +24,7 @@ def procedural_generation(seed: int = None) -> tuple[list[Planet], int]:
     random = rd.Random(seed)
 
     # Initialisation
-    files = os.listdir(PLANET_ASSETS_PATH)
+    files = list(sorted(os.listdir(PLANET_ASSETS_PATH), key=lambda s: os.path.basename(s)))
     planet_spritesheets = list(filter(lambda s: s.startswith("planet"), files))
     star_spritesheets = list(filter(lambda s: s.startswith("star"), files))
 
