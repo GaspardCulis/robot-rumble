@@ -28,6 +28,8 @@ def credits_screen(screen: pygame.Surface):
         "une guerre civile dechirat la civilisation des robots".upper(),
         "qui pour ahiniler leurs opposants".upper(),
         "utilisaient des pistolets a trou noir leur permettant de devenir maitres de la gravite.".upper(),
+        "",
+        "CREDITS",
         "THANKS TO WUBS FOR HIS SICK PIXEL ART GUN GENERATOR",
         "HUGE THANKS TO DEEP FOLD FOR HIS AMAZING PLANET AND SPACE BACKGROUND GENERATOR",
         "S/O DAVID HARRINGTON FOR HIS CUTE ANIMATED ROBOT SPRITE",
