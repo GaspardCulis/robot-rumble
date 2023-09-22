@@ -1,9 +1,8 @@
 import re
 
 import pygame
-from pygame import Surface
 
-from core.sound import Sound
+import core.sound
 
 # Couleurs
 WHITE = (255, 255, 255)
@@ -13,9 +12,22 @@ YELLOW = "#FFCE00"
 RED = "#FF0000"
 
 
-def credits_screen(screen: Surface):
+def credits_screen(screen: pygame.Surface):
     # Liste des chaînes de caractères à afficher avec des espacements
     credits_list = [
+        "Il etait une fois un robot...".upper(),
+        "Qui dans un monde ou les humains, apres avoir conquis le systeme solaire,".upper(),
+        "ont disparu suite a une crise ecologique inter-planetaire".upper(),
+        "et ou les robots se retrouvent seuls dans un monde pollue par les dechets".upper(),
+        "trouve une solution frolant le genie.".upper(),
+        "Consistant a passer le systeme solaire dans une machine a laver geante".upper(),
+        "elle impressionne la NIGG (Nation Inter-Galactique Generale)".upper(),
+        "qui accepta immediatement le projet.".upper(),
+        "Malheureusement toutes les planetes du systeme solaire retrecirent au lavage !".upper(),
+        "Le systeme solaire devenu inhabitable,".upper(),
+        "une guerre civile dechirat la civilisation des robots".upper(),
+        "qui pour ahiniler leurs opposants".upper(),
+        "utilisaient des pistolets a trou noir leur permettant de devenir maitres de la gravite.".upper(),
         "THANKS TO WUBS FOR HIS SICK PIXEL ART GUN GENERATOR",
         "HUGE THANKS TO DEEP FOLD FOR HIS AMAZING PLANET AND SPACE BACKGROUND GENERATOR",
         "S/O DAVID HARRINGTON FOR HIS CUTE ANIMATED ROBOT SPRITE",
@@ -65,7 +77,7 @@ def credits_screen(screen: Surface):
         pygame.display.flip()
 
 
-def home_screen(screen: Surface) -> tuple[str, int] | str:
+def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
@@ -98,7 +110,7 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
 
     error_text = ""
 
-    Sound.get().loop_music('title_screen')
+    core.sound.Sound.get().loop_music('title_screen')
 
     # État du jeu
     running = True
@@ -110,7 +122,7 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
                 return "quit"
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if start_button.collidepoint(event.pos):
-                    Sound.get().play('button')
+                    core.sound.Sound.get().play('button')
                     print("Clic sur Start")
                     # Vérifier l'adresse IP avec une expression régulière
                     ip_pattern = r'(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}'
@@ -128,12 +140,12 @@ def home_screen(screen: Surface) -> tuple[str, int] | str:
 
                     # Ajoutez ici le code pour lancer le jeu
                 elif credits_button.collidepoint(event.pos):
-                    Sound.get().play('button')
+                    core.sound.Sound.get().play('button')
                     print("Clic sur Credit")
                     credits_screen(screen)
                     # Ajoutez ici le code pour les credits du jeu
                 elif quit_button.collidepoint(event.pos):
-                    Sound.get().play('button')
+                    core.sound.Sound.get().play('button')
                     running = False
                     return "quit"
                 elif ip_rect.collidepoint(event.pos):
