@@ -11,10 +11,11 @@ MIN_PLANETS = 8
 MAX_PLANETS = 10
 
 MIN_PLANET_RADIUS = 80
-MAX_PLANET_RADIUS=400
+MAX_PLANET_RADIUS = 400
 
 MAX_PLANET_SURFACE_DISTANCE = 4000
 MIN_PLANET_SURFACE_DISTANCE = 300
+
 
 def procedural_generation(seed: int = None) -> tuple[list[Planet], int]:
     # Create seed for world, 64 bits
@@ -26,7 +27,7 @@ def procedural_generation(seed: int = None) -> tuple[list[Planet], int]:
     files = os.listdir(PLANET_ASSETS_PATH)
     planet_spritesheets = list(filter(lambda s: s.startswith("planet"), files))
     star_spritesheets = list(filter(lambda s: s.startswith("star"), files))
-    
+
     out: list[Planet] = []
     center = Vector2(0)
 
@@ -51,11 +52,11 @@ def procedural_generation(seed: int = None) -> tuple[list[Planet], int]:
             closest = sorted_planets[0]
             furthest = sorted_planets[-1]
             if position.distance_to(closest.position) - total_r > MIN_PLANET_SURFACE_DISTANCE \
-            and position.distance_to(furthest.position) - total_r < MAX_PLANET_SURFACE_DISTANCE:
+                    and position.distance_to(furthest.position) - total_r < MAX_PLANET_SURFACE_DISTANCE:
                 out.append(
                     Planet(position, radius, random.choice(planet_spritesheets))
                 )
                 break
         print()
-    
+
     return out, seed

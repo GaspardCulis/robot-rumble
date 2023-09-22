@@ -23,6 +23,5 @@ class ClientCallback(Callback):
         print("Server is on seed", seed)
         generation.procedural_generation(seed)
 
-
     def on_disconnect(self, state: ConnectionState, addr: Address):
         pass

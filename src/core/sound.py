@@ -1,6 +1,8 @@
-from pygame import mixer
-from typing import Optional
 import asyncio
+from typing import Optional
+
+from pygame import mixer
+
 
 class Sound():
     # Dictionnaire de sons chargés
@@ -74,4 +76,3 @@ class Sound():
     def stop_channel(self, name):
         if name in Sound.channels and Sound.channels[name].get_busy():
             Sound.channels[name].stop()
-

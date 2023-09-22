@@ -1,15 +1,15 @@
 from pygame import Vector2
 
+from core.sound import Sound
 from objects.gunbullet import GunBullet
 from objects.weapon import Weapon
 
-from core.sound import Sound
 
 class Shotgun(Weapon):
     def __init__(self, owner) -> None:
         super().__init__(owner, 800, 0.0, 1, 2, "shotgun.png")
         self.reload_snd = 'reload_shotgun'
-        
+
     def shoot(self, target: Vector2) -> Vector2:
         if self.can_shoot():
             Sound.get().play('shotgun')

@@ -6,8 +6,10 @@ from objects.bullet import Bullet
 
 BULLET_KB = 60
 
+
 class GunBullet(Bullet):
     all: Group = Group()
+
     def __init__(self, position: Vector2, target: Vector2, owner_id: int = 69):
         super().__init__(
             position=position,
@@ -23,4 +25,3 @@ class GunBullet(Bullet):
     def kill(self):
         GunBullet.all.remove(self)
         super().kill()
-

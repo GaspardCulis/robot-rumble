@@ -4,9 +4,9 @@ from pygame import Vector2
 
 from network.converter import DataBuffer
 from objects.blackhole import BlackHole
+from objects.bullet import Bullet
 from objects.gunbullet import GunBullet
 from objects.player import Player
-from objects.bullet import Bullet
 
 
 def get_number_from_bullet(b: Bullet) -> int:

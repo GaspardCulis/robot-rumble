@@ -1,11 +1,9 @@
 from pygame import Vector2
-from pygame.sprite import Sprite
 
-from core.gravity import PhysicsObject
+from core.sound import Sound
 from objects.gunbullet import GunBullet
 from objects.weapon import Weapon
 
-from core.sound import Sound
 
 class Minigun(Weapon):
     def __init__(self, owner):
@@ -18,4 +16,3 @@ class Minigun(Weapon):
             Sound.get().play('minigun')
             return bullet.direction_vector * self.recoil
         return Vector2(0)
- 

@@ -1,34 +1,37 @@
-from typing import Tuple
-from pygame import Vector2, constants, transform
-from pygame.math import lerp
-import pygame as pg
 import math
+import random
+from typing import Tuple
+
+import pygame as pg
+from pygame import Vector2, constants, transform
 from pygame.key import ScancodeWrapper
+from pygame.math import lerp
 from pygame.sprite import Group, Sprite
+
+import network
 from core.gravity import PhysicsObject
+from core.sound import Sound
+from core.spritesheets import SpriteSheet
+from objects.blackhole import BlackHole
 from objects.gunbullet import GunBullet
 from objects.holegun import BlackHoleGun
 from objects.minigun import Minigun
 from objects.planet import Planet
 from objects.shotgun import Shotgun
-import random
-from objects.blackhole import BlackHole
-from core.sound import Sound
-from core.spritesheets import SpriteSheet
 from objects.weapon import Weapon
-import network
 
 PLAYER_MASS = 800
 PLAYER_HEIGHT = 80
 PLAYER_VELOCITY = 500
 ON_GROUND_THRESHOLD = 1
 
+
 class Player(PhysicsObject, Sprite):
     all: Group = Group()
     max_id: list[int] = [0]
 
     def __init__(self, position: Vector2):
-        super().__init__(mass=PLAYER_MASS, position=position, passive = True, static = False)
+        super().__init__(mass=PLAYER_MASS, position=position, passive=True, static=False)
         self.new_position = position
         self.remote = False
         # Degrees
@@ -38,14 +41,16 @@ class Player(PhysicsObject, Sprite):
         self.lives = 3
         self.isDead = False
 
-        self.frames_idle = SpriteSheet("assets/img/player/player_idle.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT))
-        self.frames_run = SpriteSheet("assets/img/player/player_run.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT))
+        self.frames_idle = SpriteSheet("assets/img/player/player_idle.png", 3, 3, 0.1, frame_count=7,
+                                       sprite_size=Vector2(PLAYER_HEIGHT))
+        self.frames_run = SpriteSheet("assets/img/player/player_run.png", 3, 3, 0.1, frame_count=7,
+                                      sprite_size=Vector2(PLAYER_HEIGHT))
 
         self.frames = self.frames_idle
-      
+
         self.image = transform.rotozoom(self.frames.get_frame(), self.rotation, 1.0)
-        self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
-        self.radius = PLAYER_HEIGHT/2
+        self.rect = self.image.get_rect(center=self.image.get_rect(center=self.position).center)
+        self.radius = PLAYER_HEIGHT / 2
         self.onground = False
         self.gotshot = False
 
@@ -89,11 +94,12 @@ class Player(PhysicsObject, Sprite):
             if len(BlackHole.all) == 0:
                 pos = Vector2(0)
             else:
-                nearest_blackhole = sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
+                nearest_blackhole = \
+                sorted(BlackHole.all, key=lambda b: b.position.distance_to(self.position) - b.radius)[0]
                 pos = nearest_blackhole.position
             spawn_positions.append((self.position.distance_to(pos), self.position, self.rotation, random_planet))
 
-        sorted_positions = sorted(spawn_positions, key=lambda p : p[0])
+        sorted_positions = sorted(spawn_positions, key=lambda p: p[0])
         final_position = sorted_positions[-1]
         self.position = final_position[1]
         self.rotation = final_position[2]
@@ -102,15 +108,16 @@ class Player(PhysicsObject, Sprite):
         self.velocity = Vector2(0)
 
         # Set rotation
-        target_angle = - math.degrees(math.atan2(planet.position.y - self.position.y, planet.position.x - self.position.x)) + 90
+        target_angle = - math.degrees(
+            math.atan2(planet.position.y - self.position.y, planet.position.x - self.position.x)) + 90
 
         self.set_rotation(target_angle)
 
-
     def update(self, delta: float):
         # Rotate towards nearest planet
-        nearest_planet = sorted(Planet.all, key=lambda p : p.position.distance_to(self.position) - p.radius)[0]
-        target_angle = - math.degrees(math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
+        nearest_planet = sorted(Planet.all, key=lambda p: p.position.distance_to(self.position) - p.radius)[0]
+        target_angle = - math.degrees(
+            math.atan2(nearest_planet.position.y - self.position.y, nearest_planet.position.x - self.position.x)) + 90
 
         short_angle = (target_angle - self.rotation) % 360
         short_angle = 2 * short_angle % 360 - short_angle
@@ -118,15 +125,16 @@ class Player(PhysicsObject, Sprite):
         # Handles rect position set, frame update and rotation
         self.set_rotation(self.rotation + short_angle * delta * 6)
         if self.remote:
-            self.position = Vector2(pg.math.lerp(self.position.x, self.new_position.x, min(delta * network.converter.TICK_RATE, 1)),
-                                    pg.math.lerp(self.position.y, self.new_position.y, min(delta * network.converter.TICK_RATE, 1)))
+            self.position = Vector2(
+                pg.math.lerp(self.position.x, self.new_position.x, min(delta * network.converter.TICK_RATE, 1)),
+                pg.math.lerp(self.position.y, self.new_position.y, min(delta * network.converter.TICK_RATE, 1)))
 
-        self.onground = self.position.distance_to(nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
+        self.onground = self.position.distance_to(
+            nearest_planet.position) < self.radius + nearest_planet.radius + ON_GROUND_THRESHOLD
         if self.onground:
             self.process_collision(nearest_planet, delta)
 
         self.process_bullets()
-
 
     def process_keys(self, keys: ScancodeWrapper, delta: float):
         """
@@ -149,7 +157,7 @@ class Player(PhysicsObject, Sprite):
             self.jumped = True
             Sound.get().play('jump')
         if keys[constants.K_s]:
-            self.input_velocity.y = lerp(self.input_velocity.y, PLAYER_VELOCITY * 0.75, min(delta*4, 1))
+            self.input_velocity.y = lerp(self.input_velocity.y, PLAYER_VELOCITY * 0.75, min(delta * 4, 1))
         else:
             self.input_velocity.y = lerp(self.input_velocity.y, 0, min(delta * 10, 1))
 
@@ -166,7 +174,7 @@ class Player(PhysicsObject, Sprite):
         # Check if lands on his feets
         collision_normal: Vector2 = (self.position - collider.position).normalize()
         # La différence entre notre rotation et l'angle de la normale au sol
-        rotation_normal_diff = abs((collision_normal.angle_to(Vector2(1,0)) + 360)%360 - (self.rotation + 450) % 360)
+        rotation_normal_diff = abs((collision_normal.angle_to(Vector2(1, 0)) + 360) % 360 - (self.rotation + 450) % 360)
         if rotation_normal_diff > 30 or self.gotshot:
             # Not on feets, bounce
             velocity_along_normal = self.velocity.dot(collision_normal)
@@ -202,4 +210,4 @@ class Player(PhysicsObject, Sprite):
     def set_rotation(self, rotation: float):
         self.rotation = rotation
         self.image = pg.transform.rotate(self.frames.get_frame(), self.rotation)
-        self.rect = self.image.get_rect(center=self.image.get_rect(center = self.position).center)
+        self.rect = self.image.get_rect(center=self.image.get_rect(center=self.position).center)

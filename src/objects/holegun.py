@@ -1,7 +1,9 @@
 from pygame import Vector2
+
+from core.sound import Sound
 from objects.blackhole import BlackHole
 from objects.weapon import Weapon
-from core.sound import Sound
+
 
 class BlackHoleGun(Weapon):
     def __init__(self, owner) -> None:
@@ -12,4 +14,3 @@ class BlackHoleGun(Weapon):
             bullet = BlackHole(self.get_bullet_spawnpoint(), target)
             Sound.get().play('black_hole_gun')
         return Vector2(0)
-

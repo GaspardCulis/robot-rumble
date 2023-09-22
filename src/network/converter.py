@@ -47,8 +47,9 @@
 # C->S 0x05 id <DATA ABOUT PLAYER>
 # C<-S 0x06 id <ARRAY OF OBJECTS AND STATES>
 
-from typing import TypeAlias, Any
 import struct
+from typing import TypeAlias, Any
+
 from pygame import Vector2
 
 Address: TypeAlias = tuple[str | Any, int]
@@ -73,7 +74,7 @@ class DataBuffer:
     def get_data(self) -> bytes:
         return bytes(self._data[self._index:])
 
-    def append_boolean(self, boolean: bool)  -> 'DataBuffer':
+    def append_boolean(self, boolean: bool) -> 'DataBuffer':
         self.append_varint(1 if boolean else 0)
         return self
 

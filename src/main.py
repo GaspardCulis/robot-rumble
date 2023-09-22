@@ -3,35 +3,33 @@ import os
 import random
 from asyncio import DatagramTransport
 from os import path
-import pygame
-from pygame import Vector2
 from time import monotonic
 
+import pygame
+from pygame import Vector2
+
 from core.camera import Camera
+from core.generation import procedural_generation
+from core.gravity import PhysicsObject
 from core.imageloader import ImageLoader
+from core.sound import Sound
 from network import server, client
 from network.client_callback import ClientCallback
 from network.server_callback import ServerCallback
 from objects.blackhole import BlackHole
-
+from objects.bullet import Bullet
 from objects.planet import Planet
 from objects.player import Player
-from objects.bullet import Bullet
-
-from core.gravity import PhysicsObject
 from objects.weapon import Weapon
-from ui.hud import Hud
 from ui import homescreen
+from ui.hud import Hud
 
-from core.sound import Sound
-from core.generation import procedural_generation
-
-ASSETS_PATH="assets/"
-IMG_PATH=path.join(ASSETS_PATH, "img/")
+ASSETS_PATH = "assets/"
+IMG_PATH = path.join(ASSETS_PATH, "img/")
 BG_PATH = path.join(IMG_PATH, "backgrounds/")
 
 pygame.init()
-screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN, pygame.SCALED, vsync=1)
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
 pygame.display.set_caption('Game')
 SCREEN_SIZE = pygame.display.get_window_size()
 
@@ -41,6 +39,7 @@ state = homescreen.home_screen(screen)
 if state == "quit":
     pygame.quit()
     exit(0)
+
 
 async def run_game(state: tuple[str, int]):
     ip = state[0]
@@ -59,8 +58,6 @@ async def run_game(state: tuple[str, int]):
         await protocol.on_connected.wait()  # Block until connected successfully
         # map will be created in the client callback
 
-    
-    
     hud = Hud(player)
     camera = Camera(player, Vector2(SCREEN_SIZE))
 
@@ -78,7 +75,7 @@ async def run_game(state: tuple[str, int]):
     backgrounds_list = os.listdir(BG_PATH)
 
     bg_name = random.choice(backgrounds_list)
-    bg = ImageLoader.get_instance().load(BG_PATH+"/"+bg_name, scale=screen.get_size(), alpha_channel=False)
+    bg = ImageLoader.get_instance().load(BG_PATH + "/" + bg_name, scale=screen.get_size(), alpha_channel=False)
 
     Sound.get().loop_music('in_game')
 
@@ -106,9 +103,11 @@ async def run_game(state: tuple[str, int]):
 
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Planet.all])
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Player.all])
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in filter(lambda w : w.is_selected(), Weapon.all)])
+        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in
+                      filter(lambda w: w.is_selected(), Weapon.all)])
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Bullet.all])
-        screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in BlackHole.all])
+        screen.blits(
+            [(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in BlackHole.all])
 
         hud.weapon_hud(screen)
         hud.hp_hud(screen)
@@ -117,9 +116,11 @@ async def run_game(state: tuple[str, int]):
 
         async def flip():
             pygame.display.flip()
+
         await asyncio.ensure_future(flip())  # Needs to be async, will block network otherwise
         # print("FPS ", 1 / delta)
     connection.close()
     pygame.quit()
+
 
 asyncio.run(run_game(state))
