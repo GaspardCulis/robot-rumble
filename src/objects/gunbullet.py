@@ -14,7 +14,7 @@ class GunBullet(Bullet):
         super().__init__(
             position=position,
             target=target,
-            sprite=ImageLoader.get_instance().load("assets/img/bullet.png", 2),
+            sprite=ImageLoader.get_instance().load("assets/img/bullet.png", 2, collect=False),
             damage=2.5
         )
         self.owner_id = owner_id
