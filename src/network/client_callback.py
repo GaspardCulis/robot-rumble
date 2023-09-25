@@ -37,7 +37,7 @@ class ClientCallback(Callback):
                 p.name = to_sync[p.unique_id]
                 del to_sync[p.unique_id]
         for uid, name in to_sync.items():
-            p = Player(Vector2(1,1))
+            p = Player(Vector2(1, 1))
             p.unique_id = uid
             p.name = name
             p.remote = True

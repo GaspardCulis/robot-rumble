@@ -52,12 +52,9 @@ class ServerCallback(Callback):
                 break
 
         buffer = DataBuffer()
-        buffer.append_varint(0x08)
-        state.last_sent_id += 1
-        buffer.append_varlong(state.last_sent_id)
         buffer.append_varint(state.player_id)
         buffer.append_string(name)
-        self.protocol.broadcast(buffer.flip().get_data())
+        self.protocol.broadcast(0x08, buffer.flip().get_data())
 
     def on_disconnect(self, state: ConnectionState, addr: Address):
         pass
