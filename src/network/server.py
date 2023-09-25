@@ -28,6 +28,7 @@ class ServerProtocol(asyncio.DatagramProtocol):
         self.update_task = None
         self.clients = {}
         self.callback = callback
+        self.callback.set_protocol(self) # serverprotocol
         self.server_seed = -1
 
     def connection_made(self, transport: asyncio.DatagramTransport):
@@ -62,6 +63,10 @@ class ServerProtocol(asyncio.DatagramProtocol):
             self.clients[addr].last_sent_id += 1
             self.transport.sendto(
                 b'\x00' + DataBuffer().append_varlong(self.clients[addr].last_sent_id).flip().get_data(), addr)
+
+    def broadcast(self, data: bytes):
+        for c in self.clients.keys():
+            self.transport.sendto(data, c)
 
     async def send_update_data(self):
         while True:
@@ -104,7 +109,8 @@ class ServerProtocol(asyncio.DatagramProtocol):
                     self.callback.on_connected(self.transport, state, state.addr, self.server_seed)
                     self.callback.welcome_data(data, state, state.addr)
                 case 0x05:
-                    self.update_player(data)
+                    if state.connected:
+                        self.update_player(data)
                 case _:
                     print("Warning ! got an unknown packet !")
         else:

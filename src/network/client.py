@@ -6,7 +6,8 @@ from typing import Any
 from network import serializer
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import DataConverter, Address, TICK_RATE
+from network.converter import DataConverter, Address, TICK_RATE, DataBuffer
+from objects.player import Player
 
 
 async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> tuple[
@@ -100,8 +101,6 @@ class ClientProtocol(asyncio.DatagramProtocol):
                     pass  # KeepAlive NO-OP !
                 case 0x02:
                     print("Got Second packet, sending last confirmation")
-                    self.state.last_sent_id += 1
-                    self.transport.sendto(b'\x03' + DataConverter.write_varlong(self.state.last_sent_id), None)
                     self.callback.on_connected(self.transport, state, state.addr)
                 case 0x04:
                     self.callback.welcome_data(data, state, state.addr)
@@ -110,6 +109,15 @@ class ClientProtocol(asyncio.DatagramProtocol):
                 case 0x06:
                     if self.state.connected:
                         self.update_current_state(data)
+                case 0x08:
+                    buffer = DataBuffer(data)
+                    p_id = buffer.read_varint()
+                    name = buffer.read_string()
+                    print("Got player name", name, "for id", p_id)
+                    p: Player  # New player just joined ! ! !
+                    for p in Player.all:
+                        if p.unique_id == p_id:
+                            p.name = name
                 case _:
                     print("Warning ! got an unknown packet !")
         else:
