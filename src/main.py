@@ -125,6 +125,9 @@ async def run_game(state: tuple[str, int, str]):
         hud.fps_hud(screen, delta)
         camera.update(delta)
 
+        if random.random() > 0.99:
+            ImageLoader.get_instance().collect()
+
         async def flip():
             pygame.display.flip()
 
