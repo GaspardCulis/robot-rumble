@@ -65,7 +65,12 @@ class ServerProtocol(asyncio.DatagramProtocol):
                 b'\x00' + DataBuffer().append_varlong(self.clients[addr].last_sent_id).flip().get_data(), addr)
 
     def broadcast(self, data: bytes):
-        for c in self.clients.keys():
+        for c, state in self.clients.items():
+            buffer = DataBuffer()
+            buffer.append_varint(0x08)
+            state.last_sent_id += 1
+            buffer.append_varlong(state.last_sent_id)
+            buffer.extend(data)
             self.transport.sendto(data, c)
 
     async def send_update_data(self):

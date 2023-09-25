@@ -70,7 +70,7 @@ class Player(PhysicsObject, Sprite):
         self.spectated_player_index = 0
 
     def kill(self):
-        self.lives -= 1
+        # self.lives -= 1
         if self.lives == 0:
             super().kill()
             self.all.remove(self)
