@@ -8,6 +8,9 @@ from time import monotonic
 import pygame
 from pygame import Vector2
 
+pygame.init()
+screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
+
 from core.camera import Camera
 from core.generation import procedural_generation
 from core.gravity import PhysicsObject
@@ -29,8 +32,6 @@ ASSETS_PATH = "assets/"
 IMG_PATH = path.join(ASSETS_PATH, "img/")
 BG_PATH = path.join(IMG_PATH, "backgrounds/")
 
-pygame.init()
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN, pygame.SCALED, vsync=1)
 pygame.display.set_caption('Game')
 SCREEN_SIZE = pygame.display.get_window_size()
 
