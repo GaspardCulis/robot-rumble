@@ -64,10 +64,10 @@ class ServerProtocol(asyncio.DatagramProtocol):
             self.transport.sendto(
                 b'\x00' + DataBuffer().append_varlong(self.clients[addr].last_sent_id).flip().get_data(), addr)
 
-    def broadcast(self, data: bytes):
+    def broadcast(self, packet_id: int, data: bytes):
         for c, state in self.clients.items():
             buffer = DataBuffer()
-            buffer.append_varint(0x08)
+            buffer.append_varint(packet_id)
             state.last_sent_id += 1
             buffer.append_varlong(state.last_sent_id)
             buffer.extend(data)
