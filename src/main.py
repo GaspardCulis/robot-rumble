@@ -36,7 +36,11 @@ SCREEN_SIZE = pygame.display.get_window_size()
 
 # procedural_generation()
 
-state = homescreen.home_screen(screen)
+backgrounds_list = os.listdir(BG_PATH)
+bg_name = random.choice(backgrounds_list)
+bg = ImageLoader.get_instance().load(BG_PATH + "/" + bg_name, scale=screen.get_size(), alpha_channel=False)
+
+state = homescreen.home_screen(screen, bg)
 if state == "quit":
     pygame.quit()
     exit(0)
@@ -74,11 +78,6 @@ async def run_game(state: tuple[str, int, str]):
     last_time = monotonic()
     last_mouse_buttons = (False, False, False)
     running = True
-
-    backgrounds_list = os.listdir(BG_PATH)
-
-    bg_name = random.choice(backgrounds_list)
-    bg = ImageLoader.get_instance().load(BG_PATH + "/" + bg_name, scale=screen.get_size(), alpha_channel=False)
 
     Sound.get().loop_music('in_game')
     police = pygame.font.Font("./assets/font/geom.TTF", 24)
