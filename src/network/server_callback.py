@@ -25,6 +25,7 @@ class ServerCallback(Callback):
         state.player_id = new_player.unique_id
         state.last_sent_id += 1
         output = DataBuffer()
+        output.append_varint(0x04)
         output.append_varlong(state.last_sent_id)
         output.append_varint(new_player.unique_id)
         output.append_varlong(args[0])
@@ -34,16 +35,16 @@ class ServerCallback(Callback):
             p: Player
             if p.name != "":
                 to_send.append((p.unique_id, p.name))
+        print("Sending name info", to_send)
         output.append_varint(len(to_send))
         for uid, name in to_send:
             output.append_varint(uid)
             output.append_string(name)
 
-        transport.sendto(b'\x04' + output.flip().get_data(),
+        transport.sendto(output.flip().get_data(),
                          addr)  # inform client about the unique id chosen and the seed
 
     def welcome_data(self, data: bytes, state: ConnectionState, addr: Address):
-        print("Got data", data)
         p: Player
         name = ""
         for p in Player.all:
@@ -57,4 +58,10 @@ class ServerCallback(Callback):
         self.protocol.broadcast(0x08, buffer.flip().get_data())
 
     def on_disconnect(self, state: ConnectionState, addr: Address):
-        pass
+        for p in Player.all:
+            p: Player
+            if p.unique_id == state.player_id:
+                super(Player, p).kill()  # do not call .kill() directly, would just remove a life
+                p.isDead = True  # just in case it's used somewhere else
+                Player.all.remove(p)
+                break

@@ -119,9 +119,11 @@ class ClientProtocol(asyncio.DatagramProtocol):
                         if p.unique_id == p_id:
                             p.name = name
                 case _:
-                    print("Warning ! got an unknown packet !")
+                    print("Warning ! got an unknown packet ! with id", packet_id, "and data", data)
         else:
             print("Dropping out of order packet id", packet_id)
+            if packet_id != 0x06:
+                print("Data is", data, "state is", last_id, "wanted", state.last_received_id + 1)
 
         async def cancel_for_timeout():
             await asyncio.sleep(timeout)

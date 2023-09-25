@@ -37,9 +37,11 @@ class ClientCallback(Callback):
                 p.name = to_sync[p.unique_id]
                 del to_sync[p.unique_id]
         for uid, name in to_sync.items():
-            p = Player(Vector2(1, 1))
+            p = Player(Vector2(9, 30))
             p.unique_id = uid
             p.name = name
             p.remote = True
+            print("Made new player from naming data")
+
     def on_disconnect(self, state: ConnectionState, addr: Address):
         pass
