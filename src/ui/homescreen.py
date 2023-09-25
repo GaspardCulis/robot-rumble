@@ -85,14 +85,15 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
 
     BUTTON_WIDTH = 200
     BUTTON_HEIGHT = 60
-    SPACE_BETWEEN = 300
+    SPACE_BETWEEN = 350
+    SPACE_BETWEEN_Y = 200
 
     # Boutons
-    start_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2 - SPACE_BETWEEN, screen.get_height() / 2 - 25,
+    start_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2 - SPACE_BETWEEN, screen.get_height() / 2 - SPACE_BETWEEN_Y,
                                BUTTON_WIDTH, BUTTON_HEIGHT)
-    credits_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2, screen.get_height() / 2 - 25, BUTTON_WIDTH,
+    credits_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2, screen.get_height() / 2 - SPACE_BETWEEN_Y, BUTTON_WIDTH,
                                  BUTTON_HEIGHT)
-    quit_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2 + SPACE_BETWEEN, screen.get_height() / 2 - 25,
+    quit_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2 + SPACE_BETWEEN, screen.get_height() / 2 - SPACE_BETWEEN_Y,
                               BUTTON_WIDTH, BUTTON_HEIGHT)
 
     # Entrées pour l'IP et le port
@@ -102,10 +103,10 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
     IP_WIDTH = 300
     PORT_WIDTH = 150
     NAME_WIDTH = 500
-    ip_rect = pygame.Rect(screen.get_width() / 2 - 300, screen.get_height() / 2 + 200, IP_WIDTH, 40)
-    port_rect = pygame.Rect(screen.get_width() / 2 + 100, screen.get_height() / 2 + 200, PORT_WIDTH, 40)
-    name_rect = pygame.Rect(screen.get_width() / 2 + 350, screen.get_height() / 2 + 200, NAME_WIDTH, 40)
-    active_rect = None  # Zone de texte active (IP ou port)
+    ip_rect = pygame.Rect(screen.get_width() / 2 - IP_WIDTH / 2 - SPACE_BETWEEN, screen.get_height() / 2, IP_WIDTH, 40)
+    port_rect = pygame.Rect(screen.get_width() / 2 - PORT_WIDTH / 2, screen.get_height() / 2, PORT_WIDTH, 40)
+    name_rect = pygame.Rect(screen.get_width() / 2 - IP_WIDTH / 2 + SPACE_BETWEEN, screen.get_height() / 2, IP_WIDTH, 40)
+    active_rect = None  # Zone de texte active (IP, port ou name)
 
     error_text = ""
 

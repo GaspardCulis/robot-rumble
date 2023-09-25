@@ -25,12 +25,30 @@ PLAYER_HEIGHT = 80
 PLAYER_VELOCITY = 500
 ON_GROUND_THRESHOLD = 1
 
+PLAYER_SPRITES_PATH = "assets/img/player"
+
+class PlayerSpritesheet():
+    def __init__(self, idle: SpriteSheet, run: SpriteSheet) -> None:
+        self.idle = idle
+        self.run = run
+
+PLAYER_SPRITESHEETS = [
+    PlayerSpritesheet(
+        SpriteSheet("assets/img/player/player_idle.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT)),
+        SpriteSheet("assets/img/player/player_run.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT))
+    ),
+    PlayerSpritesheet(
+        SpriteSheet("assets/img/player/shrek_idle.png", 1, 4, 0.1, sprite_size=Vector2(PLAYER_HEIGHT)),
+        SpriteSheet("assets/img/player/shrek_run.png", 1, 3, 0.1, sprite_size=Vector2(PLAYER_HEIGHT))
+    )
+]
+        
 
 class Player(PhysicsObject, Sprite):
     all: Group = Group()
     max_id: list[int] = [0]
 
-    def __init__(self, position: Vector2):
+    def __init__(self, position: Vector2, avatar: PlayerSpritesheet = PLAYER_SPRITESHEETS[0]):
         super().__init__(mass=PLAYER_MASS, position=position, passive=True, static=False)
         self.new_position = position
         self.remote = False
@@ -41,12 +59,9 @@ class Player(PhysicsObject, Sprite):
         self.lives = 3
         self.isDead = False
 
-        self.frames_idle = SpriteSheet("assets/img/player/player_idle.png", 3, 3, 0.1, frame_count=7,
-                                       sprite_size=Vector2(PLAYER_HEIGHT))
-        self.frames_run = SpriteSheet("assets/img/player/player_run.png", 3, 3, 0.1, frame_count=7,
-                                      sprite_size=Vector2(PLAYER_HEIGHT))
+        self.avatar = avatar
 
-        self.frames = self.frames_idle
+        self.frames = self.avatar.idle
 
         self.image = transform.rotozoom(self.frames.get_frame(), self.rotation, 1.0)
         self.rect = self.image.get_rect(center=self.image.get_rect(center=self.position).center)
@@ -148,9 +163,9 @@ class Player(PhysicsObject, Sprite):
             self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, min(delta * 2, 1))
         if not (keys[constants.K_d] or keys[constants.K_q]):
             self.input_velocity.x = lerp(self.input_velocity.x, 0, min(delta * 6, 1))
-            self.frames = self.frames_idle
+            self.frames = self.avatar.idle
         elif self.onground:
-            self.frames = self.frames_run
+            self.frames = self.avatar.run
         if keys[constants.K_z] and self.onground:
             speed = Vector2(0, -1).rotate(-self.rotation) * 600
             self.velocity += speed
