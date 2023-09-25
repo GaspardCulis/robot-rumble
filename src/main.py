@@ -117,8 +117,8 @@ async def run_game(state: tuple[str, int, str]):
             p: Player
             name_render = police.render(p.name, True, (255, 255, 255))
             name_render = pygame.transform.rotate(name_render, p.rotation)
-            r = Vector2(50, -50).rotate(-p.rotation)
-            screen.blit(name_render, name_render.get_rect(center=p.position).move(r).move(camera.get_pos()).scale_by(*camera.get_scale()))
+            r = Vector2(0, -40).rotate(-p.rotation)
+            screen.blit(name_render, name_render.get_rect(center=p.position + r).move(camera.get_pos()).scale_by(*camera.get_scale()))
 
         hud.weapon_hud(screen)
         hud.hp_hud(screen)
