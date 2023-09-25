@@ -77,9 +77,6 @@ class Player(PhysicsObject, Sprite):
             self.isDead = True
             print("Game over")
         else:
-            print(self.position)
-            print(self.velocity)
-            print(self.name)
             print("dead")
             self.respawn_on_random_planet()
             self.percentage = 0
@@ -118,7 +115,6 @@ class Player(PhysicsObject, Sprite):
         self.set_rotation(target_angle)
 
     def update(self, delta: float):
-        print("[Player]", self.name, "is going at", self.velocity)
         # Rotate towards nearest planet
         nearest_planet = sorted(Planet.all, key=lambda p: p.position.distance_to(self.position) - p.radius)[0]
         target_angle = - math.degrees(
