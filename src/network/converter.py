@@ -117,7 +117,7 @@ class DataBuffer:
         return self
 
     def extend(self, data: bytes) -> 'DataBuffer':
-        self._data.extend(data)
+        self._data[self._index:self._index] = data
         self._index += len(data)
         return self
 

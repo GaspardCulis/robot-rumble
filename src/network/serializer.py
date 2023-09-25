@@ -181,6 +181,7 @@ def read_player(buffer: DataBuffer) -> Player:
         pl = Player(pos)
         pl.remote = True
         pl.unique_id = unique_id
+        print("Making new player from update data")
     else:
         pl.new_position = pos
     pl.velocity = buffer.read_vector_float()
