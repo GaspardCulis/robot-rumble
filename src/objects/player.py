@@ -204,7 +204,7 @@ class Player(PhysicsObject, Sprite):
         for bullet in pg.sprite.spritecollide(self, GunBullet.all, False):
             if bullet.owner_id != self.unique_id:
                 self.percentage += bullet.damage
-                self.velocity += Vector2(1, 0).rotate(-bullet.angle) * bullet.kb * (self.percentage / 100)
+                self.velocity += Vector2(1, 0).rotate(-bullet.angle) * bullet.kb * (self.percentage / 100 + 1)
                 bullet.kill()
                 self.gotshot = True
 
