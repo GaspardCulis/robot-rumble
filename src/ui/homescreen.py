@@ -12,7 +12,7 @@ YELLOW = "#FFCE00"
 RED = "#FF0000"
 
 
-def credits_screen(screen: pygame.Surface):
+def credits_screen(screen: pygame.Surface, bg: pygame.Surface):
     # Liste des chaînes de caractères à afficher avec des espacements
     credits_list = [
         "Il etait une fois un robot...".upper(),
@@ -40,9 +40,6 @@ def credits_screen(screen: pygame.Surface):
         "SOUND DESIGN: HIPPOLYTE CHAUVIN",
         "UI DESIGN: NOHA BOUTEMEUR"
     ]
-
-    bg = pygame.image.load("./assets/img/backgrounds/space_bg_1.png")
-    bg = pygame.transform.scale(bg, screen.get_size())
 
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
@@ -79,7 +76,7 @@ def credits_screen(screen: pygame.Surface):
         pygame.display.flip()
 
 
-def home_screen(screen: pygame.Surface) -> tuple[str, int, str] | str:
+def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, str] | str:
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
@@ -89,9 +86,6 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int, str] | str:
     BUTTON_WIDTH = 200
     BUTTON_HEIGHT = 60
     SPACE_BETWEEN = 300
-    bg = pygame.image.load("./assets/img/backgrounds/space_bg_1.png")
-
-    bg = pygame.transform.scale(bg, screen.get_size())
 
     # Boutons
     start_button = pygame.Rect(screen.get_width() / 2 - BUTTON_WIDTH / 2 - SPACE_BETWEEN, screen.get_height() / 2 - 25,
