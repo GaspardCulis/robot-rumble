@@ -87,6 +87,12 @@ class DataBuffer:
         self.extend(struct.pack(DataBuffer.FLOAT_TYPING, nb))
         return self
 
+    def append_string(self, string: str) -> 'DataBuffer':
+        data = string.encode("utf-8")
+        self.append_varint(len(data))
+        self.extend(data)
+        return self
+
     def append_varint(self, number: int) -> 'DataBuffer':
         number = number & 0xFFFF_FFFF  # limit to 32 bits
         while True:
@@ -123,6 +129,10 @@ class DataBuffer:
 
     def read_float(self) -> float:
         return struct.unpack(DataBuffer.FLOAT_TYPING, self.read(struct.calcsize(DataBuffer.FLOAT_TYPING)))[0]
+
+    def read_string(self) -> str:
+        size = self.read_varint()
+        return self.read(size).decode("utf-8")
 
     def read_varlong(self) -> int:
         val = 0

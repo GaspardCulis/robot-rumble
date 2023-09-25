@@ -15,6 +15,7 @@ from core.imageloader import ImageLoader
 from core.sound import Sound
 from network import server, client
 from network.client_callback import ClientCallback
+from network.server import ServerProtocol
 from network.server_callback import ServerCallback
 from objects.blackhole import BlackHole
 from objects.bullet import Bullet
@@ -41,11 +42,13 @@ if state == "quit":
     exit(0)
 
 
-async def run_game(state: tuple[str, int]):
+async def run_game(state: tuple[str, int, str]):
     ip = state[0]
     port = state[1]
+    name = state[2]
     connection: DatagramTransport
     player = Player(Vector2(9, 30))
+    player.name = name
     if ip == "0.0.0.0":
         connection, protocol = await server.open_server(ServerCallback(), port)
         Bullet.is_server = True
@@ -78,6 +81,7 @@ async def run_game(state: tuple[str, int]):
     bg = ImageLoader.get_instance().load(BG_PATH + "/" + bg_name, scale=screen.get_size(), alpha_channel=False)
 
     Sound.get().loop_music('in_game')
+    police = pygame.font.Font("./assets/font/geom.TTF", 24)
 
     while running:
         for event in pygame.event.get():
@@ -100,7 +104,6 @@ async def run_game(state: tuple[str, int]):
         Weapon.all.update(mouse_pos)
 
         screen.blit(bg, (0, 0))
-
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Planet.all])
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Player.all])
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in
@@ -108,6 +111,14 @@ async def run_game(state: tuple[str, int]):
         screen.blits([(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in Bullet.all])
         screen.blits(
             [(spr.image, spr.rect.move(camera.get_pos()).scale_by(*camera.get_scale())) for spr in BlackHole.all])
+
+        # Display usernames
+        for p in Player.all:
+            p: Player
+            name_render = police.render(p.name, True, (255, 255, 255))
+            name_render = pygame.transform.rotate(name_render, p.rotation)
+            r = Vector2(50, -50).rotate(-p.rotation)
+            screen.blit(name_render, name_render.get_rect(center=p.position).move(r).move(camera.get_pos()).scale_by(*camera.get_scale()))
 
         hud.weapon_hud(screen)
         hud.hp_hud(screen)

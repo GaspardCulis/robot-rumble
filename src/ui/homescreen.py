@@ -79,7 +79,7 @@ def credits_screen(screen: pygame.Surface):
         pygame.display.flip()
 
 
-def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
+def home_screen(screen: pygame.Surface) -> tuple[str, int, str] | str:
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
@@ -104,10 +104,13 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
     # Entrées pour l'IP et le port
     ip_text = "0.0.0.0"
     port_text = "6942"
+    name_text = ""
     IP_WIDTH = 300
     PORT_WIDTH = 150
+    NAME_WIDTH = 500
     ip_rect = pygame.Rect(screen.get_width() / 2 - 300, screen.get_height() / 2 + 200, IP_WIDTH, 40)
     port_rect = pygame.Rect(screen.get_width() / 2 + 100, screen.get_height() / 2 + 200, PORT_WIDTH, 40)
+    name_rect = pygame.Rect(screen.get_width() / 2 + 350, screen.get_height() / 2 + 200, NAME_WIDTH, 40)
     active_rect = None  # Zone de texte active (IP ou port)
 
     error_text = ""
@@ -134,7 +137,7 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
                         text_title = titlePolice.render("LOADING...", True, YELLOW)
                         screen.blit(text_title, (screen.get_width() / 2 - text_title.get_width() / 2, 150))
                         pygame.display.flip()
-                        return ip_text, int(port_text)
+                        return ip_text, int(port_text), name_text
                         # Ajoutez ici le code pour lancer le jeu
                     else:
                         print("Adresse IP ou port incorrects")
@@ -154,6 +157,8 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
                     active_rect = ip_rect
                 elif port_rect.collidepoint(event.pos):
                     active_rect = port_rect
+                elif name_rect.collidepoint(event.pos):
+                    active_rect = name_rect
                 else:
                     active_rect = None
             if event.type == pygame.KEYDOWN:
@@ -163,6 +168,8 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
                             ip_text = ip_text[:-1]
                         elif active_rect == port_rect:
                             port_text = port_text[:-1]
+                        elif active_rect == name_rect:
+                            name_text = name_text[:-1]
                     else:
                         if active_rect == ip_rect:
                             if ip_rect.w > IP_WIDTH + 20:
@@ -171,6 +178,9 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
                         elif active_rect == port_rect:
                             if port_rect.w > PORT_WIDTH + 25:
                                 port_text += event.unicode
+                        elif active_rect == name_rect:
+                            if name_rect.w > NAME_WIDTH + 25:
+                                name_text += event.unicode.upper()
 
         screen.fill(WHITE)
 
@@ -203,21 +213,27 @@ def home_screen(screen: pygame.Surface) -> tuple[str, int] | str:
         # Afficher les entrées pour l'IP et le port
         pygame.draw.rect(screen, WHITE, ip_rect, 2)
         pygame.draw.rect(screen, WHITE, port_rect, 2)
+        pygame.draw.rect(screen, WHITE, name_rect, 2)
 
         # Afficher le texte de l'IP et du port
         title_ip = police.render("ADRESSE IP", True, WHITE)
         title_port = police.render("PORT", True, WHITE)
+        title_name = police.render("NAME", True, WHITE)
 
         text_ip = police.render(ip_text, True, WHITE)
         text_port = police.render(port_text, True, WHITE)
+        text_name = police.render(name_text, True, WHITE)
 
         IP_WIDTH = text_ip.get_width()
         PORT_WIDTH = text_port.get_width()
+        NAME_WIDTH = text_name.get_width()
 
         screen.blit(title_ip, (ip_rect.x + 5, ip_rect.y - 50))
         screen.blit(title_port, (port_rect.x + 5, port_rect.y - 50))
+        screen.blit(title_name, (name_rect.x + 5, name_rect.y - 50))
         screen.blit(text_ip, (ip_rect.x + 5, ip_rect.y + 5))
         screen.blit(text_port, (port_rect.x + 5, port_rect.y + 5))
+        screen.blit(text_name, (name_rect.x + 5, name_rect.y + 5))
 
         pygame.display.flip()
 

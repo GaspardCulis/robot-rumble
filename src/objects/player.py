@@ -61,6 +61,7 @@ class Player(PhysicsObject, Sprite):
             Shotgun(self),
             BlackHoleGun(self),
         ]
+        self.name = ""
         self.selected_weapon_index = 0
         self.unique_id = self.max_id[0]
         self.max_id[0] += 1
