@@ -41,7 +41,7 @@ class ClientCallback(Callback):
             p.unique_id = uid
             p.name = name
             p.remote = True
-            print("Made new player from naming data")
+            print("Made new player from naming data", p.name)
 
     def on_disconnect(self, state: ConnectionState, addr: Address):
         pass

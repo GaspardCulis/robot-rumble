@@ -18,9 +18,12 @@ class ServerCallback(Callback):
         self.protocol = protocol
 
     def on_connected(self, transport: DatagramTransport, state: ConnectionState, addr: Address, *args):
-        # position is useless, will be instantly updated by client
         new_player = Player(Vector2(9, 30))  # A new player just connected, make a new player object
         new_player.remote = True
+        # Spawn player, will be updated by client
+        new_player.respawn_on_random_planet()
+        # Rotate player, same
+        new_player.update(60)
         print("Player id", new_player.unique_id, "just joined !")
         state.player_id = new_player.unique_id
         state.last_sent_id += 1
