@@ -2,6 +2,8 @@ import re
 
 import pygame
 from core.imageloader import ImageLoader
+from core.spritesheets import SpriteSheet
+from objects.player import PLAYER_SPRITESHEETS
 
 import core.sound
 
@@ -77,7 +79,16 @@ def credits_screen(screen: pygame.Surface, bg: pygame.Surface):
         pygame.display.flip()
 
 
-def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, str] | str:
+def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, str, int] | str:
+    """
+    Returns either a tuple of:
+    - ip: str
+    - port: int
+    - username: str
+    - avatar_index: int
+    Or a status text such as:
+    - "quit"
+    """
     # Police de texte
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
     titlePolice = pygame.font.Font("./assets/font/geom.TTF", 75)
@@ -101,6 +112,7 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
     ip_text = "0.0.0.0"
     port_text = "6942"
     name_text = ""
+    selected_player_index = 0
     IP_WIDTH = 300
     PORT_WIDTH = 150
     NAME_WIDTH = 500
@@ -108,6 +120,37 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
     port_rect = pygame.Rect(screen.get_width() / 2 - PORT_WIDTH / 2, screen.get_height() / 2, PORT_WIDTH, 40)
     name_rect = pygame.Rect(screen.get_width() / 2 - IP_WIDTH / 2 + SPACE_BETWEEN, screen.get_height() / 2, IP_WIDTH, 40)
     active_rect = None  # Zone de texte active (IP, port ou name)
+
+    PLAYER_PREVIEW_SIZE = 48 * 3
+    PLAYER_PREVIEW_COUNT = len(PLAYER_SPRITESHEETS)
+    player_selection_rect = pygame.Rect(
+        screen.get_width() / 2 - (PLAYER_PREVIEW_SIZE + 12) * PLAYER_PREVIEW_COUNT / 2,
+        screen.get_height() / 2 + SPACE_BETWEEN_Y, 
+        (PLAYER_PREVIEW_SIZE + 12) * PLAYER_PREVIEW_COUNT,
+        PLAYER_PREVIEW_SIZE + 12
+    )
+
+    player_preview_images = list(map(
+        lambda x: SpriteSheet(
+            x.idle.spritesheet_path,
+            x.idle.rows,
+            x.idle.cols,
+            x.idle.frame_delay,
+            x.idle.frame_count,
+            pygame.Vector2(PLAYER_PREVIEW_SIZE)
+        ),
+        PLAYER_SPRITESHEETS
+    ))
+
+    player_preview_rects = [
+        pygame.Rect(
+            screen.get_width() / 2 + (a - PLAYER_PREVIEW_COUNT/2) * (PLAYER_PREVIEW_SIZE + 12) + 6,
+            screen.get_height() / 2 + SPACE_BETWEEN_Y, 
+            PLAYER_PREVIEW_SIZE, 
+            PLAYER_PREVIEW_SIZE
+        ) for a in range(PLAYER_PREVIEW_COUNT)
+    ]
+
 
     error_text = ""
 
@@ -133,7 +176,7 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
                         text_title = titlePolice.render("LOADING...", True, YELLOW)
                         screen.blit(text_title, (screen.get_width() / 2 - text_title.get_width() / 2, 150))
                         pygame.display.flip()
-                        return ip_text, int(port_text), name_text
+                        return ip_text, int(port_text), name_text, selected_player_index
                         # Ajoutez ici le code pour lancer le jeu
                     else:
                         print("Adresse IP ou port incorrects")
@@ -157,6 +200,10 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
                     active_rect = name_rect
                 else:
                     active_rect = None
+                    # Mabe clicked on a player selector
+                    for i in range(len(player_preview_rects)):
+                        if player_preview_rects[i].collidepoint(event.pos):
+                            selected_player_index = i
             if event.type == pygame.KEYDOWN:
                 if active_rect:
                     if event.key == pygame.K_BACKSPACE:
@@ -182,6 +229,14 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
 
         # Dessinez l'arrière-plan
         screen.blit(bg, (0, 0))  # Dessinez l'image de fond en haut à gauche (0, 0)
+
+        # Afficher les rect simples
+        pygame.draw.rect(screen, WHITE, player_selection_rect, 2)
+        pygame.draw.rect(screen, WHITE, player_preview_rects[selected_player_index].move(pygame.Vector2(0, 6)), 2)
+
+        # Player previews
+        for i, r in zip(player_preview_images, player_preview_rects):
+            screen.blit(i.get_frame(), r)
 
         # Dessiner les boutons
         pygame.draw.rect(screen, WHITE, start_button, 2)
