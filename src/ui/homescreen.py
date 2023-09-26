@@ -1,6 +1,7 @@
 import re
 
 import pygame
+from core.imageloader import ImageLoader
 
 import core.sound
 
@@ -142,7 +143,7 @@ def home_screen(screen: pygame.Surface, bg: pygame.Surface) -> tuple[str, int, s
                 elif credits_button.collidepoint(event.pos):
                     core.sound.Sound.get().play('button')
                     print("Clic sur Credit")
-                    credits_screen(screen)
+                    credits_screen(screen, bg)
                     # Ajoutez ici le code pour les credits du jeu
                 elif quit_button.collidepoint(event.pos):
                     core.sound.Sound.get().play('button')
