@@ -47,7 +47,7 @@ class ClientCallback(Callback):
                 p.name, avatar = to_sync[p.unique_id]
                 p.avatar = PLAYER_SPRITESHEETS[avatar]
                 del to_sync[p.unique_id]
-        for uid, name, avatar in to_sync.items():
+        for uid, (name, avatar) in to_sync.items():
             p = Player(Vector2(9, 30))
             p.unique_id = uid
             p.name = name
