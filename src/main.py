@@ -47,12 +47,13 @@ if state == "quit":
     exit(0)
 
 
-async def run_game(state: tuple[str, int, str]):
+async def run_game(state: tuple[str, int, str, int]):
     ip = state[0]
     port = state[1]
     name = state[2]
+    avatar_index = state[3]
     connection: DatagramTransport
-    player = Player(Vector2(9, 30))
+    player = Player(Vector2(9, 30), avatar_index)
     player.name = name
     if ip == "0.0.0.0":
         connection, protocol = await server.open_server(ServerCallback(), port)
