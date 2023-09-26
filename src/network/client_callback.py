@@ -5,8 +5,8 @@ from pygame import Vector2
 from core import generation
 from network.callback import Callback
 from network.connection_state import ConnectionState
-from network.converter import Address, DataBuffer, DataConverter
-from objects.player import Player
+from network.converter import Address, DataBuffer
+from objects.player import Player, PLAYER_SPRITESHEETS
 
 
 class ClientCallback(Callback):
@@ -15,7 +15,16 @@ class ClientCallback(Callback):
 
     def on_connected(self, transport: DatagramTransport, state: ConnectionState, addr: Address, *args):
         state.last_sent_id += 1
-        transport.sendto(b'\x03' + DataConverter.write_varlong(state.last_sent_id) + self.player.name.encode("utf-8"), None)
+        buffer = DataBuffer()
+        buffer.append(0x03)
+        buffer.append_varlong(state.last_sent_id)
+        buffer.append_string(self.player.name)
+        avatar = 0
+        for i, sprite in enumerate(PLAYER_SPRITESHEETS):
+            if sprite == self.player.avatar:
+                avatar = i
+        buffer.append_varint(avatar)
+        transport.sendto(buffer.flip().get_data(), None)
 
     def welcome_data(self, data: bytes, state: ConnectionState, addr: Address):
         buffer = DataBuffer(data)
@@ -30,16 +39,19 @@ class ClientCallback(Callback):
         for _ in range(size):
             uid = buffer.read_varint()
             name = buffer.read_string()
-            to_sync[uid] = name
+            avatar = buffer.read_varint()
+            to_sync[uid] = name, avatar
         for p in Player.all:
             p: Player
             if p.unique_id in to_sync:
-                p.name = to_sync[p.unique_id]
+                p.name, avatar = to_sync[p.unique_id]
+                p.avatar = PLAYER_SPRITESHEETS[avatar]
                 del to_sync[p.unique_id]
-        for uid, name in to_sync.items():
+        for uid, name, avatar in to_sync.items():
             p = Player(Vector2(9, 30))
             p.unique_id = uid
             p.name = name
+            p.avatar = PLAYER_SPRITESHEETS[avatar]
             p.remote = True
             print("Made new player from naming data", p.name)
 

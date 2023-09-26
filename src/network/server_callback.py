@@ -6,7 +6,7 @@ from network.callback import Callback
 from network.connection_state import ConnectionState
 from network.converter import Address, DataBuffer
 from network.server import ServerProtocol
-from objects.player import Player
+from objects.player import Player, PLAYER_SPRITESHEETS
 
 
 class ServerCallback(Callback):
@@ -37,28 +37,38 @@ class ServerCallback(Callback):
         for p in Player.all:
             p: Player
             if p.name != "":
-                to_send.append((p.unique_id, p.name))
+                avatar = 0
+                for i, sprite in enumerate(PLAYER_SPRITESHEETS):
+                    if sprite == p.avatar:
+                        avatar = i
+                to_send.append((p.unique_id, p.name, avatar))
         print("Sending name info", to_send)
         output.append_varint(len(to_send))
-        for uid, name in to_send:
+        for uid, name, avatar in to_send:
             output.append_varint(uid)
             output.append_string(name)
+            output.append_varint(avatar)
 
         transport.sendto(output.flip().get_data(),
                          addr)  # inform client about the unique id chosen and the seed
 
     def welcome_data(self, data: bytes, state: ConnectionState, addr: Address):
+        buffer = DataBuffer(data)
+        name = buffer.read_string()
+        sprite = buffer.read_varint()
         p: Player
-        name = ""
         for p in Player.all:
             if p.unique_id == state.player_id:
-                p.name = name = data.decode("utf-8")
+                p.name = name
+                if len(PLAYER_SPRITESHEETS) > sprite:
+                    p.avatar = PLAYER_SPRITESHEETS[sprite]
                 break
 
-        buffer = DataBuffer()
-        buffer.append_varint(state.player_id)
-        buffer.append_string(name)
-        self.protocol.broadcast(0x08, buffer.flip().get_data())
+        output = DataBuffer()
+        output.append_varint(state.player_id)
+        output.append_string(name)
+        output.append_varint(sprite)
+        self.protocol.broadcast(0x08, output.flip().get_data())
 
     def on_disconnect(self, state: ConnectionState, addr: Address):
         for p in Player.all:
