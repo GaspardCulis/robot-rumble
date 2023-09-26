@@ -93,6 +93,11 @@ class Player(PhysicsObject, Sprite):
 
         self.spectated_player_index = 0
 
+    def set_avatar(self, index: int):
+        self.avatar_index = index
+        self.avatar = PLAYER_SPRITESHEETS[self.avatar_index]
+        self.frames = self.avatar.idle
+
     def kill(self):
         self.lives -= 1
         if self.lives == 0:
