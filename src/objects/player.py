@@ -44,6 +44,10 @@ PLAYER_SPRITESHEETS = [
     PlayerSpritesheet(
         SpriteSheet("assets/img/player/shrek_idle.png", 1, 4, 0.1, sprite_size=Vector2(PLAYER_HEIGHT)),
         SpriteSheet("assets/img/player/shrek_run.png", 1, 3, 0.1, sprite_size=Vector2(PLAYER_HEIGHT))
+    ),
+    PlayerSpritesheet(
+        SpriteSheet("assets/img/player/timoreo_idle.png", 1, 12, 0.1, sprite_size=Vector2(PLAYER_HEIGHT)),
+        SpriteSheet("assets/img/player/timoreo_run.png", 1, 8, 0.1, sprite_size=Vector2(PLAYER_HEIGHT))
     )
 ]
         
