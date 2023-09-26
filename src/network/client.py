@@ -7,7 +7,7 @@ from network import serializer
 from network.callback import Callback
 from network.connection_state import ConnectionState
 from network.converter import DataConverter, Address, TICK_RATE, DataBuffer
-from objects.player import Player
+from objects.player import Player, PLAYER_SPRITESHEETS
 
 
 async def connect_to_server(callback: Callback, ip: str = "127.0.0.1", port: int = 25565) -> tuple[
@@ -113,11 +113,14 @@ class ClientProtocol(asyncio.DatagramProtocol):
                     buffer = DataBuffer(data)
                     p_id = buffer.read_varint()
                     name = buffer.read_string()
+                    avatar = buffer.read_varint()
                     print("Got player name", name, "for id", p_id)
                     p: Player  # New player just joined ! ! !
                     for p in Player.all:
                         if p.unique_id == p_id:
                             p.name = name
+                            p.avatar = PLAYER_SPRITESHEETS[avatar]
+                            break
                 case _:
                     print("Warning ! got an unknown packet ! with id", packet_id, "and data", data)
         else:
