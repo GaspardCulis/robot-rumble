@@ -41,15 +41,13 @@ class ClientCallback(Callback):
             p: Player
             if p.unique_id in to_sync:
                 p.name, avatar = to_sync[p.unique_id]
-                p.avatar = PLAYER_SPRITESHEETS[avatar]
-                p.avatar_index = avatar
+                p.set_avatar(avatar)
                 del to_sync[p.unique_id]
         for uid, (name, avatar) in to_sync.items():
             p = Player(Vector2(9, 30))
             p.unique_id = uid
             p.name = name
-            p.avatar = PLAYER_SPRITESHEETS[avatar]
-            p.avatar_index = avatar
+            p.set_avatar(avatar)
             p.remote = True
             print("Made new player from naming data", p.name)
 

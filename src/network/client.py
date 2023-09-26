@@ -119,8 +119,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
                     for p in Player.all:
                         if p.unique_id == p_id:
                             p.name = name
-                            p.avatar = PLAYER_SPRITESHEETS[avatar]
-                            p.avatar_index = avatar
+                            p.set_avatar(avatar)
                             break
                 case _:
                     print("Warning ! got an unknown packet ! with id", packet_id, "and data", data)

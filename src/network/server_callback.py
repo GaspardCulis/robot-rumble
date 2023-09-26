@@ -57,8 +57,7 @@ class ServerCallback(Callback):
             if p.unique_id == state.player_id:
                 p.name = name
                 if len(PLAYER_SPRITESHEETS) > sprite:
-                    p.avatar_index = sprite
-                    p.avatar = PLAYER_SPRITESHEETS[sprite]
+                    p.set_avatar(sprite)
                 break
 
         output = DataBuffer()
