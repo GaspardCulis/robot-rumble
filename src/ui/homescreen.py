@@ -1,4 +1,5 @@
 import re
+from time import monotonic
 
 import pygame
 from core.imageloader import ImageLoader
@@ -48,12 +49,15 @@ def credits_screen(screen: pygame.Surface, bg: pygame.Surface):
     police = pygame.font.Font("./assets/font/geom.TTF", 36)
 
     # Positions de départ pour afficher les crédits
-    y_positions = [screen.get_height() + 200 * i for i in range(len(credits_list))]
+    y_positions = [screen.get_height() + 200.0 * i for i in range(len(credits_list))]
 
     # État du jeu
     running = True
 
+    t0 = monotonic()
     while running:
+        delta = monotonic() - t0
+        t0 = monotonic()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -70,7 +74,7 @@ def credits_screen(screen: pygame.Surface, bg: pygame.Surface):
                 screen.blit(text_credit, text_rect)
 
                 # Déplacer le texte vers le haut
-                y_positions[i] -= 2  # Réglez la vitesse de défilement ici
+                y_positions[i] -= 90*delta  # Réglez la vitesse de défilement ici
 
         if all(y <= -200 for y in y_positions):
             # Toutes les chaînes de caractères ont été affichées, revenir au home screen
