@@ -15,6 +15,7 @@ class SpriteSheet():
                  sprite_size: None | Vector2 = None) -> None:
         if frame_count == -1:
             frame_count = rows * cols
+        self.spritesheet_path = spritesheet_path
         self.spritesheet = ImageLoader.get_instance().load(
             spritesheet_path,
         )
