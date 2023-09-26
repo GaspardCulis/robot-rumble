@@ -19,11 +19,7 @@ class ClientCallback(Callback):
         buffer.append(0x03)
         buffer.append_varlong(state.last_sent_id)
         buffer.append_string(self.player.name)
-        avatar = 0
-        for i, sprite in enumerate(PLAYER_SPRITESHEETS):
-            if sprite == self.player.avatar:
-                avatar = i
-        buffer.append_varint(avatar)
+        buffer.append_varint(self.player.avatar_index)
         transport.sendto(buffer.flip().get_data(), None)
 
     def welcome_data(self, data: bytes, state: ConnectionState, addr: Address):
@@ -46,12 +42,14 @@ class ClientCallback(Callback):
             if p.unique_id in to_sync:
                 p.name, avatar = to_sync[p.unique_id]
                 p.avatar = PLAYER_SPRITESHEETS[avatar]
+                p.avatar_index = avatar
                 del to_sync[p.unique_id]
         for uid, (name, avatar) in to_sync.items():
             p = Player(Vector2(9, 30))
             p.unique_id = uid
             p.name = name
             p.avatar = PLAYER_SPRITESHEETS[avatar]
+            p.avatar_index = avatar
             p.remote = True
             print("Made new player from naming data", p.name)
 

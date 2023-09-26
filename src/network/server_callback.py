@@ -37,11 +37,7 @@ class ServerCallback(Callback):
         for p in Player.all:
             p: Player
             if p.name != "":
-                avatar = 0
-                for i, sprite in enumerate(PLAYER_SPRITESHEETS):
-                    if sprite == p.avatar:
-                        avatar = i
-                to_send.append((p.unique_id, p.name, avatar))
+                to_send.append((p.unique_id, p.name, p.avatar_index))
         print("Sending name info", to_send)
         output.append_varint(len(to_send))
         for uid, name, avatar in to_send:
@@ -61,6 +57,7 @@ class ServerCallback(Callback):
             if p.unique_id == state.player_id:
                 p.name = name
                 if len(PLAYER_SPRITESHEETS) > sprite:
+                    p.avatar_index = sprite
                     p.avatar = PLAYER_SPRITESHEETS[sprite]
                 break
 
