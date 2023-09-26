@@ -38,6 +38,10 @@ PLAYER_SPRITESHEETS = [
         SpriteSheet("assets/img/player/player_run.png", 3, 3, 0.1, frame_count=7, sprite_size=Vector2(PLAYER_HEIGHT))
     ),
     PlayerSpritesheet(
+        SpriteSheet("assets/img/player/shiba_idle.png", 1, 4, 0.1, sprite_size=Vector2(PLAYER_HEIGHT)),
+        SpriteSheet("assets/img/player/shiba_run.png", 1, 4, 0.1, sprite_size=Vector2(PLAYER_HEIGHT))
+    ),
+    PlayerSpritesheet(
         SpriteSheet("assets/img/player/shrek_idle.png", 1, 4, 0.1, sprite_size=Vector2(PLAYER_HEIGHT)),
         SpriteSheet("assets/img/player/shrek_run.png", 1, 3, 0.1, sprite_size=Vector2(PLAYER_HEIGHT))
     )
