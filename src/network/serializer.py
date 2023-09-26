@@ -36,6 +36,7 @@ def prepare_update(player_id: int) -> bytes:
             output.append_vector_float(p.position)
             output.append_vector_float(p.velocity)
             output.append_float(p.rotation)
+            output.append_boolean(p.is_running)
             output.append_boolean(p.isDead)
             output.append_float(p.percentage)
             output.append_varint(p.selected_weapon_index)
@@ -126,6 +127,7 @@ def update_player() -> bytes | None:
     output.append_vector_float(p.position)
     output.append_vector_float(p.velocity)
     output.append_float(p.rotation)
+    output.append_boolean(p.is_running)
     output.append_varint(p.selected_weapon_index)
     output.append_float(p.weapons[p.selected_weapon_index].direction)
 
@@ -186,4 +188,5 @@ def read_player(buffer: DataBuffer) -> Player:
         pl.new_position = pos
     pl.velocity = buffer.read_vector_float()
     pl.rotation = buffer.read_float()
+    pl.is_running = buffer.read_boolean()
     return pl

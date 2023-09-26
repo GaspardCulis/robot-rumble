@@ -66,6 +66,7 @@ class Player(PhysicsObject, Sprite):
         self.percentage = 0.0
         self.lives = 3
         self.isDead = False
+        self.is_running = False
 
         self.avatar_index = avatar_index
         self.avatar = PLAYER_SPRITESHEETS[avatar_index]
@@ -96,7 +97,6 @@ class Player(PhysicsObject, Sprite):
     def set_avatar(self, index: int):
         self.avatar_index = index
         self.avatar = PLAYER_SPRITESHEETS[self.avatar_index]
-        self.frames = self.avatar.idle
 
     def kill(self):
         self.lives -= 1
@@ -177,9 +177,9 @@ class Player(PhysicsObject, Sprite):
             self.input_velocity.x = lerp(self.input_velocity.x, -PLAYER_VELOCITY, min(delta * 2, 1))
         if not (keys[constants.K_d] or keys[constants.K_q]):
             self.input_velocity.x = lerp(self.input_velocity.x, 0, min(delta * 6, 1))
-            self.frames = self.avatar.idle
+            self.is_running = False
         elif self.onground:
-            self.frames = self.avatar.run
+            self.is_running = True
         if keys[constants.K_z] and self.onground:
             speed = Vector2(0, -1).rotate(-self.rotation) * 600
             self.velocity += speed
@@ -239,5 +239,9 @@ class Player(PhysicsObject, Sprite):
 
     def set_rotation(self, rotation: float):
         self.rotation = rotation
+        if self.is_running:
+            self.frames = self.avatar.run
+        else:
+            self.frames = self.avatar.idle
         self.image = pg.transform.rotate(self.frames.get_frame(), self.rotation)
         self.rect = self.image.get_rect(center=self.image.get_rect(center=self.position).center)
