@@ -48,7 +48,7 @@ class Player(PhysicsObject, Sprite):
     all: Group = Group()
     max_id: list[int] = [0]
 
-    def __init__(self, position: Vector2, avatar: PlayerSpritesheet = PLAYER_SPRITESHEETS[0]):
+    def __init__(self, position: Vector2, avatar_index: int = 0):
         super().__init__(mass=PLAYER_MASS, position=position, passive=True, static=False)
         self.new_position = position
         self.remote = False
@@ -59,7 +59,8 @@ class Player(PhysicsObject, Sprite):
         self.lives = 3
         self.isDead = False
 
-        self.avatar = avatar
+        self.avatar_index = avatar_index
+        self.avatar = PLAYER_SPRITESHEETS[avatar_index]
 
         self.frames = self.avatar.idle
 
