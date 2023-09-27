@@ -33,7 +33,7 @@ class BlackHole(Bullet):
         self.origin = position + Vector2(0)
 
         self.scale = 0.4
-        self.frames = SpriteSheet(BLACK_HOLE_SPRITESHEET, 2, 25, 0.05)
+        self.frames = SpriteSheet(BLACK_HOLE_SPRITESHEET, 2, 25, 0.05, collect=False)
 
         self.image = pg.transform.scale_by(self.frames.get_frame(), self.scale)
         self.rect = self.image.get_rect(center=self.image.get_rect(center=self.position).center)

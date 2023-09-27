@@ -12,12 +12,13 @@ class SpriteSheet():
     """
 
     def __init__(self, spritesheet_path: str, rows: int, cols: int, frame_delay: float, frame_count: int = -1,
-                 sprite_size: None | Vector2 = None) -> None:
+                 sprite_size: None | Vector2 = None, collect: bool = True) -> None:
         if frame_count == -1:
             frame_count = rows * cols
         self.spritesheet_path = spritesheet_path
         self.spritesheet = ImageLoader.get_instance().load(
             spritesheet_path,
+            collect=collect
         )
         s = self.spritesheet.get_size()
         if sprite_size == None:
