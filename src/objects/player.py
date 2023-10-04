@@ -180,7 +180,7 @@ class Player(PhysicsObject, Sprite):
             self.is_running = False
         elif self.onground:
             self.is_running = True
-        if keys[constants.K_z] and self.onground:
+        if (keys[constants.K_z] or keys[constants.K_SPACE]) and self.onground:
             speed = Vector2(0, -1).rotate(-self.rotation) * 600
             self.velocity += speed
             self.position += speed * delta  # Move, to avoid clipping instantly
