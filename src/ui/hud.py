@@ -69,5 +69,5 @@ class Hud():
 
     def fps_hud(self, screen: Surface, delta: float):
 
-        fps_text = self.police.render(str(round(1 / min(delta, 1), 0)) + " FPS", True, self.border_color)
+        fps_text = self.police.render(str(round(1 / max(delta, 1), 0)) + " FPS", True, self.border_color)
         screen.blit(fps_text, Vector2(screen.get_width() - fps_text.get_width(), 20))
