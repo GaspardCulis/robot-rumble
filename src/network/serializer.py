@@ -23,6 +23,9 @@ def make_bullet_from_number(bullet_type: int, *args) -> Bullet:
             return GunBullet(*args)
         case 0x01:
             return BlackHole(*args)
+        case _:
+            print("Warning ! unknown bullet ? type is :" + str(bullet_type))
+            return GunBullet(*args)
 
 
 def prepare_update(player_id: int) -> bytes:

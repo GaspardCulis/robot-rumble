@@ -57,6 +57,8 @@ class ClientProtocol(asyncio.DatagramProtocol):
         if self.state.keepalive_task is not None:
             self.state.keepalive_task.cancel()
         if self.state.timeout_task is not None:
+            if self.state.timeout_task.done():
+                print("Disconnected from server")
             self.state.timeout_task.cancel()
         self.callback.on_disconnect(self.state, self.state.addr)  # TODO send to the server that the client is closing
 
@@ -85,8 +87,6 @@ class ClientProtocol(asyncio.DatagramProtocol):
 
     async def handle_server_data(self, data: bytes, state: ConnectionState):
         if state.timeout_task is not None:
-            if state.timeout_task.done():
-                pass  # TODO server has timed out ? do something specific ?
             state.timeout_task.cancel()
         skip, packet_id = DataConverter.parse_varint(data)
         data = data[skip:]
