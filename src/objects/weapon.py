@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from os import path
-from time import monotonic
+from time import perf_counter
 
 import pygame as pg
 from pygame import Vector2
@@ -50,12 +50,12 @@ class Weapon(Sprite, ABC):
         if self.remaining_ammo == 0:
             if hasattr(self, "reload_snd"):
                 asyncio.create_task(Sound.get().play_with_delay(self.reload_snd, 0.5))
-            self.reload_t = monotonic()
+            self.reload_t = perf_counter()
             self.remaining_ammo = -1
             return False
 
-        if monotonic() - self.last_shot >= self.cooldown_delay and self.remaining_ammo > 0:
-            self.last_shot = monotonic()
+        if perf_counter() - self.last_shot >= self.cooldown_delay and self.remaining_ammo > 0:
+            self.last_shot = perf_counter()
             self.remaining_ammo -= 1
             return True
         else:
@@ -70,7 +70,7 @@ class Weapon(Sprite, ABC):
         self.rect = self.image.get_rect(center=self.image.get_rect(center=center).center)
 
         if self.remaining_ammo == -1:
-            if monotonic() - self.reload_t >= self.reload_time:
+            if perf_counter() - self.reload_t >= self.reload_time:
                 self.remaining_ammo = self.ammo
 
     def is_selected(self) -> bool:

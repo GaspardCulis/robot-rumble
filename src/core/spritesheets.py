@@ -1,5 +1,5 @@
 from random import random
-from time import monotonic
+from time import perf_counter
 
 from pygame import Rect, Surface, Vector2, transform
 
@@ -28,17 +28,17 @@ class SpriteSheet():
         self.cols = cols
         self.original_sprite_size = Vector2(s[0] / cols, s[1] / rows)
         self.frame_count = frame_count
-        self.last_frame_skip = monotonic() + random()  # Add random delay to avoid all sprites updating at the same time
+        self.last_frame_skip = perf_counter() + random()  # Add random delay to avoid all sprites updating at the same time
         self.frame_delay = frame_delay
         self.current_frame_index = 0
         self.__update_frame()
 
     def get_frame(self) -> Surface:
-        if monotonic() - self.last_frame_skip > self.frame_delay:
+        if perf_counter() - self.last_frame_skip > self.frame_delay:
             self.current_frame_index = (self.current_frame_index + 1) % self.frame_count
             if self.frame_count > 1:
                 self.__update_frame()
-            self.last_frame_skip = monotonic()
+            self.last_frame_skip = perf_counter()
         return self.frame
 
     def __update_frame(self):

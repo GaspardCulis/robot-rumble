@@ -1,5 +1,5 @@
 import re
-from time import monotonic
+from time import perf_counter
 
 import pygame
 from core.imageloader import ImageLoader
@@ -54,10 +54,10 @@ def credits_screen(screen: pygame.Surface, bg: pygame.Surface):
     # État du jeu
     running = True
 
-    t0 = monotonic()
+    t0 = perf_counter()
     while running:
-        delta = monotonic() - t0
-        t0 = monotonic()
+        delta = perf_counter() - t0
+        t0 = perf_counter()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False

@@ -3,7 +3,7 @@ import os
 import random
 from asyncio import DatagramTransport
 from os import path
-from time import monotonic
+from time import perf_counter
 
 import pygame
 from pygame import Vector2
@@ -77,7 +77,7 @@ async def run_game(state: tuple[str, int, str, int]):
     # Rotate player
     player.update(60)
 
-    last_time = monotonic()
+    last_time = perf_counter()
     last_mouse_buttons = (False, False, False)
     running = True
 
@@ -88,7 +88,7 @@ async def run_game(state: tuple[str, int, str, int]):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        new_time = monotonic()
+        new_time = perf_counter()
         delta = new_time - last_time
         last_time = new_time
 

@@ -1,4 +1,4 @@
-from time import monotonic
+from time import perf_counter
 
 import pygame
 from pygame import Surface, Vector2, Color
@@ -35,7 +35,7 @@ class Hud():
             k += self.rect_width + self.spacing
         for weapon in self.player.weapons:
             pygame.draw.rect(screen, self.border_color, (x, 10, self.rect_width, self.rect_height), 3, 15)
-            timer = monotonic() - weapon.reload_t
+            timer = perf_counter() - weapon.reload_t
             if timer <= weapon.reload_time:
                 remaining_time = round(weapon.reload_time - timer, 1)
                 cd_text = self.police_small.render(str(remaining_time), True, self.border_color)

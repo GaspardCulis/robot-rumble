@@ -1,4 +1,4 @@
-from time import monotonic
+from time import perf_counter
 
 import pygame as pg
 from pygame import Vector2
@@ -63,8 +63,8 @@ class BlackHole(Bullet):
             self.scale = min(delta * 2 + self.scale, 2)
             if self.scale == 2:
                 self.is_active = True
-                self.spawn_time = monotonic()
-        elif monotonic() - self.spawn_time >= 10:
+                self.spawn_time = perf_counter()
+        elif perf_counter() - self.spawn_time >= 10:
             self.scale = max(self.scale - delta, 0)
             if self.scale <= 0:
                 self.kill()

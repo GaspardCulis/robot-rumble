@@ -1,6 +1,6 @@
 import asyncio
 from asyncio import DatagramTransport, Task
-from time import monotonic
+from time import perf_counter
 from typing import Any
 
 from network import serializer
@@ -64,7 +64,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
 
     async def send_update_data(self):
         while True:
-            old_time = monotonic()
+            old_time = perf_counter()
             # serialize all the data to send
             data = serializer.update_player()
             # send the data (this does not block)
@@ -72,7 +72,7 @@ class ClientProtocol(asyncio.DatagramProtocol):
                 self.state.last_sent_id += 1
                 self.transport.sendto(b'\x05' + DataConverter.write_varlong(self.state.last_sent_id) + data, None)
             # calculate time taken and sleep if needed
-            new_time = monotonic()
+            new_time = perf_counter()
             delta = new_time - old_time
             await asyncio.sleep(1 / TICK_RATE - delta)  # tps target, if time to sleep is negative it skips
 
