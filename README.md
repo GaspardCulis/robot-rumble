@@ -52,4 +52,4 @@ Thanks to Wubs for [yet another amazing pixel art procedural gun generator](http
 
 Also thanks to PizzaDude alias Jakob Fischer, the man behind the Geometry Dash font
 
-And finally thanks to [AhuracMusic](https://www.youtube.com/@Ahurac) who for some reason doesn't appear in this project contributors, even if he wrote some code and made all of our game music and SFX.
+And finally thanks to [AhuracMusic](https://www.youtube.com/@Ahurac) who wrote some code and made all of our game music and SFX.
